@@ -9,7 +9,7 @@ root: "../"
 This assignment is based on problems 1-5 of [Jason Eisner](http://www.cs.jhu.edu/~jason/)'s [language modeling homework](https://18d120ec-a-e22e9223-s-sites.googlegroups.com/a/utcompling.com/nlp-s11/assignments/homework-1/eisner_lm_homework.pdf?attachauth=ANoY7crnvOj8DTMuEPniMbpaM6TsNW7G1t807GXUnn8-rZO14f7G_L8KTzU4c0c5E5rhcL0WVmS_yyfTN5B045b9SyrXABL8vTbH9ydSWRFcO8PbwlgbDqSbmYKa6VQk4evqMOfM12ArQ9VzhWd-SeHA6xkhiMFxULD7bAUkY5_bb3yIMj10NSm5lnUo_xIpoJy9kv8v6C2lh3sztweVkqhRJy0XfT0rCNbU8lJfp5RayzYAx0yLMDKeLfTrVQBYRoEnBaFwzr_P&attredirects=0) plus a small programming problem (problem 6). Many thanks to Jason E. for making this and other materials for teaching NLP available!
 
 * Answers to problems 1-4 should be hand-written or printed and handed in before class.
-* Problems 5-6 should be turned in via GitHub.
+* Problem 5 should be turned in via GitHub.
 
 You are welcome to consult books that cover probability theory, such as DeGroot and Schervish or the appendices of [Cormen et al](http://www.amazon.com/Introduction-Algorithms-Thomas-H-Cormen/dp/0262032937), as well as the slides on probability from Dickinson, Eisner and Martin. Also, usage of Wikipedia in conjunction with the course readings, notes and assignments is acceptable (especially if you learn something from it). For this assignment, it may be helpful to consult the following: [Algebra of sets](http://en.wikipedia.org/wiki/Algebra_of_sets) (especially if you're rusty on set theory) and [Bayes' theorem](http://en.wikipedia.org/wiki/Bayes%27_theorem) which is not extensively discussed in Jurafsy & Martin.
 

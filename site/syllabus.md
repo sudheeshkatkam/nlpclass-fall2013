@@ -15,7 +15,7 @@ title: Syllabus
 
 ## Instructor Contact Information
 [Dan Garrette](http://www.cs.utexas.edu/~dhg/)  
-**office hours:** Tues/Wed 9:30-10:30, or by appointment  
+**office hours:** Wed/Thurs 9:30-10:30, or by appointment  
 **office hours location:** GDC 1.302  
 **office:** GDC 3.504A  
 **email:** dhg@cs.utexas.edu  
