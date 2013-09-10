@@ -56,9 +56,8 @@ Topics
 Materials
 
 * [Probability overview slides](http://nlp-s11.utcompling.com/schedule/dickinson-prob-review.pdf?attredirects=0&d=1) (by Markus Dickinson)
-* [Univariate Probability](http://idiom.ucsd.edu/~rlevy/textbook/pmsl_2.pdf), chapter from Roger Levy's draft book [Probabilistic Models in the Study of Language](http://idiom.ucsd.edu/~rlevy/textbook/text.html).
+* [Univariate Probability](http://idiom.ucsd.edu/~rlevy/pmsl_textbook/chapters/pmsl_2.pdf), chapter from Roger Levy's draft book Probabilistic Models in the Study of Language.
 * [Probability Theory Review](http://www.stanford.edu/class/cs229/section/cs229-prob.pdf) from Andrew Ng's [Machine Learning course](http://www.stanford.edu/class/cs229/)
-* [Probability exercises for in class](http://jones.ling.indiana.edu/~mdickinson/09/645/slides/02-prob/inclass1.pdf).
 
 <span style="color: red">Assignments</span>
 

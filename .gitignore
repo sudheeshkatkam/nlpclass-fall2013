@@ -17,4 +17,7 @@ project/plugins/project/
 .settings/
 .cache
 
+*.aux
+*.pdf
+*.out
 

@@ -24,7 +24,7 @@ These short problems will help you get the hang of manipulating probabilities. L
 
 You are told that `\( p \)` satisfies the following two axioms:&nbsp; `\( p(\mathcal{E})=1 \)`.&nbsp;&nbsp; `\( p(X \cup Y) = p(X) + p(Y) \)` provided that `\( X \cap Y = \emptyset \)`.
 
-As a matter of notation, remember that the **conditional probability**&nbsp; `\( p(X \mid Y) \stackrel{\tiny{\mbox{def}}}{=} \frac{p(X \cap Z)}{p(Z)} \)`.  For example, singing in the rain is one of my favorite rainy-day activities: so my ratio `\( p(\text{singing} \mid \text{rainy}) = \frac{p(\text{singing}~AND~\text{rainy})}{p(\text{rainy})} \)` is high.  Here the predicate "singing" picks out the set of singing events in `\( \mathcal{E} \)`, "rainy" picks out the set of rainy events, and the conjoined predicate "singing AND rainy" picks out the interesction of these two sets---that is, all the vents that are both singing AND rainy.
+As a matter of notation, remember that the **conditional probability**&nbsp; `\( p(X \mid Z) \stackrel{\tiny{\mbox{def}}}{=} \frac{p(X \cap Z)}{p(Z)} \)`.  For example, singing in the rain is one of my favorite rainy-day activities: so my ratio `\( p(\text{singing} \mid \text{rainy}) = \frac{p(\text{singing}~AND~\text{rainy})}{p(\text{rainy})} \)` is high.  Here the predicate "singing" picks out the set of singing events in `\( \mathcal{E} \)`, "rainy" picks out the set of rainy events, and the conjoined predicate "singing AND rainy" picks out the interesction of these two sets---that is, all the vents that are both singing AND rainy.
 
 1. Prove from the axioms that if `\( Y \subseteq Z \)`, then `\( p(Y) \leq p(Z) \)`.
 
@@ -65,7 +65,7 @@ All cars are either red or blue.  The witness claimed the car that hit the pedes
         \end{align}
     \]`
 
-    Reminder: Here, *claimed* and *true* are *random variables*, which means that they are functions over some outcome space.  For example, the probability that *claimed* = blue really means the probability of getting an outcome *x* such that *claimed*(x) = blue.  We are implicitly assumping that the space of outcomes *x* is something like the set of witnessed car accidents.
+    Reminder: Here, *claimed* and *true* are *random variables*, which means that they are functions over some outcome space.  For example, the probability that *claimed* = blue really means the probability of getting an outcome *x* such that *claimed*(x) = blue.  We are implicitly assuming that the space of outcomes *x* is something like the set of witnessed car accidents.
 
 2. (1 point) Match the three probabilites above with the following terms: *prior probablity*, *likelihood of the evidence*, *posterior probability*.
 
