@@ -4,15 +4,29 @@ title: Assignment 1 - Probability
 root: "../"
 ---
 
-**Due: Monday, February 7, 12pm**
+**Due: Thursday, Sept 19.  Written portion by 2pm, programming by noon**
 
 This assignment is based on problems 1-5 of [Jason Eisner](http://www.cs.jhu.edu/~jason/)'s [language modeling homework](https://18d120ec-a-e22e9223-s-sites.googlegroups.com/a/utcompling.com/nlp-s11/assignments/homework-1/eisner_lm_homework.pdf?attachauth=ANoY7crnvOj8DTMuEPniMbpaM6TsNW7G1t807GXUnn8-rZO14f7G_L8KTzU4c0c5E5rhcL0WVmS_yyfTN5B045b9SyrXABL8vTbH9ydSWRFcO8PbwlgbDqSbmYKa6VQk4evqMOfM12ArQ9VzhWd-SeHA6xkhiMFxULD7bAUkY5_bb3yIMj10NSm5lnUo_xIpoJy9kv8v6C2lh3sztweVkqhRJy0XfT0rCNbU8lJfp5RayzYAx0yLMDKeLfTrVQBYRoEnBaFwzr_P&attredirects=0) plus a small programming problem (problem 6). Many thanks to Jason E. for making this and other materials for teaching NLP available!
 
-* Answers to problems 1-4 should be hand-written or printed and handed in before class. 
+* Answers to problems 1-4 should be hand-written or printed and handed in before class.
+* Problems 5-6 should be turned in via GitHub.
 
 You are welcome to consult books that cover probability theory, such as DeGroot and Schervish or the appendices of [Cormen et al](http://www.amazon.com/Introduction-Algorithms-Thomas-H-Cormen/dp/0262032937), as well as the slides on probability from Dickinson, Eisner and Martin. Also, usage of Wikipedia in conjunction with the course readings, notes and assignments is acceptable (especially if you learn something from it). For this assignment, it may be helpful to consult the following: [Algebra of sets](http://en.wikipedia.org/wiki/Algebra_of_sets) (especially if you're rusty on set theory) and [Bayes' theorem](http://en.wikipedia.org/wiki/Bayes%27_theorem) which is not extensively discussed in Jurafsy & Martin.
 
-There are 70 points total in this assignment. Point values for each problem/sub-problem are given below.
+There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.
+
+
+
+## Overview
+
+The programming portion of this assignment is meant to help you work with computing probabilities and to put in place code that you will use in subsequent assignments.
+
+In the root of your repository, create a file called `Assignment1_README.md` that contains:
+* A short overview of what you've done
+* A list of files relevant to this assignment
+* Any commands needed to demonstrate your programs
+
+We will grade whatever code is pushed to your GitHub repository at noon on the due date.  If your assignment will be late, please send an email by noon to both me (dhg@cs.utexas.edu) and Lewis (lewfish@cs.utexas.edu) or else we will simply grade what is there.
 
 
 
@@ -208,8 +222,6 @@ Rube Goldberg gets his think-tank working and evolves the simplified pencil-shar
 2\. `\( p(\neg \text{horse} \mid \neg \text{shoe}) = 1 \)`&nbsp;&nbsp; *For want of a shoe the horse was lost*,  
 3\. `\( p(\neg \text{race} \mid \neg \text{horse}) = 1 \)`&nbsp;&nbsp; *For want of a horse the race was lost*,  
 4\. `\( p(\neg \text{fortune} \mid \neg \text{race}) = 1 \)`&nbsp;&nbsp; *For want of a race the fortune was lost*,  
-
-----
 5\. `\( p(\neg \text{fortune} \mid \neg \text{nail}) = 1 \)` And all for the want of a horseshoe nail.  
 
 Show carefully that (e) follows from (a)--(d). Hint: Consider
@@ -226,27 +238,101 @@ as well as the "chain rule" and problems (1.1), (1.2), and (1.11).
 
 
 
-## Problem 5: XX points
+## Problem 5: 30 points
 
 This problem builds on the work done in [Assingment 0, Part 6](a0programming.html#part_6_reading_a_data_file).  For that problem we read a file containing features and labels and computed both label counts and feature counts.  In this problem we will write code that computes probability distributions.  
 
-For this task, you will implement two classes that that will represent a probability distribution and a conditional probability distribution:
+For this task, you will implement two classes that that will represent a probability distribution and a conditional probability distribution.  
+
+The classes will extend traits that are found version **0002** of the `nlpclass-fall2013` dependency.  In order to get these updates, you will need to edit your root `build.sbt` file and update the version of the dependency:
+
+    libraryDependencies += "com.utcompling" % "nlpclass-fall2013_2.10" % "0002" changing()
+
+If you use Eclipse, then after you modify the dependency you will once again have to run `sbt "eclipse with-source=true"` and refresh your project in Eclipse.
+
+The classes to implement are as follows:
 
 1. A class that represents a probability distribution: {% highlight scala %}nlp.a1.ProbabilityDistribution{% endhighlight %} that extends {% highlight scala %}nlpclass.ProbabilityDistributionToImplement{% endhighlight %}
 
 
 2. A class that represents a conditional probability distribution: {% highlight scala %}nlp.a1.ConditionalProbabilityDistribution{% endhighlight %} that extends {% highlight scala %}nlpclass.ConditionalProbabilityDistributionToImplement{% endhighlight %}
 
-This will allow us to interact with the probability distributions is a simple way.
+Each of these classes must store relevant training data extracted from a file of features and labels.  Each class has two methods: `apply` and `sample`.  The `apply` method takes an item and returns its probability according to the distribution.  The `sample` method returns an item from the distribution will likelihood according to its probability.  These classes will allow us to interact with the probability distributions is a simple way.
+
+Note that both of these classes are *generic* in that they are written so that they can work with any type of data, not simply Strings.  Your code should also be generic.  This will allow you to work with probability distributions over various types, like integers, characters, Vectors, or anything else.
+
+
+### The `apply` method
+
+The `apply` method for each discrete distribution class should return a probability derived from the training data.  For this assignment, these probabilites should be computed from the relative frequencies of labels and features given in an input file.
+
+*Remember:* A method named `apply` is special in that it can be called as `x.apply(y)` or simply `x(y)`.
+
+For example, if the training data contained 10 labels, 6 of which were "Yes", then a `ProbabilityDistribution` trained on that data might work like this:
+
+{% highlight scala %}
+import nlp.a1.ProbabilityDistribution 
+val pd = new ProbabilityDistribution[String](...something...)
+pd("Yes")  // 0.6, since p(Yes) = 0.6
+{% endhighlight %}
+
+Similarly, if the training data contained 10 instances labeled "Yes", 7 of which had value "hello", then a `ConditionalProbabilityDistribution` trained on that data might work like this:
+
+{% highlight scala %}
+import nlp.a1.ConditionalProbabilityDistribution 
+val cpd = new ConditionalProbabilityDistribution[String, String](...)
+cpd("hello", "Yes")  // 0.7, since p(hello | Yes) = 0.7
+{% endhighlight %}
+
+Make sure that the method returns 0.0 for items that were never seen in the data:
+
+{% highlight scala %}
+pd("unknown")            // 0.0
+cpd("unknown", "Yes")    // 0.0
+cpd("hello", "unknown")  // 0.0
+{% endhighlight %}
+
+
+### The `sample` method
+
+In order to be able to generate random data for a model, it is useful to have a way to randomly sample items from a probability distribution.  Therefore, you should implement a `sample` method on each discrete distribution class.  
+
+It is important that your `sample` method not simply pick an item uniformally; it should choose items with frequencies determined by the distribution.  For example, if the training data contained 10 labels, 6 of which were "Yes" and 4 "No", then a `ProbabilityDistribution` trained on that data might work like this:
+
+{% highlight scala %}
+import dhg.util.CollectionUtil._
+import nlp.a1.ProbabilityDistribution 
+val pd = new ProbabilityDistribution[String](...something...)
+Vector.fill(1000)(pd.sample).counts  // Map(No -> 393, Yes -> 607)
+{% endhighlight %}
+
+The conditional version works similarly, but requires parameter for the conditioning item.
+
+*Note:* If you sample 1000 items, you are unlikely to get *exactly* 600 "Yes" since the sampling is, after all, random.
+
+Sampling from a probability distribution can easily be accomplished with the following algorithm:
+
+1. Generate a random number between 0 and 1 (`scala.util.Random.nextDouble`)
+2. Iterate over each item, computing its probability.
+3. Keep a running sum of all the item probabilities.
+4. When the sum exceeds the random number, return the current item.
+
+This algorithm can be made more efficient by first sorting the items by their probabilities, largest to smallest.
+
+
+### Executing the code
 
 In order to make it easy for me to test your code, you will also need to implement an `object` for building these representations from a feature file:
 
 {% highlight scala %}nlp.a1.FeatureFileAsDistributions{% endhighlight %} that extends {% highlight scala %}nlpclass.FeatureFileAsDistributionsToImplement{% endhighlight %}
 
-This `object` will require a method `fromFile(filename: String)` to be implemented that reads a file of features and labels (as was done for [Assingment 0, Part 6](a0programming.html#part_6_reading_a_data_file)) and produce two things:
+This `object` will require a method `fromFile(filename: String)` to be implemented that reads a file of features and labels (as was done for [Assingment 0, Part 6](a0programming.html#part_6_reading_a_data_file)) and produce three things:
 
-1. A probability distribution over labels
-2. A `Map` from features to conditional probability distribution over feature values given labels.
+1. A set of labels
+2. A probability distribution over labels
+3. A `Map` from features to conditional probability distribution over feature values given labels.
+
+The source code for the traits can be [viewed](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L21) in the class GitHub repository.
 
 So, given a file `data2.txt`:
 
@@ -263,8 +349,25 @@ I should be able to do:
 The [source code](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L16) shows the interface code.
 
 {% highlight scala %}
-import nlp.a1.FeatureFileAsDistributions
-val (labels, pLabel, pFeatureValueGivenLabelByFeature) = FeatureFileAsDistributions.fromFile("data2.txt") 
+import nlp.a1.FeatureFileAsDistributions 
+val (labels, pLabel, pFeatureValueGivenLabelByFeature) = FeatureFileAsDistributions.fromFile("data2.txt")
+
+println(labels) // Set(neutral, negative, positive)
+
+println(f"${pLabel("negative")}%.2f") // 0.57
+println(f"${pLabel("neutral")}%.2f") //  0.14
+println(f"${pLabel("positive")}%.2f") // 0.29
+
+val featureNeg = pFeatureValueGivenLabelByFeature("neg")
+println(f"${featureNeg("bad", "negative")}%.2f") // 0.29
+
+val featurePos = pFeatureValueGivenLabelByFeature("pos")
+println(f"${featurePos("best", "negative")}%.2f") // 1.0
+println(f"${featurePos("best", "positive")}%.2f") // 0.25
+
+val featureWord = pFeatureValueGivenLabelByFeature("word")
+println(f"${featureWord("best", "negative")}%.2f") // 0.07
+println(f"${featureWord("best", "positive")}%.2f") // 0.13
 {% endhighlight %}
 
 

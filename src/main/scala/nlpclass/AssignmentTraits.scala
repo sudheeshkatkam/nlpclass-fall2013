@@ -26,7 +26,7 @@ trait NGramCountingToImplement {
  */
 trait ProbabilityDistributionToImplement[B] {
   def apply(x: B): Double
-  def generate: B
+  def sample(): B
 }
 
 /**
@@ -34,7 +34,7 @@ trait ProbabilityDistributionToImplement[B] {
  */
 trait ConditionalProbabilityDistributionToImplement[A, B] {
   def apply(x: B, given: A): Double
-  def generate(given: A): B
+  def sample(given: A): B
 }
 
 /**
