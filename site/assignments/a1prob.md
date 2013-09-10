@@ -6,7 +6,7 @@ root: "../"
 
 **Due: Thursday, Sept 19.  Written portion by 2pm, programming by noon**
 
-This assignment is based on problems 1-5 of [Jason Eisner](http://www.cs.jhu.edu/~jason/)'s [language modeling homework](https://18d120ec-a-e22e9223-s-sites.googlegroups.com/a/utcompling.com/nlp-s11/assignments/homework-1/eisner_lm_homework.pdf?attachauth=ANoY7crnvOj8DTMuEPniMbpaM6TsNW7G1t807GXUnn8-rZO14f7G_L8KTzU4c0c5E5rhcL0WVmS_yyfTN5B045b9SyrXABL8vTbH9ydSWRFcO8PbwlgbDqSbmYKa6VQk4evqMOfM12ArQ9VzhWd-SeHA6xkhiMFxULD7bAUkY5_bb3yIMj10NSm5lnUo_xIpoJy9kv8v6C2lh3sztweVkqhRJy0XfT0rCNbU8lJfp5RayzYAx0yLMDKeLfTrVQBYRoEnBaFwzr_P&attredirects=0) plus a small programming problem (problem 6). Many thanks to Jason E. for making this and other materials for teaching NLP available!
+This assignment is based on problems 1-5 of [Jason Eisner](http://www.cs.jhu.edu/~jason/)'s [language modeling homework](https://18d120ec-a-e22e9223-s-sites.googlegroups.com/a/utcompling.com/nlp-s11/assignments/homework-1/eisner_lm_homework.pdf?attachauth=ANoY7crnvOj8DTMuEPniMbpaM6TsNW7G1t807GXUnn8-rZO14f7G_L8KTzU4c0c5E5rhcL0WVmS_yyfTN5B045b9SyrXABL8vTbH9ydSWRFcO8PbwlgbDqSbmYKa6VQk4evqMOfM12ArQ9VzhWd-SeHA6xkhiMFxULD7bAUkY5_bb3yIMj10NSm5lnUo_xIpoJy9kv8v6C2lh3sztweVkqhRJy0XfT0rCNbU8lJfp5RayzYAx0yLMDKeLfTrVQBYRoEnBaFwzr_P&attredirects=0) plus a small programming problem (problem 5). Many thanks to Jason E. for making this and other materials for teaching NLP available!
 
 * Answers to problems 1-4 should be hand-written or printed and handed in before class.
 * Problem 5 should be turned in via GitHub.
@@ -250,16 +250,16 @@ The classes will extend traits that are found version **0002** of the `nlpclass-
 
 If you use Eclipse, then after you modify the dependency you will once again have to run `sbt "eclipse with-source=true"` and refresh your project in Eclipse.
 
-The classes to implement are as follows:
+The discrete probability distribution classes to implement are as follows:
 
 1. A class that represents a probability distribution: {% highlight scala %}nlp.a1.ProbabilityDistribution{% endhighlight %} that extends {% highlight scala %}nlpclass.ProbabilityDistributionToImplement{% endhighlight %}
 
 
 2. A class that represents a conditional probability distribution: {% highlight scala %}nlp.a1.ConditionalProbabilityDistribution{% endhighlight %} that extends {% highlight scala %}nlpclass.ConditionalProbabilityDistributionToImplement{% endhighlight %}
 
-Each of these classes must store relevant training data extracted from a file of features and labels.  Each class has two methods: `apply` and `sample`.  The `apply` method takes an item and returns its probability according to the distribution.  The `sample` method returns an item from the distribution will likelihood according to its probability.  These classes will allow us to interact with the probability distributions is a simple way.
+Each of these classes must store relevant training data extracted from a file of features and labels.  Each class has two methods: `apply` and `sample`.  The `apply` method takes an item and returns its probability according to the distribution.  The `sample` method returns an item from the distribution with likelihood according to its probability.  These classes will allow us to interact with the probability distributions is a simple way.
 
-Note that both of these classes are *generic* in that they are written so that they can work with any type of data, not simply Strings.  Your code should also be generic.  This will allow you to work with probability distributions over various types, like integers, characters, Vectors, or anything else.
+Note that both of these classes are *generic* in that they are written so that they can work with any type of data, not simply Strings.  Your code should also be generic.  This will allow you to work with probability distributions over various types like integers, characters, Vectors, or anything else.  This will be useful in later assignments.
 
 
 ### The `apply` method
@@ -306,18 +306,18 @@ val pd = new ProbabilityDistribution[String](...something...)
 Vector.fill(1000)(pd.sample).counts  // Map(No -> 393, Yes -> 607)
 {% endhighlight %}
 
-The conditional version works similarly, but requires parameter for the conditioning item.
+The conditional version works similarly, but requires a parameter for the conditioning item.
 
 *Note:* If you sample 1000 items, you are unlikely to get *exactly* 600 "Yes" since the sampling is, after all, random.
 
 Sampling from a probability distribution can easily be accomplished with the following algorithm:
 
 1. Generate a random number between 0 and 1 (`scala.util.Random.nextDouble`)
-2. Iterate over each item, computing its probability.
+2. Iterate over each item and its probability.
 3. Keep a running sum of all the item probabilities.
 4. When the sum exceeds the random number, return the current item.
 
-This algorithm can be made more efficient by first sorting the items by their probabilities, largest to smallest.
+This algorithm can be made more efficient by first sorting the items by their probabilities, largest to smallest.  This will help the algorithm to traverse a smaller number of elements during each call to `sample`.
 
 
 ### Executing the code
