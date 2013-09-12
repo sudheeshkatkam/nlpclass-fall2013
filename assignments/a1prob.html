@@ -313,7 +313,7 @@
 
 <h2 id='problem_4_7_points'>Problem 4: 7 points</h2>
 
-<p><img alt='Rube Goldbergs pencil sharpener' src='../images/rube_goldberg_pencil_sharpener.jpg' /></p>
+<p><img src='../images/rube_goldberg_pencil_sharpener.jpg' alt='Rube Goldbergs pencil sharpener' /></p>
 
 <p>Rube Goldberg gets his think-tank working and evolves the simplified pencil-sharpener. Open window (A) and y kite (B). String (C) lifts small door (D) allowing moths (E) to escape and eat red flannel shirt (F). As weight of shirt becomes less, shoe (G) steps on switch (H) which heats electric iron (I) and burns hole in pants (J). Smoke (K) enters hole in tree (L), smoking out opossum (M) which jumps into basket (N), pulling rope (O) and lifting cage (P), allowing woodpecker (Q) to chew wood from pencil (R), exposing lead. Emergency knife (S) is always handy in case opossum or the woodpecker gets sick and can&#8217;t work.</p>
 
@@ -446,20 +446,20 @@ word=hated,word=terrible,word=film,neg=hated,neg=terrible,negative</code></pre>
 
 <span class='n'>println</span><span class='o'>(</span><span class='n'>labels</span><span class='o'>)</span> <span class='c1'>// Set(neutral, negative, positive)</span>
 
-<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${pLabel(&quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.57</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${pLabel(&quot;</span><span class='n'>neutral</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>//  0.14</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${pLabel(&quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.29</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(label=negative) = ${pLabel(&quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.57</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(label=neutral)  = ${pLabel(&quot;</span><span class='n'>neutral</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.14</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(label=positive) = ${pLabel(&quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.29</span>
 
 <span class='k'>val</span> <span class='n'>featureNeg</span> <span class='k'>=</span> <span class='n'>pFeatureValueGivenLabelByFeature</span><span class='o'>(</span><span class='s'>&quot;neg&quot;</span><span class='o'>)</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featureNeg(&quot;</span><span class='n'>bad</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.29</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(neg=bad | label=negative) = ${featureNeg(&quot;</span><span class='n'>bad</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.29</span>
 
 <span class='k'>val</span> <span class='n'>featurePos</span> <span class='k'>=</span> <span class='n'>pFeatureValueGivenLabelByFeature</span><span class='o'>(</span><span class='s'>&quot;pos&quot;</span><span class='o'>)</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featurePos(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 1.0</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featurePos(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.25</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(pos=best | label=negative) = ${featurePos(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 1.00</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(pos=best | label=positive) = ${featurePos(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.25</span>
 
 <span class='k'>val</span> <span class='n'>featureWord</span> <span class='k'>=</span> <span class='n'>pFeatureValueGivenLabelByFeature</span><span class='o'>(</span><span class='s'>&quot;word&quot;</span><span class='o'>)</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featureWord(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.07</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featureWord(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.13</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featureWord(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// p(word=best | label=negative) = 0.07</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featureWord(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// p(word=best | label=positive) = 0.13</span>
 </code></pre></div>
       </div>
       <div id='footer'></div>
