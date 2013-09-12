@@ -39,15 +39,267 @@
 
 
 
-\section{Basics}
+\section{Classification Tasks}
 
 \begin{itemize}
-  \item $\mathcal{E} \neq \emptyset$: event space (sample space)
-  \item We will be dealing with sets of discrete events.
+  \item Language identification: determine the language that a text is written in
+  \item Spam filtering: label emails, tweets, blog comments as spam or not spam
+  \item Routing: label emails to approprate people in an organization (complaints, tech support, order status, etc)
+  \item Sentiment analysis: label some text as being positive or negative (polarity classification)
 \end{itemize}
 
+Example: Sentiment
+
+\begin{itemize}
+  \item Determine the sentiment (positive vs. negative) of, for example, a tweet
+  \item ``Probably the worst movie of the century''
+  \item One idea: Compare of ``positive'' words (good, great, best) to ``negative'' words (bad, terrible, worst).
+    \begin{itemize}
+      \item Humans give insufficent lists.  Learning a sufficent list is hard.
+      \item Words mean different things in different contexts: \\
+            ``This thing is \textit{a great deal}.  Definitely worth the money.'' \\
+            ``\textit{A great deal} of media attention surrounded the event.'' \\
+            ``It's \textit{a great deal}... if you're looking to looking to waste your money.''
+      \item Some words can flip polarity: \\
+            ``It's \textbf{not} a \textbf{good} investment.'' \\
+            ``I thought it would be \textbf{terrible}, \textbf{but} I was so wrong.''
+      \item Multi-word expressions: \\
+            ``The movie was \underline{shit}.'' \\
+            ``The movie was \underline{the shit}.''
+      \item Subtlety: \\
+            ``If this movie's your thing, don't bother talking to me.'' \\
+            ``Great plot, great acting, great cast, but it just doesn't hold up.''
+      \item Can depend on the target: \\
+            ``Unpredicatable plot''\\
+            ``Unpredicatable steering''
+    \end{itemize}
+  \item Additional Features
+    \begin{itemize}
+      \item Ngrams: ``must buy'', ``couldn't care less''
+      \item Casing: uppercase words are often subjective
+      \item Punctuation: lots of ! or ? can indicate subjectivity
+      \item Emoticons: :) vs. :(
+    \end{itemize}
+\end{itemize}
+
+\section{Rule-Based System}
+
+\begin{itemize}
+  \item Write prediction rules: ``If contains X and Y but not Z, then `positive'"
+  \item What happens when multiple rules apply but conflict?
+    \begin{itemize}
+      \item Order the rules according to their accuracy?
+      \item Assign weights to the rules?
+    \end{itemize}
+  \item Problems
+    \begin{itemize}
+      \item Time-consuming and expensive to write rules.
+      \item High precision, low recall
+      \item Rules have to be manually tailored to each dataset (unpredictable vs. unpredictable)
+      \item Expensive to update (new expressions, new slang, new abrvs)
+    \end{itemize}
+\end{itemize}
+
+\section{Learning}
+
+\begin{itemize}
+  \item If we have examples, we can learn a function mapping texts to categories
+  \item Often probabilistic
+  \item Instead of rules, we use features
+  \item Features are automatically weighted based on statistics in the training data.
+  \item Features are dimensions in space.
+  \item Learn a boundary between classes.
+  \item Boundary used to classify new texts.
+\end{itemize}
+
+Some Data
+\begin{verbatim}
+    start=B, end=ia, location
+    start=B, end=er, person
+    start=M, end=ia, person
+    start=L, end=ia, location
+    start=N, end=er, location
+    start=B, end=ia, location
+    start=E, end=nd, location
+    start=N, end=ia, location
+    start=A, end=er, person
+    start=L, end=ke, person
+\end{verbatim}
+
+Our Goal
+
+\begin{itemize}
+  \item Learn a function that maps features to the most likely label  
+  \item $\text{best\_label} = \text{argmax}_{\text{label}}~p(label \mid \text{features})$
+\end{itemize}
+
+
+Direct Posterior Parameter Estimation from Data
+
+\begin{itemize}
+  \item $p(label \mid features) = \frac{C(instances~with~label~and~feature)}{C(instances~with~features)}$
+    \begin{itemize}
+      \item $p(label=location \mid start=B, end=er) = \frac{0}{1} = 0.0$
+      \item $p(label=person \mid start=B, end=er) = \frac{1}{1} = 1.0$
+      \\
+      \item $p(label=location \mid start=B, end=ia) = \frac{2}{2} = 1.0$
+      \item $p(label=person \mid start=B, end=ia) = \frac{0}{2} = 0.0$
+    \end{itemize}
+  \item This doesn't work very well
+  \item Sparsity: any particular feature combination is rare, hard to generalize
+  \item Even worse when every word in a text is a feature
+    \begin{itemize}
+      \item Every text would be unique, and there would be no generalization at all
+      \item Couldn't label new instances
+    \end{itemize}
+\end{itemize}
+
+
+Bayes Rule
+
+\begin{itemize}
+  \item $p(label \mid features) = \frac{p(features \mid label) \cdot p(label)}{p(features)}$
+  \item $\text{best\_label} = \text{argmax}_{\text{label}}~\frac{p(features \mid label) \cdot p(label)}{p(features)}$
+  \item If labels = \{A,B\}: $\frac{p(features \mid A) \cdot p(A)}{p(features)}$ vs. $\frac{p(features \mid B) \cdot p(B)}{p(features)}$
+  \item Denominator is always the same, so: $p(features \mid A)$$\cdot$$p(A)$ vs. $p(features \mid B)$$\cdot$$p(B)$
+  \item Thus, to compute the \textbf{posterior}, we need two things
+    \begin{itemize}
+      \item the likelihood of the evidence: $p(features \mid label)$
+      \item the prior: $p(label)$
+    \end{itemize}
+\end{itemize}
+
+
+Direct Evidence Likelihood Estimation from Data
+
+\begin{itemize}
+  \item $p(features \mid label) = \frac{C(instances~with~features~and~label)}{C(instances~with~label)}$
+    \begin{itemize}
+      \item $p(start=B, end=er \mid label=location) = \frac{0}{6} = 0.0$
+      \item $p(start=B, end=er \mid label=person) = \frac{1}{4} = 0.25$
+      \\
+      \item $p(start=B, end=ia \mid label=location) = \frac{2}{6} = 0.33$
+      \item $p(start=B, end=ia \mid p(label=person) = \frac{0}{4} = 0.0$
+    \end{itemize}
+  \item Still problematic: still sparse, still lots of zeros, still hard to generalize
+\end{itemize}
+
+
+Na\"{i}ve Bayes
+
+\begin{itemize}
+  \item We want to disentangle the features for better generalization
+  \item Compute each feature's probability independently
+  \item Will be able to compute the probability of an instance from the features even if we haven't seen that particular combination of features before.
+  \item Requires us to assume that features are independent
+    \begin{itemize}
+      \item Not actually true!  Language doesn't work like that.
+      \item But it's a simplifying assumption
+      \item ``Na\"{i}ve'' assumption
+    \end{itemize}
+  \item $p(features \mid label) = p(F_1, F_2, F_3, ... \mid label) = p(F_1 \mid label) \cdot p(F_2 \mid label) \cdot p(F_3 \mid label) \cdot ...$
+\end{itemize}
+
+
+Parameter Estimation from Data
+
+\begin{itemize}
+  \item The prior
+    \begin{itemize}
+      \item $p(label=location) = \frac{C(label=location)}{\sum_l C(label=l)} = \frac{6}{10} = 0.6$
+      \item $p(label=person) = \frac{C(label=person)}{\sum_l C(label=l)} = \frac{2}{10} = 0.2$
+    \end{itemize}
+  \item Likelihood of the evidence
+    \begin{itemize}
+      \item $p(start=B \mid label=location) = \frac{C(start=B, label=location)}{C(label=location)} = \frac{2}{6} = 0.33$
+      \item $p(start=B \mid label=person) = \frac{C(start=B, label=person)}{C(label=person)} = \frac{1}{4} = 0.25$
+      \\
+      \item $p(end=ia \mid label=location) = \frac{C(end=ia, label=location)}{C(label=location)} = \frac{4}{6} = 0.67$
+      \item $p(end=ia \mid label=person) = \frac{C(end=ia, label=person)}{C(label=person)} = \frac{1}{4} = 0.25$
+      \\
+      \item $p(end=nd \mid label=location) = \frac{C(end=nd, label=location)}{C(label=location)} = \frac{1}{6} = 0.17$
+      \item $p(end=nd \mid label=person) = \frac{C(end=nd, label=person)}{C(label=person)} = \frac{0}{4} = 0.0$
+    \end{itemize}
+\end{itemize}
+
+
+Na\"{i}ve Probabilities
+
+\begin{itemize}
+  \item Before
+    \begin{itemize}
+      \item $p(start=B, end=ia \mid label=location) = \frac{2}{6} = 0.33$
+      \item $p(start=B, end=ia \mid p(label=person) = \frac{0}{4} = 0.0$
+    \end{itemize}
+  \item Now
+    \begin{itemize}
+      \item $p(start=B \mid label=location) \cdot p(end=ia \mid label=location) = 0.33 \cdot 0.67 = 0.22$
+      \item $p(start=B \mid label=location) \cdot p(end=ia \mid label=person) = 0.25 \cdot 0.25 = 0.06$
+    \end{itemize}
+\end{itemize}
+
+
+Classifying
+
+\begin{itemize}
+  \item We get a \textbf{new} instance.  Need to determine its label.
+  \item Works even if we haven't seen the particular combination of features
+  \item \texttt{start=L, end=er}
+  \item $p(features \mid A)$$\cdot$$p(A)$ vs. $p(features \mid B)$$\cdot$$p(B)$
+  \item $p(start=L \mid location) \cdot p(end=er \mid location) \cdot p(location) = \frac{1}{6} \cdot \frac{1}{6} \cdot \frac{6}{10} = 0.02$
+  \item $p(start=L \mid person) \cdot p(end=er \mid person) \cdot p(person) = \frac{1}{4} \cdot \frac{2}{4} \cdot \frac{4}{10} = 0.06$
+  \item So, it's more likely a \textit{person}
+\end{itemize}
+
+
+Why Na\"{i}ve Bayes?
+
+\begin{itemize}
+  \item Modularity: separate out individual features and prior
+  \item Helps us deal with sparsity
+    \begin{itemize}
+      \item Particular feature combinations are rare
+      \item Individual features are less sparse
+      \item Still have some features that appear only with one label (meaning zero probaiblities), but this is less common
+    \end{itemize}
+  \item Priors
+    \begin{itemize}
+      \item Controls how much the base label distribution affects the probabilities
+      \item Can be automatically calculated from data (as we've seen)
+      \item Can be set from outside knowledge, if available
+        \begin{itemize}
+          \item Imagine we are explicitly told that 3/4 of named entities are people
+          \item $p(label = person) = 0.75$
+          \item $p(start=L \mid location) \cdot p(end=er \mid location) \cdot p(location) = \frac{1}{6} \cdot \frac{1}{6} \cdot 0.25 = 0.007$
+          \item $p(start=L \mid person) \cdot p(end=er \mid person) \cdot p(person) = \frac{1}{4} \cdot \frac{2}{4} \cdot 0.75 = 0.09$
+          \item So the likelihood of \textit{person} is even higher
+        \end{itemize}
+      \item Useful for injecting linguistic knowledge into a learned model
+    \end{itemize}
+\end{itemize}
+
+
+P \& R
+
+
+Smoothing
+  - dev set
 
 
 
 
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
