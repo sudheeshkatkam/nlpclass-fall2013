@@ -23,7 +23,28 @@ Your code should be hosted in a *private* GitHub repository.  Follow these instr
 5. Clone your repositiory.
     {% highlight text %}$ git clone git@github.com:USERNAME/REPOSITORY-NAME.git{% endhighlight %}
 6. Follow the instructions on the [Scala Environment Setup]({{ page.root }}scala/setup.html) page to create a scala project in your repository directory.
-7. Add the following to your main `build.sbt`:
+7. Create a file `.gitignore` in the root of your repository that contains this:
+
+		*.class
+		*.log
+		.DS_STORE
+
+		# sbt specific
+		dist/*
+		target/
+		lib_managed/
+		src_managed/
+		project/boot/
+		project/plugins/project/
+
+		# Scala-IDE specific
+		.scala_dependencies
+		.classpath
+		.project
+		.settings/
+		.cache
+
+8. Add the following to your main `build.sbt`:
     {% highlight text %}
 resolvers ++= Seq(
   "dhg releases repo" at "http://www.cs.utexas.edu/~dhg/maven-repository/releases",
