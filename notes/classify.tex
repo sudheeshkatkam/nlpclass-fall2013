@@ -17,6 +17,7 @@
 \usepackage{subfig}
 \usepackage{tikz}
 \usepackage{dsfont}
+\usepackage{multirow}
 \usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
 
 \newcommand{\bs}{\textbackslash}
@@ -207,7 +208,7 @@ Parameter Estimation from Data
   \item The prior
     \begin{itemize}
       \item $p(label=location) = \frac{C(label=location)}{\sum_l C(label=l)} = \frac{6}{10} = 0.6$
-      \item $p(label=person) = \frac{C(label=person)}{\sum_l C(label=l)} = \frac{2}{10} = 0.2$
+      \item $p(label=person) = \frac{C(label=person)}{\sum_l C(label=l)} = \frac{4}{10} = 0.4$
     \end{itemize}
   \item Likelihood of the evidence
     \begin{itemize}
@@ -279,13 +280,344 @@ Why Na\"{i}ve Bayes?
 \end{itemize}
 
 
-P \& R
+
+// Day 2
+
+\section{Smoothing}
+
+Classify \textit{Austria}:
+\begin{itemize}
+  \item The prior
+    \begin{itemize}
+      \item $p(label=location) = \frac{C(label=location)}{\sum_l C(label=l)} = \frac{6}{10} = 0.6$
+      \item $p(label=person) = \frac{C(label=person)}{\sum_l C(label=l)} = \frac{4}{10} = 0.4$
+    \end{itemize}
+  \item Likelihood of the evidence
+    \begin{itemize}
+      \item $p(end=ia \mid label=location) = \frac{C(end=ia, label=location)}{C(label=location)} = \frac{4}{6} = 0.67$
+      \item $p(end=ia \mid label=person) = \frac{C(end=ia, label=person)}{C(label=person)} = \frac{1}{4} = 0.25$
+      \\
+      \item $p(start=A \mid label=location) = \frac{C(start=A, label=location)}{C(label=location)} = \frac{0}{6} = 0.00$
+      \item $p(start=A \mid label=person) = \frac{C(start=A, label=person)}{C(label=person)} = \frac{1}{4} = 0.25$
+    \end{itemize}
+  \item The posterior
+    \begin{itemize}
+      \item $p(label=location \mid start=A, end=ia) \\
+            ~ = p(label=location) \cdot p(start=A \mid label=location) \cdot p(end=ia \mid label=location) \\
+            ~ = 0.6 \cdot 0.0 \cdot 0.67 = \mathbf{0.0}$
+      \item $p(label=person \mid start=A, end=ia) \\
+            ~ = p(label=person) \cdot p(start=A \mid label=person) \cdot p(end=ia \mid label=person) \\
+            ~ = 0.4 \cdot 0.25 \cdot 0.25 = \mathbf{0.025}$
+    \end{itemize}
+  \item Since $0.025 > 0.0$, we pick the label \textit{person}
+  \item This seems wrong
+    \begin{itemize}
+      \item $end=ia$ leans strongly toward \textit{location} (0.67 vs. 0.25)
+      \item \textit{location} is more likely \textit{a priori} (0.6 vs 0.4)
+      \item While $start=A$ is leans toward \textit{person}, it's not so strong (0.25 vs. 0.00)
+      \item Moreover, we have very little evidence regarding $start=A$, so we probably shouldn't give much weight to it during classification
+    \end{itemize}
+  \item Why did we get the wrong answer?
+    \begin{itemize}
+      \item Since we had no evidence for $label=location$ AND $start=A$, we got a zero count, which gave us a zero probability.
+      \item So, basically, the $start=A$ feature ended up being the only thing that mattered.
+      \item Even though $start=A$ should have been the least important thing in the calculation.
+    \end{itemize}
+\end{itemize}
+
+Add-$\lambda$ smoothing
+
+\begin{itemize}
+  \item We need to avoid having any zero counts.
+  \item More generally, we need to deal with cases in which we have so few counts that it's hard to generalize
+    \begin{itemize}
+      \item $C(A)=1000, C(B)=2$ wouldn't be considered a lack of evidence
+      \item $C(A)=2, C(B)=1$ probably doesn't have enough evidence to judge well
+    \end{itemize}
+
+  \item One way to make all the numbers non-zero is to simply add 1 to all of them.
+  \item So if the count was 0, it becomes 1, 1 becomes 2, 100 becomes 101.
+  \item \textit{start} values = \{B,M,L,N,E,A\}, \textit{end} values = \{ia,er,nd,ke\} \\\\
+   \begin{tabular}{|p{15mm}cccc|p{15mm}cccc|}
+     \hline
+     (Feature, Label) & \textsc{c(f,l)} & +1 & p(F$\mid$L) & p$_{+1}$(F$\mid$L) & (Feature, Label) & \textsc{c(f,l)} & +1 & p(F$\mid$L) & p$_{+1}$(F$\mid$L) \\
+     \hline
+     \hline
+     (B, loc) & 2 & 3 & 2/6=0.33 & 3/12=0.25  &  (B, per) & 1 & 2 & 1/4=0.25 & 2/10=0.20  \\
+     (M, loc) & 0 & 1 & 0/6=0.00 & 1/12=0.08  &  (M, per) & 1 & 2 & 1/4=0.25 & 2/10=0.20  \\
+     (L, loc) & 1 & 2 & 1/6=0.17 & 2/12=0.17  &  (L, per) & 1 & 2 & 1/4=0.25 & 2/10=0.20  \\
+     (N, loc) & 2 & 3 & 2/6=0.33 & 3/12=0.25  &  (N, per) & 0 & 1 & 0/4=0.00 & 1/10=0.10  \\
+     (E, loc) & 1 & 2 & 1/6=0.17 & 2/12=0.17  &  (E, per) & 0 & 1 & 0/4=0.00 & 1/10=0.10  \\
+     (A, loc) & 0 & 1 & 0/6=0.00 & 1/12=0.08  &  (A, per) & 1 & 2 & 1/4=0.25 & 2/10=0.20  \\
+     \hline
+     ($\cdot$, loc) & 6 & 12 & &             & ($\cdot$, per) & 4 & 10 & & \\
+     \hline
+     \hline
+     (ia, loc) & 4 & 5 & 4/6=0.67 & 5/10=0.50  &  (ia, per) & 1 & 2 & 1/4=0.25 & 2/8=0.25  \\
+     (er, loc) & 1 & 2 & 1/6=0.17 & 2/10=0.20  &  (er, per) & 2 & 3 & 2/4=0.50 & 3/8=0.38  \\
+     (nd, loc) & 1 & 2 & 1/6=0.17 & 2/10=0.20  &  (nd, per) & 0 & 1 & 0/4=0.00 & 1/8=0.13  \\
+     (ke, loc) & 0 & 1 & 0/6=0.00 & 1/10=0.10  &  (ke, per) & 1 & 2 & 1/4=0.25 & 2/8=0.25  \\
+     \hline
+     ($\cdot$, loc) & 6 & 10 & &              & ($\cdot$, per) & 4 & 8 & & \\
+     \hline
+   \end{tabular}\\
+
+  \item The count of each (Feature, Label) pair goes up by 1, but the total count for the label across all features goes up by $(1 \cdot (\#~of~Feature~Values))$
+    \begin{itemize}
+      \item Since we add 1 additional count for each (F,L) --- even the ones we've never seen before --- and there is one (F,L) pair for each possible F, there are $1 \cdot |Feature~Values|$ additional counts for the label.
+      \item $\sum_{f \in Features} (C(f,L)+1) = \left(\sum_{f \in Feature~Values} C(f,L)\right) + |Feature~Values|$
+      \item So now, $p(feature \mid label) = \frac{C(feature,label)+1}{C(label) + (1 \cdot |Feature~Values|)}$
+      \\
+      \item If we didn't increase the denominator: \\\\
+          $p(start=B \mid label=location) = \frac{C(start=B, label=location)+1}{C(label=location)} = \frac{2+1}{6} = \frac{3}{6} = 0.50$ \\
+          $p(start=M \mid label=location) = \frac{C(start=M, label=location)+1}{C(label=location)} = \frac{0+1}{6} = \frac{1}{6} = 0.17$ \\
+          $p(start=L \mid label=location) = \frac{C(start=L, label=location)+1}{C(label=location)} = \frac{1+1}{6} = \frac{2}{6} = 0.33$ \\
+          $p(start=N \mid label=location) = \frac{C(start=N, label=location)+1}{C(label=location)} = \frac{2+1}{6} = \frac{3}{6} = 0.50$ \\
+          $p(start=E \mid label=location) = \frac{C(start=E, label=location)+1}{C(label=location)} = \frac{1+1}{6} = \frac{2}{6} = 0.33$ \\
+          $p(start=A \mid label=location) = \frac{C(start=A, label=location)+1}{C(label=location)} = \frac{0+1}{6} = \frac{1}{6} = 0.17$
+        \begin{itemize}
+          \item But $0.50 \cdot 0.17 \cdot 0.33 \cdot 0.50 \cdot 0.33 \cdot 0.17 = 2.0$ 
+          \item Since all the values in a probaiblity distribution must sum to 1.0, we no longer have a probability distribution
+          \item Adding the correct amount to the denominator fixes this problem.
+        \end{itemize}
+    \end{itemize}
+
+  \item Smoothing flattens out the distribution
+    \begin{center}\includegraphics[width=0.9\textwidth]{smoothing.png}\end{center}
+
+    \begin{itemize}
+      \item Extreme values are smoothed the most
+      \item The impact of smoothing is depends on the relative values of $\lambda$ and the counts.
+      \item If there are few overall counts, then a relatively large $\lambda$ will over-smooth, making all values approximately the same likelihood.
+      \item If there are many overall counts, then a relatively small $\lambda$ will not make much impact.
+      \item $\lambda=0$ means no smoothing
+      \item $\lambda=\infty$ means uniform distributiom (all have equal probability)
+    \end{itemize}
+
+  \item Smoothing changes the relative probabilities of things most when there are low overall counts
+    \begin{itemize}
+      \item This is good because low counts means low evidence and, thus, low confidence
+      \item We want the impact of evidence to be strong only when we have high confidence
+      \item For na\"{i}ve Bayes, we always compare $p(F \mid L_1)$ to $p(F \mid L_2)$
+      \item If counts $C(F,L_1)$ and $C(F,L_2)$ are small, we want smoothing to push the relative probabilities together, thus giving them a smaller impact in the NB calculation.  (The most extreme example is equal probabilities, which contribute no information to NB vs zero counts, which completely dominate the NB calculation).
+      \item If counts $C(F,L_1)$ and $C(F,L_2)$ are large, we do not want smoothing to have a large impact on the relative probabilities
+      \\
+      \item For things with low counts (0 vs. 1), smoothing pushes the relative probabilities close together \\
+        If $C(A)=1$, $C(B)=0$
+        \begin{itemize}
+          \item $p(A)=\frac{1}{1} = \mathbf{1.0}$ and 
+                $p(B) = \mathbf{0.0}$
+          \item $p_{+1}(A)=\frac{2}{3} = \mathbf{0.67}$ and 
+                $p_{+1}(B) = \mathbf{0.33}$
+        \end{itemize}
+
+        If $C(A)=2$, $C(B)=1$
+        \begin{itemize}
+          \item $p(A)=\frac{2}{3} = \mathbf{0.67}$ and 
+                $p(B) = \mathbf{0.33}$
+          \item $p_{+1}(A)=\frac{3}{5} = \mathbf{0.60}$ and 
+                $p_{+1}(B) = \mathbf{0.40}$
+        \end{itemize}
+
+      \item For things with non-trivial counts, the smoothed relative probabilities don't change much. 
+        If $C(A)=30$, $C(B)=0$
+        \begin{itemize}
+          \item $p(A)=\frac{30}{30} = \mathbf{1.0}$ and 
+                $p(B) = \mathbf{0.0}$
+          \item $p_{+1}(A)=\frac{31}{32} = \mathbf{0.97}$ and 
+                $p_{+1}(B) = \mathbf{0.03}$
+        \end{itemize}
+
+        If $C(A)=20$, $C(B)=10$
+        \begin{itemize}
+          \item $p(A)=\frac{20}{30} = \mathbf{0.67}$ and 
+                $p(B) = \mathbf{0.33}$
+          \item $p_{+1}(A)=\frac{21}{32} = \mathbf{0.66}$ and 
+                $p_{+1}(B) = \mathbf{0.44}$
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+
+Classify \textit{Austria} with Add-1 smoothing
+
+\begin{itemize}
+  \item The prior
+    \begin{itemize}
+      \item We do \textit{not} need (or want) to smooth the prior distribution $p(Label)$
+      \item Smoothing is useful when we have very low or zero counts
+      \item Counts of labels will never be so low that we can't estimate them
+    \end{itemize}
+
+  \item Likelihood of the evidence
+    \begin{itemize}
+      \item $p(end=ia \mid label=location) = \frac{C(end=ia, label=location)+1}{C(label=location)+|Feature~Values|} = \frac{4+1}{6+4} = \frac{5}{10} = 0.50$
+      \item $p(end=ia \mid label=person) = \frac{C(end=ia, label=person)}{C(label=person))+|Feature~Values|} = \frac{1+1}{4+4} = \frac{2}{8} = 0.25$
+      \\
+      \item $p(start=A \mid label=location) = \frac{C(start=A, label=location)}{C(label=location))+|Feature~Values|} = \frac{0+1}{6+6} = \frac{1}{12} = 0.08$
+      \item $p(start=A \mid label=person) = \frac{C(start=A, label=person)}{C(label=person))+|Feature~Values|} = \frac{1+1}{4+6} = \frac{2}{10} = 0.20$
+      \\
+      \item No longer have zeros (this is essential)
+    \end{itemize}
+
+
+  \item The posterior
+    \begin{itemize}
+      \item $p(label=location \mid start=A, end=ia) \\
+            ~ = p(label=location) \cdot p(start=A \mid label=location) \cdot p(end=ia \mid label=location) \\
+            ~ = 0.6 \cdot 0.0 \cdot 0.67 = \mathbf{0.0}$
+      \item $p(label=person \mid start=A, end=ia) \\
+            ~ = p(label=person) \cdot p(start=A \mid label=person) \cdot p(end=ia \mid label=person) \\
+            ~ = 0.4 \cdot 0.25 \cdot 0.25 = \mathbf{0.025}$
+    \end{itemize}
+  \item Since $0.025 > 0.0$, we pick the label \textit{person}
+
+\end{itemize}
+
+
+
+
+\section{Evaluating}
+
+Data Split
+
+\begin{itemize}
+  \item Divide labeled data into two groups: \textbf{train} and \textbf{test}
+  \item Set the model parameters using only the training data
+  \item Evaluate only on the test data
+\end{itemize}
+
+
+Accuracy
+
+\begin{itemize}
+  \item Proportion of test instances that are labeled correctly: $\frac{C(correct)}{C(total)}$
+  \item 100 instances, 70 correctly labeled: 70\% correct
+  \item Simple and intuitive, but can be misleading
+  \item 100 instances, 80 are \textit{not spam}
+    \begin{itemize}
+      \item If the system just always outputs \textit{not spam}, then accuracy is 80\%
+      \item But the model is worthless!
+    \end{itemize}
+\end{itemize}
+
+
+Precision and Recall
+
+\begin{itemize}
+  \item Precision: Out of those that we labeled ``spam'', what proportion are actually spam? \\ 
+        $p(is~spam \mid says~``spam")$
+  \item Recall: Out of those that are actually spam, what proportion did we correctly label as ``spam''? \\ 
+        $p(says~``spam" \mid is~``spam")$
+  \item Categorize kinds of correctness and mistakes for \textit{spam} \\
+        true positive (tp):  model says ``spam'',     actually spam     \\
+        false positive (fp): model says ``spam'',     actually not spam \\
+        false negative (fn): model says ``not spam'', actually spam     \\
+        true negative (tn):  model says ``not spam'', actually not spam 
+ 
+  \item $precision = \frac{tp}{tp + fp}$ ~~~~~~ $recall = \frac{tp}{tp + fn}$
+  \item $F_1$-score: A way of combining precision and recall into one number (using the harmonic mean)
+    \begin{itemize}
+      \item $F_1 = 2 \cdot \frac{P \cdot R}{P + R}$
+    \end{itemize}
+
+  \item 100 instances:
+    \begin{itemize}
+      \item P \& R on \textit{spam} \\
+        \begin{tabular}{|c|c|c|c|}
+          \cline{3-4}
+          \multicolumn{1}{ c }{} & \multicolumn{1}{ c| }{} & \multicolumn{2}{|c|}{model says} \\
+          \cline{3-4}
+          \multicolumn{1}{ c }{} & \multicolumn{1}{ c| }{} & spam & not spam \\
+          \hline
+          \multirow{2}{*}{truth} & spam     & TP = 20 & FN = 10 \\
+          \cline{2-4}
+                                 & not spam & FP = 15 & TN = 55 \\
+          \hline
+        \end{tabular} 
+        \\
+        \begin{itemize}
+          \item Accuracy is 0.75
+          \item Precision = $\frac{tp}{tp + fp} = \frac{20}{20 + 15} = 0.57$
+          \item Recall =    $\frac{tp}{tp + fn} = \frac{20}{20 + 10} = 0.67$
+          \item $F_1 = 2 \cdot \frac{P \cdot R}{P + R} =$ ?
+        \end{itemize} ~
+
+      \item P \& R on \textit{not spam} \\
+        \begin{tabular}{|c|c|c|c|}
+          \cline{3-4}
+          \multicolumn{1}{ c }{} & \multicolumn{1}{ c| }{} & \multicolumn{2}{|c|}{model says} \\
+          \cline{3-4}
+          \multicolumn{1}{ c }{} & \multicolumn{1}{ c| }{} & spam & not spam \\
+          \hline
+          \multirow{2}{*}{truth} & spam     & TN = 20 & FP = 10 \\
+          \cline{2-4}
+                                 & not spam & FN = 15 & TP = 55 \\
+          \hline
+        \end{tabular} 
+        \\
+        \begin{itemize}
+          \item Accuracy is 0.75
+          \item Precision = $\frac{tp}{tp + fp} = \frac{55}{55 + 10} = 0.85$
+          \item Recall =    $\frac{tp}{tp + fn} = \frac{55}{55 + 15} = 0.79$
+          \item $F_1 = 2 \cdot \frac{P \cdot R}{P + R} = 2 \cdot \frac{0.85 \cdot 0.79}{0.85 + 0.79} = 0.89$
+        \end{itemize}
+    \end{itemize}
+
+  \item 100 instances, 80 are \textit{not spam}, and the system just always outputs \textit{not spam} 
+    \begin{itemize}
+      \item P \& R on \textit{spam} \\
+        \begin{tabular}{|c|c|c|c|}
+          \cline{3-4}
+          \multicolumn{1}{ c }{} & \multicolumn{1}{ c| }{} & \multicolumn{2}{|c|}{model says} \\
+          \cline{3-4}
+          \multicolumn{1}{ c }{} & \multicolumn{1}{ c| }{} & spam & not spam \\
+          \hline
+          \multirow{2}{*}{truth} & spam     & TP = 0 & FN = 20 \\
+          \cline{2-4}
+                                 & not spam & FP = 0 & TN = 80 \\
+          \hline
+        \end{tabular} 
+        \\
+        \begin{itemize}
+          \item Accuracy is 0.80
+          \item Precision = $\frac{tp}{tp + fp} = \frac{0}{0 +  0} = $ \textit{NaN}
+          \item Recall =    $\frac{tp}{tp + fn} = \frac{0}{0 + 20} = 0.0$
+          \item $F_1 = 2 \cdot \frac{P \cdot R}{P + R} =$ ?
+        \end{itemize} ~
+
+      \item P \& R on \textit{not spam} \\
+        \begin{tabular}{|c|c|c|c|}
+          \cline{3-4}
+          \multicolumn{1}{ c }{} & \multicolumn{1}{ c| }{} & \multicolumn{2}{|c|}{model says} \\
+          \cline{3-4}
+          \multicolumn{1}{ c }{} & \multicolumn{1}{ c| }{} & spam & not spam \\
+          \hline
+          \multirow{2}{*}{truth} & spam     & TN = 0 & FP = 20 \\
+          \cline{2-4}
+                                 & not spam & FN = 0 & TP = 80 \\
+          \hline
+        \end{tabular} 
+        \\
+        \begin{itemize}
+          \item Accuracy is 0.80
+          \item Precision = $\frac{tp}{tp + fp} = \frac{80}{80 + 20} = 0.80$
+          \item Recall =    $\frac{tp}{tp + fn} = \frac{80}{80 +  0} = 1.00$
+          \item $F_1 = 2 \cdot \frac{P \cdot R}{P + R} = 2 \cdot \frac{0.80 \cdot 1.00}{0.80 + 1.00} = 0.89$
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
 
 
 Smoothing
   - dev set
 
+Gibbs sampling
 
+
+Clustering
+  - k-means
 
 
 \end{document}
