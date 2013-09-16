@@ -386,6 +386,7 @@ Add-$\lambda$ smoothing
     \begin{center}\includegraphics[width=0.9\textwidth]{smoothing.png}\end{center}
 
     \begin{itemize}
+      \item (Partial) counts are ``stolen'' from high-count items and ``given'' to low-count items
       \item Extreme values are smoothed the most
       \item The impact of smoothing is depends on the relative values of $\lambda$ and the counts.
       \item If there are few overall counts, then a relatively large $\lambda$ will over-smooth, making all values approximately the same likelihood.
@@ -458,6 +459,8 @@ Classify \textit{Austria} with Add-1 smoothing
       \item $p(start=A \mid label=person) = \frac{C(start=A, label=person)}{C(label=person))+|Feature~Values|} = \frac{1+1}{4+6} = \frac{2}{10} = 0.20$
       \\
       \item No longer have zeros (this is essential)
+      \item $start=A$ relative probabilities are pushed closer together than $end=ia$ since there is less evidence for either label
+
     \end{itemize}
 
 
@@ -465,13 +468,13 @@ Classify \textit{Austria} with Add-1 smoothing
     \begin{itemize}
       \item $p(label=location \mid start=A, end=ia) \\
             ~ = p(label=location) \cdot p(start=A \mid label=location) \cdot p(end=ia \mid label=location) \\
-            ~ = 0.6 \cdot 0.0 \cdot 0.67 = \mathbf{0.0}$
+            ~ = 0.6 \cdot 0.08 \cdot 0.50 = \mathbf{0.024}$
       \item $p(label=person \mid start=A, end=ia) \\
             ~ = p(label=person) \cdot p(start=A \mid label=person) \cdot p(end=ia \mid label=person) \\
-            ~ = 0.4 \cdot 0.25 \cdot 0.25 = \mathbf{0.025}$
+            ~ = 0.4 \cdot 0.20 \cdot 0.25 = \mathbf{0.020}$
     \end{itemize}
-  \item Since $0.025 > 0.0$, we pick the label \textit{person}
-
+  \item Since $0.024 > 0.020$, we pick the label \textit{location}
+  \item So smoothing fixed this classification example!
 \end{itemize}
 
 
