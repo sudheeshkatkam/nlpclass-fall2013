@@ -337,7 +337,8 @@ Add-$\lambda$ smoothing
 
   \item One way to make all the numbers non-zero is to simply add 1 to all of them.
   \item So if the count was 0, it becomes 1, 1 becomes 2, 100 becomes 101.
-  \item \textit{start} values = \{B,M,L,N,E,A\}, \textit{end} values = \{ia,er,nd,ke\} \\\\
+  \item \textit{start} values = \{B,M,L,N,E,A\}, \textit{end} values = \{ia,er,nd,ke\}
+\end{itemize}
    \begin{tabular}{|p{15mm}cccc|p{15mm}cccc|}
      \hline
      (Feature, Label) & \textsc{c(f,l)} & +1 & p(F$\mid$L) & p$_{+1}$(F$\mid$L) & (Feature, Label) & \textsc{c(f,l)} & +1 & p(F$\mid$L) & p$_{+1}$(F$\mid$L) \\
@@ -360,8 +361,8 @@ Add-$\lambda$ smoothing
      \hline
      ($\cdot$, loc) & 6 & 10 & &              & ($\cdot$, per) & 4 & 8 & & \\
      \hline
-   \end{tabular}\\
-
+   \end{tabular}
+\begin{itemize}
   \item The count of each (Feature, Label) pair goes up by 1, but the total count for the label across all features goes up by $(1 \cdot (\#~of~Feature~Values))$
     \begin{itemize}
       \item Since we add 1 additional count for each (F,L) --- even the ones we've never seen before --- and there is one (F,L) pair for each possible F, there are $1 \cdot |Feature~Values|$ additional counts for the label.
@@ -482,12 +483,33 @@ Classify \textit{Austria} with Add-1 smoothing
 
 \section{Evaluating}
 
+\begin{itemize}
+  \item How do we tell if our classifier works?
+    \begin{itemize}
+      \item Evaluating on the training data doesn't tell us about performance on new data
+    \end{itemize}
+  \item How do we set hyper-parameters (e.g. $\lambda$) without cheating?
+    \begin{itemize}
+      \item Tuning them to the test set wouldn't tell us about performance on new data
+    \end{itemize}
+\end{itemize}
+
+
 Data Split
 
 \begin{itemize}
-  \item Divide labeled data into two groups: \textbf{train} and \textbf{test}
-  \item Set the model parameters using only the training data
-  \item Evaluate only on the test data
+  \item Divide labeled data into three groups: \textbf{train}, \textbf{development (dev)}, and \textbf{test}
+  \item Use only the \textit{train} data to set parameters (take counts)
+  \item Test against the \textit{dev} data using various choices for hyper-parameters (e.g. $\lambda$) to figure out the best settings.
+  \item When all development is done, and you are ready to get final results for publication, evaluate \textit{just once} on the \textit{test} data, and record the results as your final results.
+\end{itemize}
+
+
+Data Size
+
+\begin{itemize}
+  \item Larger training set means that we will have better count estimates and, therefore, better model parameter estimates
+  \item Larger dev and test sets mean that we can trust the results more
 \end{itemize}
 
 
@@ -543,7 +565,7 @@ Precision and Recall
           \item Accuracy is 0.75
           \item Precision = $\frac{tp}{tp + fp} = \frac{20}{20 + 15} = 0.57$
           \item Recall =    $\frac{tp}{tp + fn} = \frac{20}{20 + 10} = 0.67$
-          \item $F_1 = 2 \cdot \frac{P \cdot R}{P + R} =$ ?
+          \item $F_1 = 2 \cdot \frac{P \cdot R}{P + R} = 2 \cdot \frac{0.57 \cdot 0.67}{0.57 + 0.67} = 0.62$
         \end{itemize} ~
 
       \item P \& R on \textit{not spam} \\
@@ -613,14 +635,109 @@ Precision and Recall
 
 
 
-Smoothing
-  - dev set
-
-Gibbs sampling
 
 
-Clustering
-  - k-means
+\section{Semi-Supervised Learning for Na\"{i}ve Bayes}
+
+\begin{itemize}
+  \item At this point, we know how to train a na\"{i}ve Bayes classifier from fully-supervised data (every training instance has a label)
+  \item Can we use (lots of) unlabeled data to improve a NB classifier trained on just a small amount of labeled data?
+  \item Can we learn a NB classifier with out any labeled data?
+\end{itemize}
+
+An excellent tutorial that carefully explains everything necessary to implement Gibbs sampling for na\"{i}ve Bayes:
+
+\begin{itemize}
+  \item Philip Resnik and Eric Hardisty.  ``Gibbs Sampling for the Uninitiated''.  June 2010.\\  \url{http://www.cs.umd.edu/~hardisty/papers/gsfu.pdf}
+\end{itemize}
+
+
+Partial Supervision: The Idea
+
+\begin{itemize}
+  \item We know how to use NB to classify if we have labeled data
+  \item If we have unlabeled data, we can assign labels to all the instances, then it because labeled data, and we can use it for NB
+  \item We don't want to just assign labels and assume that they are correct
+  \item So we will make initial guesses for those labels, and iteratively revise them
+  \item Critically, we won't revise by simply picking the most likely label.  We will choose probabilistically, based on the relatively probaiblities of the different labels.
+\end{itemize}
+
+
+The Algorithm
+
+\begin{itemize}
+  \item[1.] Make a NB classifier from any labeled data available.
+  \item[2.] For each unlabeled instance:
+    \begin{itemize}
+      \item[a.] Use this classifier to calculate the probabilities of each label.
+      \item[b.] Make a probabilty distribution out of all label probabilties (normalize them so that they add up to 1.0)
+      \item[c.] Sample from the probability distribution by choosing a label with likelihood according to its probability
+      \item[d.] Assign that chosen label as the label for the instance
+    \end{itemize}
+  \item[3.] For some large number of iterations, for each unlabeled instance:
+    \begin{itemize}
+      \item[a.] Make a NB classifier from all the instances and their current labels.
+      \item[c.] Use this classifier to calculate the probabilities of each label.
+      \item[c.] Make a probabilty distribution out of all label probabilties (normalize them so that they add up to 1.0)
+      \item[d.] Sample from the probability distribution by choosing a label with likelihood according to its probability
+      \item[e.] Assign that chosen label as the revised label for the instance
+      \item[f.] Copy the instance with its new label into a ``repository'' of labeled instances.
+    \end{itemize}
+  \item[4.] Make a final NB classifier from all of the labeled instances in the ``repository'' that we built up while we were sampling.
+  \item We don't revise the labels of the supervised instances because we assume that they are correct (unless we don't trust them, or think they are out-of-date).
+  \item Always making probabilistic label choices prevents us from just accepting the MLE and getting stuck.
+  \item The choices will allow us to ``walk'' around the space of labels, where most of the walking happens in area that lead to better parameters.
+\end{itemize}
+
+
+Why does this work?
+
+\begin{itemize}
+  \item Basically, it learns how group associated feature values together, and how to push different labels apart.
+  \item We start with a ``best guess'' based on information we have, and revise our guesses over time.
+  \item We don't just walk ``uphill'' based on the MLE.  
+  \item Instead we allow ourselves to explore lots of label choices, some of which may be very different from the MLE.
+  \item As we become more confident in a judgement, its label is less likely to change because more of the similar instances will be using that label, which gives it a high probability.
+\end{itemize}
+
+Markov Chain Monte Carlo
+
+\begin{itemize}
+  \item Markov: Uses the ``Markov principle'' which says to make decisions based only on recent information
+    \begin{itemize}
+      \item We use only the current set of labels, not the full history of labels.
+    \end{itemize}
+  \item Chain: Start with an initial set of labels, use it to change one label, then move to the next label and change it based on the new set of labels.  Repeat for a long time.
+  \item Monte Carlo: Each step in the chain has chance involved
+    \begin{itemize}
+      \item We choose the next label by chance according to the relative probabilities of the labels.
+      \item Named for Monte Carlo in Monaco and the Monte Carlo Casino
+    \end{itemize}
+\end{itemize}
+
+
+
+
+
+
+\section{Clustering}
+
+\begin{itemize}
+  \item Until now, all our classifiers have been learned from fully-supervised data (every training instance has a label)
+  \item Can we learn a classifier when we have no labels at all?
+  \item \textbf{Clustering} is when we try to automatically induce groupings without labels.
+\end{itemize}
+
+K-Means
+
+\begin{itemize}
+  \item[1.] Plot all instances in space
+  \item[2.] Choose $K$ of them to be initial centroids
+  \item[3.] For each instance, associate it with its nearest centroid
+  \item[4.] Update each centroid to the centroid of its currently-assocated instances
+  \item[5.] Repeat step 3-4 until the centroids stop moving
+  \item[6.] For new instances, classify based on their nearest centroid
+\end{itemize}
 
 
 \end{document}
