@@ -110,6 +110,29 @@
 </li>
 
 <li>
+<p>Create a file <code>.gitignore</code> in the root of your repository that contains this:</p>
+
+<pre><code>*.class
+*.log
+.DS_STORE
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+.classpath
+.project
+.settings/
+.cache</code></pre>
+</li>
+
+<li>
 <p>Add the following to your main <code>build.sbt</code>:</p>
 <div class='highlight'><pre><code class='text'>resolvers ++= Seq(
 &quot;dhg releases repo&quot; at &quot;http://www.cs.utexas.edu/~dhg/maven-repository/releases&quot;,
