@@ -480,6 +480,53 @@ Classify \textit{Austria} with Add-1 smoothing
 
 
 
+\section{Features occurring more than once per instance}
+
+\begin{itemize}
+  \item Up to this point we have only worked with instances that have exactly one value of each feature per instance.
+  \item But sometimes we want to classify data that has feaures that appear multiple times per instance, possibly with the same values.
+  \item A canoncial example of this is when we are classifying text and we simply use the words in the text as features.
+
+  \item The dataset:
+    \begin{verbatim}
+    the movie was great and the acting was great , so i loved it, positive
+    i loved the movie dispite the terrible acting, positive
+    the plot was great , but overall it was terrible, negative
+    that movie was terrible, negative
+    the movie had a terrible ending, but was great anyway, positive
+    what a terrible movie, negative
+    i've never seen anything so terrible, negative\end{verbatim}
+
+  \item Could have stopwords removed and be transformed to:
+    \begin{verbatim}
+    word=movie,word=great,word=acting,word=great,word=loved,5words=true,positive
+    word=loved,word=movie,word=terrible,word=acting,5words=true,positive
+    word=plot,word=great,word=terrible,5words=true,negative
+    word=movie,word=terrible,5words=false,negative
+    word=movie,word=terrible,word=ending,word=great,5words=true,positive
+    word=terrible,word=movie,5words=false,negative
+    word=terrible,5words=true,negative\end{verbatim}
+
+  \item 2 features: \textit{word} and \textit{5words}
+\end{itemize}
+
+Counting with duplicate features
+
+\begin{itemize}
+  \item Since there is no longer one feature of each time per instance, we have to make our probability calculations more precise.
+  \item $p(feature=F \mid label=L) = \frac{C(feature=F,label=L)}{\sum_f C(feature=f,label=L)}$
+  \item So we are no longer dividing the number of instance with the label and feature by the number of instances with the label.
+  \item Instead, we have to count the number of (label,value) pairs extracted from the data for the particular feature, including multiple identical pairs in the same instance
+  \item The probability $p(feature=F \mid label=L)$ is the proportion of times the particular feature was $F$ in an instance with label $L$ out of the total number of times the particular feature appeared in an instance with label $L$
+  \item $p(word=great \mid label=positive) = \frac{C(word=great,label=positive)}{\sum_f C(word=f,label=positive)} = \frac{3}{13} = 0.23$ \\
+  $p(word=great \mid label=negative) = \frac{C(word=great,label=negative)}{\sum_f C(word=f,label=negative)} = \frac{1}{8} = 0.13$
+  \item If we only used the count of instances as the denominator, we would not end up with a probability distribution.
+  \item Note that we still calculate the prior the same way: percentage of \textit{instances} that have the particular label.
+\end{itemize}
+
+
+
+
 
 \section{Evaluating}
 
@@ -632,6 +679,9 @@ Precision and Recall
         \end{itemize}
     \end{itemize}
 \end{itemize}
+
+
+
 
 
 
