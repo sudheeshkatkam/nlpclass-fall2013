@@ -82,16 +82,17 @@ Materials
 
 Topics
 
-* Naive Bayes Rationale (2/3)
-* Precision and Recall
+* Instructor solutions to Assignment 0
+* (Add-Lambda) Smoothing for Naive Bayes (2/3)
 
 
 ###Thursday, Sept 19
 
 Topics
 
-* Smoothing for Naive Bayes (3/3)
-* Add-Lambda Smoothing
+* Precision and Recall
+* Partially-supervised learning for Naive Bayes (3/3)
+
 
 <span style="color: red">Assignments</span>
 
@@ -106,7 +107,7 @@ Topics
 Topics
 
 * Language Modeling
-* N-Gram Language Models (1/4)
+* N-Gram Language Models (1/3)
 
 Materials
 
@@ -120,8 +121,8 @@ Materials
 
 Topics
 
-* N-Gram Language Models (2/4)
-
+* N-Gram Language Models (2/3)
+* Smoothing, Backoff, Interpolation
 
 
 ## Week 6
@@ -130,21 +131,20 @@ Topics
 
 Topics
 
-* N-Gram Language Models (3/4)
-* Smoothing, Backoff, Interpolation
-
-
-###Thursday, Oct 3
-
-Topics
-
-* N-Gram Language Models (4/4)
+* N-Gram Language Models (3/3)
 * Perplexity
 
 <span style="color: red">Assignments</span>
 
 * [Assignment 2: Text Classification]({{ page.root }}assignments/a2classification.html), **Due (programming submitted by noon, written by 2pm)**
 * [Assignment 3: N-Gram Language Models]({{ page.root }}assignments/a3ngrams.html), Assigned
+
+
+###Thursday, Oct 3
+
+Topics
+
+* ???
 
 
 ## Week 7
