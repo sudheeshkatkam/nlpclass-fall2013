@@ -72,7 +72,7 @@
       <div id='content'>
         <h1>Assignment 2 - Classification</h1>
         <ol class="toc"><li><a href="#introduction">Introduction</a></li><li></li><li></li><li></li><li></li><li></li></ol>
-        <p><strong>Due: Thursday, October 3. Written portion by 2pm, programming by noon</strong></p>
+        <p><strong>Due: Thursday, October 1. Written portion by 2pm, programming by noon</strong></p>
 
 <h2 id='introduction'>Introduction</h2>
 
@@ -80,13 +80,13 @@
 
 <p>To complete the homework, use the stub programs and data found in the class GitHub repository.</p>
 
-<p>Your submission will be:</p>
-
 <ul>
-<li>a <code>zip</code> or <code>tar.gz</code> file containing the files <code>tennis_cat.py</code>, <code>ppa_cat.py</code>, <code>log_cat.py</code>, and <code>ppa_features.py</code>. The name of the file should be in the format <code>&lt;lastname&gt;_&lt;firstname&gt;_classify.zip</code>, e.g. <code>baldridge_jason_classify.zip</code>. <strong>Submit this on Blackboard</strong>.</li>
+<li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
 
-<li>your written answers on paper and handed in on the due date in class; these may be written out by hand or type-set and printed. The problem descriptions clearly state where a written answer is expected.</li>
+<li>Programming portions should be turned in via GitHub by noon on the assignment due date.</li>
 </ul>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
 
 <p><strong>If you have any questions or problems with any of the materials, don&#8217;t hesitate to ask!</strong></p>
 
@@ -103,7 +103,7 @@ Temperature: Hot, Mild, Cool
 Humidity: High, Normal
 Wind: String, Weak</code></pre>
 
-<p>Table 3.2 on page 59 of Mitchell’s book contains information for fourteen days; this data is encoded in the file classify/data/tennis/train. There is another related file called test in the same directory. As you might expect, you will learn model parameters using train and test the resulting model on the examples in test.</p>
+<p>Table 3.2 on page 59 of Mitchell’s book contains information for fourteen days; this data is encoded into a <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a>. There is a separate <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/test.txt'>test file</a>. As you might expect, you will learn model parameters using the training data and test the resulting model on the examples in the test data.</p>
 
 <p>Each row in the data files corresponds to a single classification instance. For example, here is the training set:</p>
 
@@ -122,24 +122,24 @@ Outlook=Overcast,Temperature=Mild,Humidity=High,Wind=Strong,Yes
 Outlook=Overcast,Temperature=Hot,Humidity=Normal,Wind=Weak,Yes
 Outlook=Rain,Temperature=Mild,Humidity=High,Wind=Strong,No</code></pre>
 
-<p>Each instance consists of a list of attribute values, separated by commas, and the last element is the classification value. The value is &#8220;Yes&#8221; if it is a good day to play tennis based on the conditions, and &#8220;No&#8221; if it is not.</p>
+<p>Each instance consists of a list of attribute values, separated by commas, and the last element is the classification value. The value is &#8220;Yes&#8221; if it is a good day to play tennis based on the conditions, and &#8220;No&#8221; if it is not. This is the same format of the data used in <a href='http://utcompling.github.io/nlpclass-fall2013/assignments/a0programming.html#part_6_reading_a_data_file'>Assignment 0, Part 6</a>.</p>
 
 <p>What we are interested in for this toy example is to determine whether the probability of playing tennis is higher than the probability of not playing tennis. We can represent the probability of playing tennis as:</p>
 
 <ul>
-<li>P(Label=yes | Outlook=o, Temperator=t, Humidity=h, Wind=w)</li>
+<li>p(Label=yes | Outlook=o, Temperator=t, Humidity=h, Wind=w)</li>
 </ul>
 
 <p>Note that <em>Label</em>, <em>Outlook</em>, <em>Temperature</em>, <em>Humidity</em>, and <em>Wind</em> are all random variables, <em>yes</em> is a value, and <em>o</em>, <em>t</em>, <em>h</em>, and <em>w</em> are variables for values. In order to reduce clutter, we&#8217;ll write expression without explicit random variables, so the above will be written just as:</p>
 
 <ul>
-<li>P( <strong>yes</strong> | o, t, h, w)</li>
+<li>p( <strong>yes</strong> | o, t, h, w)</li>
 </ul>
 
 <p>So, we want to find out whether:</p>
 
 <ul>
-<li>P( <strong>yes</strong> | o,t,h,w) &gt; P( <strong>no</strong> | o,t,h,w)</li>
+<li>p( <strong>yes</strong> | o,t,h,w) &gt; p( <strong>no</strong> | o,t,h,w)</li>
 </ul>
 
 <p>Another way of stating this is that for each instance (with values for <em>o</em>, <em>t</em>, <em>h</em>, and <em>w</em>), we seek to find the label <em>x</em> with maximum probability:</p>
@@ -147,8 +147,8 @@ Outlook=Rain,Temperature=Mild,Humidity=High,Wind=Strong,No</code></pre>
 <p><code>\[
     \begin{align}
     \hat{x} 
-      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} P(x \mid o,t,h,w) \\
-      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} P(x)~P(o \mid x)~P(t \mid x)~P(h \mid x)~P(w \mid x)
+      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} p(x \mid o,t,h,w) \\
+      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} p(x)~p(o \mid x)~p(t \mid x)~p(h \mid x)~p(w \mid x)
     \end{align}
 \]</code></p>
 
@@ -163,8 +163,8 @@ Outlook=Rain,Temperature=Mild,Humidity=High,Wind=Strong,No</code></pre>
 <p><code>\[
     \begin{align}
     \hat{x} 
-      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} P(x \mid \text{sunny}, \text{cool}, \text{high}, \text{strong})\\
-      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} P(x)~P(\text{sunny} \mid x)~P(\text{cool} \mid x)~P(\text{high} \mid x)~P(\text{strong} \mid x)
+      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} p(x \mid \text{sunny}, \text{cool}, \text{high}, \text{strong})\\
+      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} p(x)~p(\text{sunny} \mid x)~p(\text{cool} \mid x)~p(\text{high} \mid x)~p(\text{strong} \mid x)
     \end{align}
 \]</code></p>
 
@@ -172,34 +172,30 @@ Outlook=Rain,Temperature=Mild,Humidity=High,Wind=Strong,No</code></pre>
 
 <p><code>\[
     \begin{align}    
-      &amp; P(\text{yes})~P(\text{sunny} \mid \text{yes})~P(\text{cool} \mid \text{yes})~P(\text{high} \mid \text{yes})~P(\text{strong} \mid \text{yes}) \\
-      &amp; P(\text{no})~P(\text{sunny} \mid \text{no})~P(\text{cool} \mid \text{no})~P(\text{high} \mid \text{no})~P(\text{strong} \mid \text{no})
+      &amp; p(\text{yes})~p(\text{sunny} \mid \text{yes})~p(\text{cool} \mid \text{yes})~p(\text{high} \mid \text{yes})~p(\text{strong} \mid \text{yes}) \\
+      &amp; p(\text{no})~p(\text{sunny} \mid \text{no})~p(\text{cool} \mid \text{no})~p(\text{high} \mid \text{no})~p(\text{strong} \mid \text{no})
     \end{align}
 \]</code></p>
 
 <p>And pick the label that produced the higher value.</p>
 
-<p>Terms like P(yes) and P(sunny|no) are just parameters that we can estimate from a corpus, like the training corpus above. We&#8217;ll start by doing maximum likelihood estimation, which means that the values assigned to the parameters are those which maximize the probability of the training corpus. We&#8217;ll return to what this means precisely later in the course; for now, it just means that you do exactly what you&#8217;d think: count the number of times (frequency) each possibility happened and divide it by the number of times it could have happened. Here are some examples:</p>
+<p>Terms like p(yes) and p(sunny|no) are just parameters that we can estimate from a corpus, like the training corpus above. We&#8217;ll start by doing maximum likelihood estimation, which means that the values assigned to the parameters are those which maximize the probability of the training corpus. We&#8217;ll return to what this means precisely later in the course; for now, it just means that you do exactly what you&#8217;d think: count the number of times (frequency) each possibility happened and divide it by the number of times it could have happened. Here are some examples:</p>
 
 <p><code>\[
-    P(\text{yes}) 
+    p(\text{yes}) 
       = \frac{freq(\text{yes})}{\sum_x freq(D=x)} 
       = \frac{freq(\text{yes})}{freq(\text{yes}) + freq(\text{no})} 
       = \frac{9}{9 + 5} = 0.643
-\]</code></p>
-
-<p><code>\[
+\]</code> &#160; <code>\[
     \begin{align}
-    P(\text{sunny} \mid \text{yes}) 
+    p(\text{sunny} \mid \text{yes}) 
       &amp;= \frac{freq(\text{yes},\text{sunny})}{\sum_x freq(\text{yes},O=x)} \\
       &amp;= \frac{freq(\text{yes},\text{sunny})}{freq(\text{yes},\text{sunny}) + freq(\text{yes},\text{rain}) + freq(\text{yes},\text{overcast})} \\
       &amp;= \frac{2}{2 + 3 + 4} = 0.222
     \end{align}
-\]</code></p>
-
-<p><code>\[
+\]</code> &#160; <code>\[
     \begin{align}
-    P(\text{sunny} \mid \text{no}) 
+    p(\text{sunny} \mid \text{no}) 
       &amp;= \frac{freq(\text{no},\text{sunny})}{\sum_x freq(\text{no},O=x)} \\
       &amp;= \frac{freq(\text{no},\text{sunny})}{freq(\text{no},\text{sunny}) + freq(\text{no},\text{rain}) + freq(\text{no},\text{overcast})} \\
       &amp;= \frac{2}{3 + 2 + 0} = 0.6
@@ -232,7 +228,7 @@ Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
 
 <p>Make sure to show your work, including the values you obtained for each label. Does it match the label given for the third instance in the test set above?</p>
 
-<p><strong>Part (c) <span>3 pts</span>.</strong> Written answer. Derive the general formula for calculating P(x|o,t,h,w) and calculate P(yes|overcast,cool,normal,weak) based on parameters estimated from the training set.</p>
+<p><strong>Part (c) <span>3 pts</span>.</strong> Written answer. Derive the general formula for calculating p(x|o,t,h,w) and calculate p(yes|overcast,cool,normal,weak) based on parameters estimated from the training set.</p>
 
 <p><strong>Part (d) <span>1 pt</span>.</strong> Written answer. Provide a set of attribute values o, t, h, and w for which the probability of either yes or no is zero.</p>
 
@@ -364,15 +360,15 @@ V 1.0 N 0.0</code></pre>
 
 <pre><code>verb=juxtapose,noun=performer,prep=with,prep_obj=tracks,V</code></pre>
 
-<p>Thus, the value of P(Noun=performer | Label=V) is zero, making P(Label=V | Verb=juxtapose, Noun=performer, Prep=with, PrepObj=tracks) also zero, regardless of how much the rest of the information looks like a V attachment.</p>
+<p>Thus, the value of p(Noun=performer | Label=V) is zero, making p(Label=V | Verb=juxtapose, Noun=performer, Prep=with, PrepObj=tracks) also zero, regardless of how much the rest of the information looks like a V attachment.</p>
 
 <p>We can fix this by using add-λ smoothing. For example, we can smooth the prior probabilities of the labels as follows:</p>
 
 <p>Here, L is the set of labels, like {V, N} or {yes, no}, and |L| is the size of that set. Quite simply, we&#8217;ve added an extra λ count to both labels, so we&#8217;ve added λ|L| hallucinated counts. We ensure it still is a probability distribution by adding λ|L| to the denominator.</p>
 
-<p><strong>Part (a) <span>5 pts</span>.</strong> Written answer. Provide the general formula for a similar smoothed estimate for P(Attribute=x|Label=y) in terms of the relevant frequencies of x and y and the set ValuesAttribute consisting of the values associated with the attribute. (For example, ValuesOutlook from the tennis example is {sunny,rainy,overcast}.) If it helps, first write it down as the estimate for a specific parameter, like P(Outlook=sunny|Label=yes), and then do the more general formula.</p>
+<p><strong>Part (a) <span>5 pts</span>.</strong> Written answer. Provide the general formula for a similar smoothed estimate for p(Attribute=x|Label=y) in terms of the relevant frequencies of x and y and the set ValuesAttribute consisting of the values associated with the attribute. (For example, ValuesOutlook from the tennis example is {sunny,rainy,overcast}.) If it helps, first write it down as the estimate for a specific parameter, like p(Outlook=sunny|Label=yes), and then do the more general formula.</p>
 
-<p>The values associated with each attribute in the tennis dataset are small, fixed sets. However, for the ppa data, the values are words, so we are not likely to observe every value in the training set. That means that we need to &#8220;save&#8221; some probability for the unknown value for every distribution of the form P(Attribute=x|Label=y). To do this, we just need to add unknown to the set of values. In an implementation, this is done implicitly by setting the size of the value set to be one more than the number of elements in the set. You should make sure to do this in your implementation. However, you should not do this when smoothing P(Label=x) because we assume the set of labels to be fixed.</p>
+<p>The values associated with each attribute in the tennis dataset are small, fixed sets. However, for the ppa data, the values are words, so we are not likely to observe every value in the training set. That means that we need to &#8220;save&#8221; some probability for the unknown value for every distribution of the form p(Attribute=x|Label=y). To do this, we just need to add unknown to the set of values. In an implementation, this is done implicitly by setting the size of the value set to be one more than the number of elements in the set. You should make sure to do this in your implementation. However, you should not do this when smoothing p(Label=x) because we assume the set of labels to be fixed.</p>
 
 <p><strong>Part (b) <span>20 pts</span>.</strong> Implementation. Copy tennis_cat.py to ppa_cat.py, then modify ppa_cat.py to use add-λ smoothed estimates of the parameters. You have less explicit code guidance on this, so you need to create and populate the appropriate data structures for storing the set of possible values associated with each attribute.</p>
 
@@ -424,7 +420,7 @@ Accuracy: 76.92</code></pre>
 
 <p>Thus, when determining the most probable label, we can do the following:</p>
 
-<p><strong>Part (a) <span>3 pts</span>.</strong> Written answer. Provide the formula for calculating P(yes|overcast,cool,normal,weak) when using log values of the parameters, such as logP(yes) and logP(no|yes). Note: you need to determine the probability, not the argmax. This is simple, but writing this out explicitly will help you for part (b).</p>
+<p><strong>Part (a) <span>3 pts</span>.</strong> Written answer. Provide the formula for calculating p(yes|overcast,cool,normal,weak) when using log values of the parameters, such as logp(yes) and logp(no|yes). Note: you need to determine the probability, not the argmax. This is simple, but writing this out explicitly will help you for part (b).</p>
 
 <p><strong>Part (b) <span>12 pts</span>.</strong> Implementation. Copy ppa_cat.py to log_cat.py, then modify log_cat.py so that the calculations are done using logarithms. Make sure that your modified version produces the same results on the tennis data and the ppa data as the original did, including when λ≠0. Keep in mind that: the parameters, including those for unseen items, must be log values the computation of the score should use addition rather than multiplication you must exponentiate the log scores for each label before you normalize to get the probabilities Note. You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base e. You can get other bases by providing an extra argument. For example, math.log(8,2) returns log28, the value 3.0. Note. Since working in log space involves addition and since the log of zero is undefined, unseen events don’t directly produce a probability of zero. You can nonetheless simulate this by having unseen features contribute a large negative amount, such as -50, to the calculation.</p>
 
@@ -450,7 +446,7 @@ $ ./log_cat.py -t out/ppa.extended.train -p out/ppa.extended.dev -l 1 | ./score.
 
 <h3 id='note_1'>Note 1</h3>
 
-<p>Keep in mind that it is possible to have the same attribute occur more than once in a given instance, so your code should handle this. What this means is that to get P(a=v|l), you do not divide by the frequency of l, but by the overall frequency of a and l occurring together. This will give you the same value for the tennis data and the ppa data <em>before</em> you add your own features.</p>
+<p>Keep in mind that it is possible to have the same attribute occur more than once in a given instance, so your code should handle this. What this means is that to get p(a=v|l), you do not divide by the frequency of l, but by the overall frequency of a and l occurring together. This will give you the same value for the tennis data and the ppa data <em>before</em> you add your own features.</p>
 
 <p>In general, we can have lots instances of the same attribute with text classification &#8211; for example, with twitter sentiment analysis, you will have tweets like:</p>
 
@@ -472,7 +468,7 @@ $ ./log_cat.py -t out/ppa.extended.train -p out/ppa.extended.dev -l 1 | ./score.
 
 <h3 id='note_3'>Note 3</h3>
 
-<p>For smoothing the P(attr=val | label) distributions, you should not use the length of the al_freq map (the keys of that map) in the denominator. Remember that you are smoothing so that you can get a non-zero value for <em>every</em> setting of attributes with the values for <em>every</em> label. So, what you want is: for each attribute, collect the set of <em>all</em> values that have occurred with it (<em>regardless</em> of the label), plus one for the &#8220;unknown&#8221; value.</p>
+<p>For smoothing the p(attr=val | label) distributions, you should not use the length of the al_freq map (the keys of that map) in the denominator. Remember that you are smoothing so that you can get a non-zero value for <em>every</em> setting of attributes with the values for <em>every</em> label. So, what you want is: for each attribute, collect the set of <em>all</em> values that have occurred with it (<em>regardless</em> of the label), plus one for the &#8220;unknown&#8221; value.</p>
       </div>
       <div id='footer'></div>
     </div>
