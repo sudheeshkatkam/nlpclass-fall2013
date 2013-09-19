@@ -73,3 +73,33 @@ trait NaiveBayesScorerToImplement {
     positveLabel: Label)
 
 }
+
+/**
+ * For Assignment 2 - Part 2:
+ */
+trait FeatureExtender[Feature, Value] {
+
+  def extendFeatures(features: Vector[(Feature, Value)]): Vector[(Feature, Value)]
+
+}
+
+/**
+ * For Assignment 2 - Part 2:
+ */
+class NoOpFeatureExtender[Feature, Value] extends FeatureExtender[Feature, Value] {
+
+  override def extendFeatures(features: Vector[(Feature, Value)]) = features
+
+}
+
+/**
+ * For Assignment 2 - Part 2:
+ */
+class CompositeFeatureExtender[Feature, Value](featureExtenders: Vector[FeatureExtender[Feature, Value]])
+  extends FeatureExtender[Feature, Value] {
+
+  override def extendFeatures(features: Vector[(Feature, Value)]) = {
+    featureExtenders.flatMap(fe => fe.extendFeatures(features))
+  }
+
+}

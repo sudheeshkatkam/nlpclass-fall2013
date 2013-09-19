@@ -114,7 +114,7 @@ All cars are either red or blue.  The witness claimed the car that hit the pedes
 
 ## Problem 3: 15 points
 
-Beavers can make three cries, which they use to communicate. `bwa` and `bwee` usually mean something like "come" and "go" respectively, and are used during dam maintenance. `kiki` means "watch out!" The following **conditional probability table** shows the probability of the various cries in different situations.
+Beavers can make three cries (and only three cries), which they use to communicate. `bwa` and `bwee` usually mean something like "come" and "go" respectively, and are used during dam maintenance. `kiki` means "watch out!" The following **conditional probability table** shows the probability of the various cries in different situations.
 
 <table class="simple" style="width: 60%;">
     <tr>
@@ -146,7 +146,7 @@ Beavers can make three cries, which they use to communicate. `bwa` and `bwee` us
 1. (1 point) Notice that each column of the above table sums to 1. Write an equation stating
 this, in the form `\( \sum_{variable} p(\cdots) = 1 \)`
 
-2. (4 point) A certain colony of beavers has already cut down all the trees around their dam. As there are no more to chew, *p(timber)* = 0. Getting rid of the trees has also reduced *p(predator)* to 0.2. These facts are shown in the following **joint probability table**. Fill in the rest of the table, using the previous table and the laws of probability. (Note that the meaning of each table is given in its top left cell.)
+2. (4 point) A certain colony of beavers has already cut down all the trees around their dam. As there are no more to chew, *p(timber)* = 0. Getting rid of the trees has also reduced *p(predator)* to 0.2. These facts are shown in the following **joint probability table**.  Assuming that the three given situtation are the only possible situations in which the cries might occur, fill in the rest of the table, using the previous table and the laws of probability. (Note that the meaning of each table is given in its top left cell.)
 
     <table class="simple" style="width: 80%;">
         <tr>
@@ -213,10 +213,6 @@ this, in the form `\( \sum_{variable} p(\cdots) = 1 \)`
 
 
 ## Problem 4: 7 points
-
-![Rube Goldberg's pencil sharpener]({{ page.root }}images/rube_goldberg_pencil_sharpener.jpg)
-
-Rube Goldberg gets his think-tank working and evolves the simplified pencil-sharpener. Open window (A) and  y kite (B). String (C) lifts small door (D) allowing moths (E) to escape and eat red flannel shirt (F). As weight of shirt becomes less, shoe (G) steps on switch (H) which heats electric iron (I) and burns hole in pants (J). Smoke (K) enters hole in tree (L), smoking out opossum (M) which jumps into basket (N), pulling rope (O) and lifting cage (P), allowing woodpecker (Q) to chew wood from pencil (R), exposing lead. Emergency knife (S) is always handy in case opossum or the woodpecker gets sick and can't work.
 
 1\. `\( p(\neg \text{shoe} \mid \neg \text{nail}) = 1 \)`&nbsp;&nbsp; *For want of a nail the shoe was lost*,  
 2\. `\( p(\neg \text{horse} \mid \neg \text{shoe}) = 1 \)`&nbsp;&nbsp; *For want of a shoe the horse was lost*,  

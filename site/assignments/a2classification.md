@@ -86,7 +86,7 @@ Another way of stating this is that for each instance (with values for *o*, *t*,
     \end{align}
 \]`
 
-**Part (a) [4 pts].** Written answer. Show explicitly how the last line above is derived from the first line using Bayes rule, the chain rule, independence assumptions, and from the fact we are finding the argmax.
+> **Part (a) [4 pts].** Written answer. Show explicitly how the last line above is derived from the first line using Bayes rule, the chain rule, independence assumptions, and from the fact we are finding the argmax.
 
 
 So, if we have a new instance that we wish to classify, like:
@@ -115,7 +115,7 @@ This simply means we need to compute the two values:
 
 And pick the label that produced the higher value. 
 
-Terms like p(yes) and p(sunny|no) are just parameters that we can estimate from a corpus, like the training corpus above. We'll start by doing maximum likelihood estimation, which means that the values assigned to the parameters are those which maximize the probability of the training corpus. We'll return to what this means precisely later in the course; for now, it just means that you do exactly what you'd think: count the number of times (frequency) each possibility happened and divide it by the number of times it could have happened. Here are some examples:
+Terms like p(yes) and p(sunny|no) are just parameters that we can estimate from a corpus, like the training corpus above. We'll start by doing maximum likelihood estimation, which means that the values assigned to the parameters are those which maximize the probability of the training corpus. We'll return to what this means precisely later in the course; for now, it just means that you do exactly what you'd think: count the number of times (frequency) each possibility happened and divide it by the number of times it could have happened.  (Note that in class we wrote *C(x)* to mean *count* instead of *freq(x)*, but these are the same).  Here are some examples:
 
 `\[
     p(\text{yes}) 
@@ -144,7 +144,7 @@ Terms like p(yes) and p(sunny|no) are just parameters that we can estimate from 
 
 Easy! 
 
-*Note:* you might have noticed that *freq*(**yes**, **sunny**) + *freq*(**yes**, **rain**) + *freq*(**yes**, **overcast**) = *freq*(**yes**). This is true for this example because each attribute only occurs exactly once per instance. Later on, with sentiment analysis, we'll need the extra flexibility of being able to see the same attribute multiple times per instance, such as multiple words.
+*Note:* you might have noticed that *freq*(**yes**, **sunny**) + *freq*(**yes**, **rain**) + *freq*(**yes**, **overcast**) = *freq*(**yes**). This is true for this example because each attribute only occurs exactly once per instance. Later on we'll need the extra flexibility of being able to see the same attribute multiple times per instance, such as multiple words.
 
 The data includes a test set for the tennis task as well, provided in full here:
 
@@ -176,7 +176,7 @@ Make sure to show your work, including the values you obtained for each label. D
 
 
 
-## Problem 2 - Implement basic naive Bayes (25 pts)
+## Problem 2 - Implement basic naive Bayes (30 pts)
 
 This problem will walk you through the implementation and training of a naive Bayes model.
 
@@ -185,15 +185,21 @@ This problem will walk you through the implementation and training of a naive Ba
 
 Implement a class 
 
-    nlp.a2.NaiveBayesModel[Label, Feature, Value]
+{% highlight scala %}
+nlp.a2.NaiveBayesModel[Label, Feature, Value]
+{% endhighlight %}
 
 that extends
 
-    nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]
+{% highlight scala %}
+nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]
+{% endhighlight %}
 
 The `NaiveBayesModel` class will contain your naive Bayes implementation.  It requires a method:
 
-    def predict(features: Vector[(Feature, Value)]): Label
+{% highlight scala %}
+def predict(features: Vector[(Feature, Value)]): Label
+{% endhighlight %}
 
 The `predict` method takes in a Vector of (feature,value) pairs and outputs the most likely label given the features.
 
@@ -226,15 +232,21 @@ Instead, you will use a distinct *trainer* class to turn the raw data into a `Na
 
 So you will implement a class 
 
-    nlp.a2.UnsmoothedNaiveBayesTrainer[Label, Feature, Value]
+{% highlight scala %}
+nlp.a2.UnsmoothedNaiveBayesTrainer[Label, Feature, Value]
+{% endhighlight %}
 
 that extends
 
-    nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]
+{% highlight scala %}
+nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]
+{% endhighlight %}
 
 The `UnsmoothedNaiveBayesTrainer` class requires a method:
 
-    def train(instances: Vector[(Label, Vector[(Feature, Value)])]): NaiveBayesModelToImplement[Label, Feature, Value]
+{% highlight scala %}
+def train(instances: Vector[(Label, Vector[(Feature, Value)])]): NaiveBayesModelToImplement[Label, Feature, Value]
+{% endhighlight %}
 
 The `train` method takes a Vector of labeled instances, uses those instances to calculate probability distributions (without smoothing, of course), and then instantiates a `NaiveBayesModel` to be returned.  
 
@@ -261,18 +273,25 @@ In order to evaluate your model, you will need to implement an object that runs 
 
 So you will implement an object:
 
-    nlp.a2.NaiveBayesScorer
+{% highlight scala %}
+nlp.a2.NaiveBayesScorer
+{% endhighlight %}
 
 that extends
 
-    nlpclass.NaiveBayesScorerToImplement
+{% highlight scala %}
+nlpclass.NaiveBayesScorerToImplement
+{% endhighlight %}
 
 The `NaiveBayesScorer` class requires a method:
 
-    def score[Label, Feature, Value](
-        naiveBayesModel: NaiveBayesModelToImplement[Label, Feature, Value],
-        testInstances: Vector[(Label, Vector[(Feature, Value)])],
-        positveLabel: Label)
+{% highlight scala %}
+def score[Label, Feature, Value](
+    naiveBayesModel: NaiveBayesModelToImplement[Label, Feature, Value],
+    testInstances: Vector[(Label, Vector[(Feature, Value)])],
+    positveLabel: Label)
+{% endhighlight %}
+
 
 The `score` method takes a three arguments.  
 
@@ -311,7 +330,15 @@ f1 = 44.44
 
 ### Naive Bayes from the command-line
 
-In order for us to test your code, you will need to create an object `nlp.a2.NaiveBayes` so that we can train and test a model from the command line.
+In order for us to test your code, you will need to create an object `nlp.a2.NaiveBayes` with a `main` method so that we can train and test a model from the command line.
+
+There should be three options that correspond to the three scorer arguments above:
+
+* `--train FILE`
+* `--test FILE`
+* `--poslab LABEL`
+
+Then we should be able to this:
 
     $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes"
     accuracy = 61.54
@@ -327,7 +354,7 @@ In order for us to test your code, you will need to create an object `nlp.a2.Nai
 
 ### Logging
 
-A logging framework is one that lets you print information to the screen (or to a file) from your program in a clean way.  Whereas 
+A logging framework is one that lets you print information to the screen (or to a file) from your program in a clean way.  Whereas println statements always show up, logging statements can be controlled when the program is run.  You will use logging statements to show extra information in your output.
 
 You will have to take a few steps to make this work.
 
@@ -363,34 +390,41 @@ The way the logging framework works, you will get all the logging statements at 
 
 For this assignment, you should add log statements to the `predict` method of `NaiveBayesModel` so that, for each test instance, it logs posterior probabilities for each label, given the features.
 
+When `predict` receieves a feature vector, it will have to compute the probabilities of each of the labels in order to make a decision about which label is best.  So, for each prediction, you should compute the probability of each label given the features, normalize them so that they sum to 1, sort them from greatest to least, and log them at the INFO level.  
+
+If all probabilities are zero, then there will be no way to normalize them to 1, so you should instead log the statement "All posteriors are zero!".  In such a case, you should simply return the label with the highest prior, since the feature counts contain zeros.
+
+So I should be able to do this (minus sbt output noise and logging line noise):
+
+    $ sbt -Dorg.apache.logging.log4j.level=INFO "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes"
+    [...logging stuff...] - No   0.7954  Yes  0.2046
+    [...logging stuff...] - Yes  1.0000  No   0.0000
+    [...logging stuff...] - Yes  0.6729  No   0.3271
+    [...logging stuff...] - No   0.8383  Yes  0.1617
+    [...logging stuff...] - Yes  0.8606  No   0.1394
+    [...logging stuff...] - Yes  1.0000  No   0.0000
+    [...logging stuff...] - No   0.6603  Yes  0.3397
+    [...logging stuff...] - Yes  1.0000  No   0.0000
+    [...logging stuff...] - Yes  0.8224  No   0.1776
+    [...logging stuff...] - Yes  1.0000  No   0.0000
+    [...logging stuff...] - Yes  0.8224  No   0.1776
+    [...logging stuff...] - No   0.5645  Yes  0.4355
+    [...logging stuff...] - Yes  0.6068  No   0.3932
+    accuracy = 61.54
+    precision (Yes) = 66.67
+    recall (Yes) = 75.00
+    f1 = 70.59
+
+And when the logging flag is not given, I should still be able to do this:
+
+    $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes"
+    accuracy = 61.54
+    precision (Yes) = 66.67
+    recall (Yes) = 75.00
+    f1 = 70.59
 
 
-
-
-
-
-sbt -Dorg.apache.logging.log4j.level=INFO "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab N"
-
-
-
-
-
-TODO !!!!
-
-outputs the probabilities for each label in reverse sorted order, using the format:
-
-    Label_1 Probability_1 Label_2 Probability_2 ... Label_n Probability_n
-
-For example, here's what the output should look like:
-
-    No 0.795417348609 Yes 0.204582651391
-    Yes 1.0 No 0.0
-    Yes 0.672947510094 No 0.327052489906
-    No 0.8382923674 Yes 0.1617076326
-    ...
-
-
-
+*NOTE:* You are welcome to (and encouraged) to log additional information at the debug and trace levels if you find it useful as you are developing and testing your code.  But please do not log additional information at the info level or above since it will interfere with grading.
 
 
 
@@ -422,29 +456,33 @@ For this exercise, you will train a classifier that learns a model from the data
 
 The first thing you should do is train your unsmoothed naive Bayes classifier on the ppa data:
 
-    $ sbt "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab N"
-    Accuracy: 67.39
+    $ sbt "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V"
+    accuracy = 67.37
+    precision (V) = 74.27
+    recall (V) = 46.71
+    f1 = 57.35
 
-Ratnaparkhi et al (1994) obtain accuracies of around 80%, so we clearly should be able to do much better.  One obvious problem shows up if you look at the actual output:
+Ratnaparkhi et al (1994) obtain accuracies of around 80%, so we clearly should be able to do much better.  One obvious problem shows up if you look at the actual output (minus sbt output junk and logging line noise):
 
-    $ ./tennis_cat.py -t out/ppa.basic.train -p out/ppa.basic.dev | more
-    V 0.832766613303 N 0.167233386697
-    V 1.0 N 0.0
-    V 1.0 N 0.0
-    V 1.0 N 0.0
-    V 1.0 N 0.0
-    N 0.5 V 0.5
-    V 1.0 N 0.0
-    V 1.0 N 0.0
-    N 0.5 V 0.5
-    V 1.0 N 0.0
-    V 0.999803237929 N 0.000196762070993
-    V 0.999826549526 N 0.000173450474426
-    V 0.999763228 N 0.000236771999789
-    V 1.0 N 0.0
-    V 1.0 N 0.0
+    $ sbt -Dorg.apache.logging.log4j.level=INFO "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab N" | head -n20
+    [...logging stuff...] - V    0.8328  N    0.1672
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - All posteriors are zero!
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - All posteriors are zero!
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - V    0.9998  N    0.0002
+    [...logging stuff...] - V    0.9998  N    0.0002
+    [...logging stuff...] - V    0.9998  N    0.0002
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - V    1.0000  N    0.0000
+    [...logging stuff...] - V    1.0000  N    0.0000
 
-There are many items that have zero probability for N, V, or both (those are the ones with uniform .5 probability for both labels). The problem is that we haven't done any smoothing, so there are many parameters that we assign zero to, and then the overall probability for the class becomes zero. For example, the tenth     line in `out/ppa.basic.dev` is:
+There are many items that have zero probability for N, V, or both. The problem is that we haven't done any smoothing, so there are many parameters that we assign zero to, and then the overall probability for the class becomes zero. For example, the tenth line in `dev.txt` is:
 
     verb=was,noun=performer,prep=among,prep_obj=groups,N
 
@@ -456,110 +494,215 @@ Thus, the value of p(Noun=performer | Label=V) is zero, making p(Label=V | Verb=
 
 We can fix this by using add-λ smoothing. For example, we can smooth the prior probabilities of the labels as follows:
 
-
+`\[
+    p(Label = x) = \frac{
+        freq(Label=x) + \lambda
+    }{
+        \left[\sum_y freq(Label=y)\right] + \lambda \cdot |L|
+    }
+\]`
 
 Here, L is the set of labels, like {V, N} or {yes, no}, and |L| is the size of that set. Quite simply, we've added an extra λ count to both labels, so we've added λ|L| hallucinated counts. We ensure it still is a probability distribution by adding λ|L| to the denominator.
 
 **Part (a) [5 pts].** Written answer. Provide the general formula for a similar smoothed estimate for p(Attribute=x|Label=y) in terms of the relevant frequencies of x and y and the set ValuesAttribute consisting of the values associated with the attribute. (For example, ValuesOutlook from the tennis example is {sunny,rainy,overcast}.) If it helps, first write it down as the estimate for a specific parameter, like p(Outlook=sunny|Label=yes), and then do the more general formula.
 
-The values associated with each attribute in the tennis dataset are small, fixed sets. However, for the ppa data, the values are words, so we are not likely to observe every value in the training set. That means that we need to "save" some probability for the unknown value for every distribution of the form p(Attribute=x|Label=y). To do this, we just need to add unknown to the set of values. In an implementation, this is done implicitly by setting the size of the value set to be one more than the number of elements in the set. You should make sure to do this in your implementation. However, you should not do this when smoothing p(Label=x) because we assume the set of labels to be fixed.
 
-**Part (b) [20 pts].** Implementation. Copy tennis_cat.py to ppa_cat.py, then modify ppa_cat.py to use add-λ smoothed estimates of the parameters. You have less explicit code guidance on this, so you need to create and populate the appropriate data structures for storing the set of possible values associated with each attribute. 
+**Part (b) [20 pts].** Implementation. 
 
-Note: the --lambda option has been set up for specifying the lambda value on the command line. The value is accessible as options.lambda_value. It has a default of 0, so if you do not specify a value for --lambda, the program should behave the same way that tennis_cat.py does (i.e, it should obtain the same accuracy).
+Similar to what you did for [Problem 2](#problem_2__implement_basic_naive_bayes_30_pts), you should create a class
 
-Use λ=1 while implementing and debugging this. You should obtain an accuracy of around 80% on the devset when you do the following:
+    nlp.a2.AddLambdaNaiveBayesTrainer[Label, Feature, Value]
 
-    $ ./ppa_cat.py -t out/ppa.basic.train -p out/ppa.basic.dev -l 1 | ./score.py -g out/ppa.basic.dev 
+that extends
 
-Find a good λ for improving the accuracy on the development set. By exploring other values for λ, you may be able to improve the results. 
+    nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]
 
-Written answer. Report the best λ you found and what accuracy you obtained.
+Again, you will need to implement the `train` method, but this time it should perform smoothing on the training data.  The λ class-level parameter should be configurable.
 
-Tip. You can easily check many possible values for λ using the Unix command line. For example,
+There are a few changes you should make to your code.
 
-    $ for i in {0..10}; do echo $i; ./ppa_cat.py -t out/ppa.basic.train -p out/ppa.basic.dev -l $i | ./score.py -g out/ppa.basic.dev; done
+First, you should update your `ProbabilityDistribution` class to allow for a "default" parameter so that if a previously-unseen key is looked up in the distribution, the default will be used to return the probability based on there being λ counts.
 
-You should see multiple accuracy values go by, each one associated with the λ value printed above it. (If this doesn't work, then you might not be using the bash shell.) You can also specify ranges such as for i in .5 1 1.5 2 2.5 for drilling down further.
+Next, you should update the `main` method of the NaiveBayes object to support an extra `--lambda` option where the λ parameter can be specified from the command line.  If specified, the option should specify the parameter lambda for the `AddLambdaNaiveBayesTrainer`.  If the `--lambda` option is not specified, then `UnsmoothedNaiveBayesTrainer` should be used.  Using this should yield these results:
 
-Coding check. If you have implemented things correctly, you should get the following output for the tennis dataset:
+    $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 1.0"
+    accuracy = 61.54
+    precision (Yes) = 66.67
+    recall (Yes) = 75.00
+    f1 = 70.59
 
-    $ for i in {0..4}; do echo $i; ./ppa_cat.py -t data/tennis/train -p data/tennis/test -l $i | ./score.py -g data/tennis/test; done
-    0
-    Accuracy: 61.54
-    1
-    Accuracy: 61.54
-    2
-    Accuracy: 69.23
-    3
-    Accuracy: 76.92
-    4
-    Accuracy: 76.92
+    $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 4.0"
+    accuracy = 76.92
+    precision (Yes) = 72.73
+    recall (Yes) = 100.00
+    f1 = 84.21
+
+Now when you run on the `ppa` dataset, you should see that they are no more zero posteriors:
+
+    $ sbt -Dorg.apache.logging.log4j.level=INFO "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab N --lambda 1.0" | head -n20
+    [...logging stuff...] - V    0.8010  N    0.1990
+    [...logging stuff...] - V    0.9997  N    0.0003
+    [...logging stuff...] - V    0.9997  N    0.0003
+    [...logging stuff...] - V    0.9982  N    0.0018
+    [...logging stuff...] - V    0.9999  N    0.0001
+    [...logging stuff...] - V    0.9986  N    0.0014
+    [...logging stuff...] - V    0.9996  N    0.0004
+    [...logging stuff...] - V    0.9998  N    0.0002
+    [...logging stuff...] - V    0.9996  N    0.0004
+    [...logging stuff...] - V    0.5166  N    0.4834
+    [...logging stuff...] - V    0.9997  N    0.0003
+    [...logging stuff...] - V    0.9996  N    0.0004
+    [...logging stuff...] - V    0.9995  N    0.0005
+    [...logging stuff...] - V    0.9999  N    0.0001
+    [...logging stuff...] - V    0.9999  N    0.0001
+    [...logging stuff...] - V    0.9997  N    0.0003
+
+
+**Written answer.**  Experiment on the `ppa` dataset with various λ values, checking accuracy on `dev.txt`.  Report the best λ you found and what accuracy you obtained on `dev.txt`.
+
 
 
 ## Problem 4 - Computing with logarithms (15 pts)
 
-When you calculated the values to determine the most probable label for problems 1 and 2, you (probably) followed the equation directly and used multiplication to combine the various probabilities. Doing so works fine on small examples like those in problems 1 and 2, but ior problems 4 and 5 you will be using a much wider set of attributes with even more values than those used so far. This means that you will be combining a much larger group of much smaller probabilities, so you might easily end up exceeding the floating point precision when many more probabilties are to be combined. A straightforward way of getting around this is to convert the probabilities to logarithms and use addition of log probabilities instead of multiplication of probabilities.
+When you calculated the values to determine the most probable label for problems 2 and 3, you (probably) followed the equation directly and used multiplication to combine the various probabilities. Doing so works fine on small examples like those in problems 2 and 3, but for problem 5 you will be using a much wider set of attributes with even more values than those used so far. This means that you will be combining a much larger group of much smaller probabilities, so you might easily end up exceeding the floating point precision when many more probabilties are to be combined. A straightforward way of getting around this is to convert the probabilities to logarithms and use addition of log probabilities instead of multiplication of probabilities.
 
 First, here's a reminder of the basic property of interest:
 
+`\[
+    a \cdot b = e^{\log_e a + \log_e b}
+\]`
 
+Try it out in Scala:
 
-Try it out in Python:
-
-    >>> import math
-    >>> 6 * 7
+    scala> import scala.math
+    scala> 6 * 7
     42
-    >>> math.exp(math.log(6) + math.log(7))
+    scala> math.exp(math.log(6) + math.log(7))
     41.999999999999986
 
 More generally:
 
-
+`\[
+    \prod_{x \in X} P(x) = e^{\sum_{x \in X} \log_e P(x)}
+\]`
 
 Thus, when determining the most probable label, we can do the following:
 
+`\[
+  \begin{align*}
+    \hat{x} &= \text{argmax}_{x \in L}~p(Label=x) \cdot \prod_i p(Attribute_i = y_i \mid Label=x) \\
+            &= \text{argmax}_{x \in L}~\log(p(Label=x)) + \sum_i \log(p(Attribute_i = y_i \mid Label=x))
+  \end{align*}
+\]`
 
 
-**Part (a) [3 pts].** Written answer. Provide the formula for calculating p(yes|overcast,cool,normal,weak) when using log values of the parameters, such as logp(yes)  and logp(no|yes). Note: you need to determine the probability, not the argmax. This is simple, but writing this out explicitly will help you for part (b).
 
-**Part (b) [12 pts].** Implementation. Copy ppa_cat.py to log_cat.py, then modify log_cat.py so that the calculations are done using logarithms. Make sure that your modified version produces the same results on the tennis data and the ppa data as the original did, including when λ≠0.  Keep in mind that:
-the parameters, including those for unseen items, must be log values
-the computation of the score should use addition rather than multiplication
-you must exponentiate the log scores for each label before you normalize to get the probabilities
-Note. You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base e. You can get other bases by providing an extra argument. For example, math.log(8,2) returns log28, the value 3.0.
-Note. Since working in log space involves addition and since the log of zero is undefined, unseen events don’t directly produce a probability of zero. You can nonetheless simulate this by having unseen features contribute a large negative amount, such as -50, to the calculation. 
+**Part (a) [3 pts].** Written answer. Provide the formula for calculating p(yes|overcast,cool,normal,weak) when using log values of the parameters, such as *log p(yes)*  and *log p(no|yes)*. Note: you need to determine the probability, not the argmax. This is simple, but writing this out explicitly will help you for part (b).
+
+**Part (b) [12 pts].** Implementation. 
+
+Create a new class
+
+    nlp.a2.LogNaiveBayesModel[Label, Feature, Value]
+
+that, like the previous version, extends
+
+    nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]
+
+As before, you will have to implement the `predict` method:
+
+    def predict(features: Vector[(Feature, Value)]): Label
+
+But, this time, you will compute the argmax using logarithms of probabilities instead of multiplying simple probabilities together.
+
+You should also create a class
+
+    nlp.a2.LogAddLambdaNaiveBayesTrainer[Label, Feature, Value]
+
+That is exactly the same as your `AddLambdaNaiveBayesTrainer` except that it returns a `LogNaiveBayesModel` instead of a `NaiveBayesModel`.  Feel free to reuse code as much as possible here.
+
+Finally, add an option `--log` to the `main` function of `NaiveBayes` that takes an argument `true` or `false` specifying whether `LogAddLambdaNaiveBayesTrainer` should be used.  If `--log` is not specified, then it should be treated as `false` so that the behavior of the program is as it was before.
+
+You should verify that your new class yields the same results as your previous version:
+
+    $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 1.0 --log true"
+    accuracy = 61.54
+    precision (Yes) = 66.67
+    recall (Yes) = 75.00
+    f1 = 70.59
+
+Keep in mind that you must exponentiate the log scores for each label before you normalize to get the probabilities for logging to the console.
+
+Note. You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base *e*.  Since working in log space involves addition and since the log of zero is undefined, unseen events don’t directly produce a probability of zero. You can nonetheless simulate this by having unseen features contribute a large negative amount, such as -50, to the calculation. 
 
 
 ## Problem 5 - Extending the feature set (20 pts)
 
 The simple set of features used for the ppa data above can definitely be improved upon. For example, you could
 have features that:
-are combinations of the head noun and verb, e.g. verb+noun=join+board
-are a stemmed version of the verb, e.g. verb_stem=caus from cause, causes, caused, and causing
-identify all numbers, e.g. noun_form=number for 42, 1.5, 100,000, etc.
-identify capitalized forms, e.g. noun_form=Xx for Texas and noun_form=XX for USA.
-use word clusters derived from a large corpus (see the discussion of bitstrings in Ratnaparkhi et al (1994))
-Implementation. Create extended ppa features by modifying ppa_features.py, following instructions in the code. Look at the suggestions above, at some examples of extended features already in ppa_features.py, and also look at the training file to see if you can think of other features. You should come up with at least five new features, but are encouraged to do much more. Be creative! Look at the directions in the ppa_features.py so that you can define features that will be output when the --extended_features option is given to ppa_features.py.
 
-Written answer. Describe five of the features you added, and why you think they would be useful.
+* are combinations of the head noun and verb, e.g. `verb+noun=join+board`
+* are a stemmed version of the verb, e.g. `verb_lemma=cause` from *cause*, *causes*, *caused*, and *causing*
+* identify all numbers, e.g. noun_form=number for 42, 1.5, 100,000, etc.
+* identify capitalized forms, e.g. noun_form=Xx for Texas and noun_form=XX for USA.
+* use word clusters derived from a large corpus (see the discussion of bitstrings in [Ratnaparkhi et al (1994)](http://aclweb.org/anthology/H/H94/H94-1048.pdf)
 
-Tip. Some resources have been imported for you:
-The Porter stemmer is available via the stemmer object -- to get the stem of a word, you can call, for example, stemmer.stem_token("walked")
-The bitstrings supplied with the data set capture word clusters. They can be imported by using the --bitstrings option, which gives you a dictionary from words to BitVector objects. There is an example in the code of how you can use them. You might find the BitVector documentation useful.
-As you enable new features, you can try them out by generating new feature files and running the classifier:
+**Implementation.** 
 
-    $ ./ppa_features.py -i data/ppa/training -e -b data/ppa/bitstrings > out/ppa.extended.train
-    $ ./ppa_features.py -i data/ppa/devset -e -b data/ppa/bitstrings > out/ppa.extended.dev
-    $ ./log_cat.py -t out/ppa.extended.train -p out/ppa.extended.dev -l 1 | ./score.py -g out/ppa.extended.dev
+Create a new class that extends the trait
 
-Notice that the above commands use the shortened versions of the options.
+{% highlight scala %}
+nlpclass.FeatureExtender[Feature, Value]
+{% endhighlight %}
+
+Your implementation will have to implement a method `extendFeatures` that takes an instance's feature vector and produces a new feature vector containing any new features you want the classifier to use.  Be sure to include the original features in the output unless you intentionally want to exclude them.
+
+{% highlight scala %}
+def extendFeatures(features: Vector[(Feature, Value)]) = features
+{% endhighlight %}
+
+You may call your implementation class whatever you want (maybe `PpaFeatureExtender`?).  
+
+In order to make use of your `FeatureExtender` class, you will need to update your `NaiveBayesModel` and `NaiveBayesTrainer` implementations (as well as their `Log` versions from Problem 4) to store an additional field of type `FeatureExtender[Feature, Label]`.  Your trainer requires this field so that it can adjust the features of any training instances that it sees as it counts for the model.  It also needs the field so that it can give it as an argument to `NaiveBayesModel` during construction.  The model needs the field so that it can adjust the features of a instance during prediction. 
+
+For command-line use, add an option `--extend` to `NaiveBayes` that takes either `true` or `false` as an argument.  If `true`, then the `main` method should instantiate your FeatureExtender and pass it to the trainer.  If `false`, or if the option is not present, you should, instead, instantiate `nlpclass.NoOpFeatureExtender` and pass *it* to the trainer.  `NoOpFeatureExtender` is a `FeatureExtender` implementation that does not change the feature it is given.  (*Note:* For a real implementation you would likely have different feature extenders that could be specified from the command line option, but, for the sake of grading, you will only have one implementaiton available from the `--extend` option).  We should be able to run your classifier like this:
+
+    $ sbt "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V --lambda 1.0 --log true --extend true"
+
+To keep your code modular, you may want to create a variety of `FeatureExtender` implementations that each focus on a subset of useful features: one for number features, one for lemma features, one for wordshape feature, etc.  This could be useful during testing when you want to easily try different combinations of features.  To make it easy to combine these separate implementations, I have created a class `CompositeFeatureExtender` (which is itself a `FeatureExtender`) that will compose separate other `FeatureExtender`s into one `FeatureExtender`:
+
+{% highlight scala %}
+val featureExtender = 
+  new CompositeFeatureExtender[String, String](Vector(
+    new NumberFeatureExtender[String, StringV](),
+    new LemmaFeatureExtender[String, String],
+    new WordShapeFeatureExtender[String, String]))
+{% endhighlight %}
+
+You should come up with at least five new features, but are encouraged to do much more. Be creative!
+
+> **Written answer.** Describe five of the features you added, and why you think they would be useful.
+
+**Tip.** Some resources have been imported for you:
+
+* A *lemmatizer* is available for getting lemmas from words.  
+
+    {% highlight scala %}
+    import nlpclass.Lemmatize
+
+    println(Lemmatize("causing"))  // cause
+    println(Lemmatize("cause"))    // cause
+    println(Lemmatize("causes"))   // cause
+    println(Lemmatize("caused"))   // cause{% endhighlight %}
+
 
 As before with the basic features, find an optimal λ on the dev set with the extended features. (Note that this may change as you add more features.)  When you are satisfied that you cannot improve the performance any further, you can finally try out the test set! (Once you've done this, there is no going back to change the features any more.) 
 
-Written answer. What is the performance you obtain when using the basic features and the extended features, each with their best λ?
+> **Written answer.** What is the performance you obtain when using the basic features and the extended features, each with their best λ?  Report the performance on `dev.txt` and `test.txt`.
 
-Additional notes based on office hours and questions from students
+
+
+## Additional Notes
 
 
 ### Note 1
@@ -568,11 +711,11 @@ Keep in mind that it is possible to have the same attribute occur more than once
 
 In general, we can have lots instances of the same attribute with text classification -- for example, with twitter sentiment analysis, you will have tweets like:
 
-Love the angelic music behind Luke Russert #HCR reporting.
+> Love the angelic music behind Luke Russert #HCR reporting.
 
 With a positive sentiment. This will turn into a set of attribute-values + label like:
 
-word=love,word=angelic,word=music,word=behind,word=luke,word=russert,hashtag=hcr,word=reporting,positive
+    word=love,word=angelic,word=music,word=behind,word=luke,word=russert,hashtag=hcr,word=reporting,positive
 
 So, your code should be set up to handle that!
 
@@ -581,12 +724,7 @@ So, your code should be set up to handle that!
 
 Values can be shared across multiple random variables, which means that you can't just use a tuple containing the value and the label -- you have to make sure to include the attribute. For example, if you have ppa instances like:
 
-verb=join,noun=board,prep=as,prep_obj=director,V
-verb=saw,noun=director,prep=of,prep_obj=company,N
+    verb=join,noun=board,prep=as,prep_obj=director,V
+    verb=saw,noun=director,prep=of,prep_obj=company,N
 
 You do not want the prep_obj=director and noun=director to be mixed in the same counts!
-
-
-### Note 3
-
-For smoothing the p(attr=val | label) distributions, you should not use the length of the al_freq map (the keys of that map) in the denominator. Remember that you are smoothing so that you can get a non-zero value for *every* setting of attributes with the values for *every* label. So, what you want is: for each attribute, collect the set of *all* values that have occurred with it (*regardless* of the label), plus one for the "unknown" value.
