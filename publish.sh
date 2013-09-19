@@ -7,4 +7,8 @@ do
   dir=public_html/maven-repository/snapshots/com/utcompling/nlpclass-fall2013_2.10/$version/
   ssh k mkdir -p $dir
   scp $f k:$dir
+  
+  rm -rf ~/.ivy2/cache/com.utcompling/nlpclass-fall2013_2.10/*-$version*
+  rm -rf ~/.ivy2/cache/com.utcompling/nlpclass-fall2013_2.10/*/*-$version*
+
 done

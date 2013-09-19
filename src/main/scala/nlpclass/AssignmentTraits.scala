@@ -61,3 +61,15 @@ trait NaiveBayesModelToImplement[Label, Feature, Value] {
 trait NaiveBayesTrainerToImplement[Label, Feature, Value] {
   def train(instances: Vector[(Label, Vector[(Feature, Value)])]): NaiveBayesModelToImplement[Label, Feature, Value]
 }
+
+/**
+ * For Assignment 2 - Part 2:
+ */
+trait NaiveBayesScorerToImplement {
+
+  def score[Label, Feature, Value](
+    naiveBayesModel: NaiveBayesModelToImplement[Label, Feature, Value],
+    testInstances: Vector[(Label, Vector[(Feature, Value)])],
+    positveLabel: Label)
+
+}

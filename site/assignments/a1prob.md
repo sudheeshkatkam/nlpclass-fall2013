@@ -224,7 +224,7 @@ Rube Goldberg gets his think-tank working and evolves the simplified pencil-shar
 4\. `\( p(\neg \text{fortune} \mid \neg \text{race}) = 1 \)`&nbsp;&nbsp; *For want of a race the fortune was lost*,  
 5\. `\( p(\neg \text{fortune} \mid \neg \text{nail}) = 1 \)` And all for the want of a horseshoe nail.  
 
-Show carefully that (e) follows from (a)--(d). Hint: Consider
+Show carefully that (5) follows from (1)--(4). Hint: Consider
 `\[
     p(\neg \text{fortune}, \neg \text{race}, \neg \text{horse}, \neg \text{shoe} \mid \neg \text{nail}),
 \]`

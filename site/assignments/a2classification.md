@@ -18,6 +18,14 @@ To complete the homework, use the stub programs and data found in the class GitH
 
 There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.
 
+
+The used here classes will extend traits that are found version **0003** of the `nlpclass-fall2013` dependency.  In order to get these updates, you will need to edit your root `build.sbt` file and update the version of the dependency:
+
+    libraryDependencies += "com.utcompling" % "nlpclass-fall2013_2.10" % "0003" changing()
+
+If you use Eclipse, then after you modify the dependency you will once again have to run `sbt "eclipse with-source=true"` and refresh your project in Eclipse.
+
+
 **If you have any questions or problems with any of the materials, don't hesitate to ask!**
 
 **Tip:** Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.
@@ -26,7 +34,7 @@ Finally: if possible, don't print this homework out! Just read it online, which 
 
 
 
-## Problem 1 - A good day to play tennis? [10 pts]
+## Problem 1 - A good day to play tennis? (10 pts)
 
 Let’s start with a simple example problem from Tom Mitchell’s book Machine Learning. The problem is to predict whether it is a good day to play tennis given various factors and some initial data that provides information about whether previous days were good or bad days for tennis. The factors include (in the format "Attribute: List, of, Possible, Values"):
 
@@ -134,7 +142,9 @@ Terms like p(yes) and p(sunny|no) are just parameters that we can estimate from 
     \end{align}
 \]`
 
-Easy! *Note:* you might have noticed that *freq*(**yes**, **sunny**) + *freq*(**yes**, **rain**) + *freq*(**yes**, **overcast**) = *freq*(**yes**). This is true for this example because each attribute only occurs exactly once per instance. Later on, with sentiment analysis, we'll need the extra flexibility of being able to see the same attribute multiple times per instance, such as multiple words.
+Easy! 
+
+*Note:* you might have noticed that *freq*(**yes**, **sunny**) + *freq*(**yes**, **rain**) + *freq*(**yes**, **overcast**) = *freq*(**yes**). This is true for this example because each attribute only occurs exactly once per instance. Later on, with sentiment analysis, we'll need the extra flexibility of being able to see the same attribute multiple times per instance, such as multiple words.
 
 The data includes a test set for the tennis task as well, provided in full here:
 
@@ -166,9 +176,208 @@ Make sure to show your work, including the values you obtained for each label. D
 
 
 
-## Problem 2 - Implement basic naive Bayes [25 pts]
+## Problem 2 - Implement basic naive Bayes (25 pts)
 
-Implementation. Complete the stub program classify/tennis_cat.py so that it learns parameters from the training set, calculates the scores for each label for each instance in the test set, and then outputs the probabilities for each label in reverse sorted order, using the format:
+This problem will walk you through the implementation and training of a naive Bayes model.
+
+
+### NaiveBayesModel
+
+Implement a class 
+
+    nlp.a2.NaiveBayesModel[Label, Feature, Value]
+
+that extends
+
+    nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]
+
+The `NaiveBayesModel` class will contain your naive Bayes implementation.  It requires a method:
+
+    def predict(features: Vector[(Feature, Value)]): Label
+
+The `predict` method takes in a Vector of (feature,value) pairs and outputs the most likely label given the features.
+
+The structure in which you store the underlying data within the `NaiveBayesModel` class is ultimately up to you, but I highly encourage you to make use of the `ProbabilityDistribution` and `ConditionalProbabilityDistribution` classes that you wrote for [Assignment 1, Problem 5](http://utcompling.github.io/nlpclass-fall2013/assignments/a1prob.html#problem_5_30_points).  In fact, you'll probably want something like this, which should look familiar:
+
+{% highlight scala %}
+class NaiveBayesModel[Label, Feature, Value](
+  labels: Set[Label],
+  pLabel: ProbabilityDistribution[Label],
+  pValue: Map[Feature, ConditionalProbabilityDistribution[Label, Value]])
+  extends NaiveBayesModelToImplement[Label, Feature, Value]
+{% endhighlight %}
+
+When trained on the tennis [training file](https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt), you should get the following behavior:
+
+{% highlight scala %}
+scala> val nbm = new NaiveBayesModel[String,String,String](...)
+scala> nbm.predict(Vector("Outlook"->"Sunny", "Temperature"->"Cool", "Humidity"->"High", "Wind"->"Strong"))
+res0: String = No
+scala> nbm.predict(Vector("Outlook"->"Overcast", "Temperature"->"Cool", "Humidity"->"Normal", "Wind"->"Weak"))
+res1: String = Yes
+{% endhighlight %}
+
+
+### UnsmoothedNaiveBayesModelTrainer
+
+In order to maintain good modularity in your code, you will not actually calculate the probability distributions from within the `NaiveBayesModel` class; you will only *use* the distributions to predict a label.
+
+Instead, you will use a distinct *trainer* class to turn the raw data into a `NaiveBayesModel`, calculating the probability distributions along the way.
+
+So you will implement a class 
+
+    nlp.a2.UnsmoothedNaiveBayesTrainer[Label, Feature, Value]
+
+that extends
+
+    nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]
+
+The `UnsmoothedNaiveBayesTrainer` class requires a method:
+
+    def train(instances: Vector[(Label, Vector[(Feature, Value)])]): NaiveBayesModelToImplement[Label, Feature, Value]
+
+The `train` method takes a Vector of labeled instances, uses those instances to calculate probability distributions (without smoothing, of course), and then instantiates a `NaiveBayesModel` to be returned.  
+
+When trained on the tennis [training file](https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt), you should get the following behavior:
+
+{% highlight scala %}
+scala> val instances = ... from tennis training file ...
+scala> val nbt = new UnsmoothedNaiveBayesTrainer(...)
+scala> val nbm = nbt.train(instances)
+scala> nbm.predict(Vector("Outlook"->"Sunny", "Temperature"->"Cool", "Humidity"->"High", "Wind"->"Strong"))
+res0: String = No
+scala> nbm.predict(Vector("Outlook"->"Overcast", "Temperature"->"Cool", "Humidity"->"Normal", "Wind"->"Weak"))
+res1: String = Yes
+{% endhighlight %}
+
+
+*Note:*  This separation of concerns is nice because it means that the `NaiveBayesModel` needs only to be concerned with using the parameters to predict labels; it does not care where those parameters come from, meaning that it can be reused under all sorts of parameter-estimating scenarios.  Thus, the trainer's only job is to estimate the parameters from raw data and produce a model.  This means that we can have many kinds of trainers that all have the same interface (train from data to make a model), but vary in their parameter estimation techniques.
+
+
+
+### NaiveBayesScorer
+
+In order to evaluate your model, you will need to implement an object that runs labeled test instances through your classifier and checks the results.  
+
+So you will implement an object:
+
+    nlp.a2.NaiveBayesScorer
+
+that extends
+
+    nlpclass.NaiveBayesScorerToImplement
+
+The `NaiveBayesScorer` class requires a method:
+
+    def score[Label, Feature, Value](
+        naiveBayesModel: NaiveBayesModelToImplement[Label, Feature, Value],
+        testInstances: Vector[(Label, Vector[(Feature, Value)])],
+        positveLabel: Label)
+
+The `score` method takes a three arguments.  
+
+1. `naiveBayesModel`: A trained `NaiveBayesModel` instance
+2. `testInstances`: A Vector of test instances and their *correct* labels
+3. `positveLabel`: The label to be treated as "positive" for precision and recall calculations
+
+Notice that the `score` method does not return anything.  Instead, it should simply print out the information:
+
+* Accuracy
+* Precision (based on the `positiveLabel`)
+* Recall (based on the `positiveLabel`)
+* F1 (based on the `positiveLabel`)
+
+When trained on the tennis [training file](https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt) and tested on the tennis [testing file](https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/test.txt), you should get the following behavior:
+
+{% highlight scala %}
+scala> val trainInstances = ... from tennis training file ...
+scala> val nbt = new UnsmoothedNaiveBayesTrainer(...)
+scala> val nbm = nbt.train(trainInstances)
+scala> val testInstances = ... from tennis test file ...
+scala> NaiveBayesScorer.score(nbm, testInstances, "Yes")
+accuracy = 61.54
+precision (Yes) = 66.67
+recall (Yes) = 75.00
+f1 = 70.59
+scala> NaiveBayesScorer.score(nbm, testInstances, "No")
+accuracy = 61.54
+precision (No) = 50.00
+recall (No) = 40.00
+f1 = 44.44
+{% endhighlight %}
+
+
+
+
+### Naive Bayes from the command-line
+
+In order for us to test your code, you will need to create an object `nlp.a2.NaiveBayes` so that we can train and test a model from the command line.
+
+    $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes"
+    accuracy = 61.54
+    precision (Yes) = 66.67
+    recall (Yes) = 75.00
+    f1 = 70.59
+    $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab No"
+    accuracy = 61.54
+    precision (No) = 50.00
+    recall (No) = 40.00
+    f1 = 44.44
+
+
+### Logging
+
+A logging framework is one that lets you print information to the screen (or to a file) from your program in a clean way.  Whereas 
+
+You will have to take a few steps to make this work.
+
+First, you will have to extend the trait `com.typesafe.scalalogging.log4j.Logging` from any class or object that you want to be able to log.  If your class or object is already extending something, then you should used the `with` keyword to indicate a second trait to extend:
+
+{% highlight scala %}
+import com.typesafe.scalalogging.log4j.Logging
+
+class NaiveBayesModel[Label, Feature, Value](...)
+  extends NaiveBayesModelToImplement[Label, Feature, Value]
+  with Logging
+{% endhighlight %}
+
+Then you will have to add logging statements to print out relevant information.  There are 6 levels of logging statements: trace, debug, info, warn, error, and fatal.  Trace is the lowest, fatal is the highest.  You can log statements using the syntax `logger.debug`, `logger.info`, etc.  (`logger` is a field on the `Logging` trait, which is why it exists even though you aren't explicitly declaring it.)
+
+{% highlight scala %}
+  override def predict(features: Vector[(Feature, Value)]): Label = {
+    [...]
+    logger.debug("something at the debug level")
+    [...]
+    logger.info("something at the info level")
+    [...]
+  }
+{% endhighlight %}
+
+When `predict` is run, it will print two statement at different logging levels.  
+
+To see the logging statements when you run your program, you should pass a VM argument indicating the log level that you want to show:
+
+    sbt -Dorg.apache.logging.log4j.level=INFO "run-main nlp.a2.NaiveBayes ..."
+
+The way the logging framework works, you will get all the logging statements at the level you specify and above.  So, if you specify INFO, you will get info, warn, error, and fatal statements.  If you specify DEBUG, you will get debug, info, warn, error, and fatal statements.
+
+For this assignment, you should add log statements to the `predict` method of `NaiveBayesModel` so that, for each test instance, it logs posterior probabilities for each label, given the features.
+
+
+
+
+
+
+
+sbt -Dorg.apache.logging.log4j.level=INFO "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab N"
+
+
+
+
+
+TODO !!!!
+
+outputs the probabilities for each label in reverse sorted order, using the format:
 
     Label_1 Probability_1 Label_2 Probability_2 ... Label_n Probability_n
 
@@ -180,99 +389,40 @@ For example, here's what the output should look like:
     No 0.8382923674 Yes 0.1617076326
     ...
 
-See the instructions in the stub program for specific places to make changes to do this implementation.
-
-Note: if the score for all labels is zero (remember we aren't smoothing yet), you should output a uniform distribution in which all labels receive the probability 1.0/number_of_labels. This won't happen for the tennis data set, but will happen for the prepositional phrase attachment data in the next problem.
-
-Before you get started, `tennis_cat.py` doesn't do what it is supposed to do, but you can run it (in the classify directory) with verbose output to start developing and debugging:
-
-    $ ./tennis_cat.py --train data/tennis/train --predict data/tennis/test --verbose
-    Showing verbose output.
-    Frequency accumulation for labels not implemented yet.
-    Frequency accumulation for (attr,val) and (attr,val,label) not implemented yet.
-    ...
-
-It's up to you to fill in the required capabilities! When you are done, you should be able to run the program as follows:
-
-    $ python tennis_cat.py --train data/tennis/train --predict data/tennis/test --out predictions.txt
-
-To see the accuracy of the predictions against the gold standard labels in the test file, do the following:
-
-    $ python score.py --gold data/tennis/test --predict predictions.txt
-
-You should see the following output:
-
-    Accuracy: 61.54
-
-Tip: things are set up so that:
-if `tennis_cat.py` is not given the `--out` option, then the predictions are output to `STDOUT`
-if `score.py` is not given the `--predict` option, it will take input from `STDIN`
-for both programs, all of the options have short versions using the first letter of the option
-That means you can do classification and scoring using a single line with UNIX pipes:
-
-    $ python tennis_cat.py -t data/tennis/train -p data/tennis/test | python score.py -g data/tennis/test 
-
-Also, you can run without calling Python explicitly as follows:
-
-    $ ./tennis_cat.py -t data/tennis/train -p data/tennis/test | ./score.py -g data/tennis/test 
-
-Tip: To easily sort lists of pairs, you can use the itemgetter function (already imported in the program). Here's an example in the Python interactive interpreter:
-
-    >>> from operator import itemgetter
-    >>> foo = [("a",2),("b",3),("c",1)]
-    >>> foo.sort(key=itemgetter(1),reverse=True)
-    >>> foo
-    [('b', 3), ('a', 2), ('c', 1)]
-
-Also, you can use list comprehensions to do operations on all the elements of a list of pairs without for loops, e.g.:
-
-    >>> bar = [(x[0],x[1]*2) for x in foo]
-    >>> bar
-    [('b', 6), ('a', 4), ('c', 2)]
 
 
-## Problem 3 - Prepositional Phrase Attachment and smoothing [25 pts]
 
-Prepositional phrase attachment is the well-known task of resolving a common ambiguity in English syntax regarding whether a prepositional phrase attaches to the verb or the noun in sentences with the pattern Verb Noun_Phrase Prepositional_Phrase. An example is I saw the man with the telescope. If the prepositional phrase attaches to the verb, then the seeing was done with the telescope; if it attaches to the noun, it indicates that the man had the telescope in his possession. A clear difference can be seen with the following related examples:
-Attach to the noun: He ate the spaghetti with meatballs.
-Attach to the verb: He ate the spaghetti with chopsticks.
-We can deal with this decision just like any simple labeling problem: each sentence receives a label V or N indicating the attachment decision, and there is no benefit to be gained from using previous attachment decisions.
 
-For this problem, you will use a conveniently formatted data set for prepositional phrase attachment which has been made available by Adwait Ratnaparkhi. You can find it in the directory classify/data/ppa. Go to that directory and list the contents. There are three files which you will use for this problem: training, devset, and test. Look at the contents of training:
 
-    classify/data/ppa/training
-    0 join board as director V
-    1 is chairman of N.V. N
-    2 named director of conglomerate N
-    3 caused percentage of deaths N
-    5 using crocidolite in filters V
-    ...
+## Problem 3 - Prepositional Phrase Attachment and smoothing (25 pts)
 
-Each row lists an abbreviated form of a prepositional phrase attachment. The first item is just a source sentence‘ identifier that we can ignore. The four words correspond to the head verb, head noun, preposition, and head noun object of the preposition, in that order. The final element indicates whether the attachment was to the verb (V) or to the noun (N). For example, for the two spaghetti eating sentences given above, the abbreviated forms would be:
+Prepositional phrase attachment is the well-known task of resolving a common ambiguity in English syntax regarding whether a prepositional phrase attaches to the verb or the noun in sentences with the pattern 
 
-    4242 ate spaghetti with meatballs N
-    4243 ate spaghetti with chopsticks V
+> Verb Noun_Phrase Prepositional_Phrase 
 
-For this exercise, you will build a classifier that learns a model from the data in training and use it to classify new instances. You will develop your model using the material in devset. You must not personally inspect the contents of test — you will run your classifier on test only once, when you are done developing.
+An example is I saw the man with the telescope. If the prepositional phrase attaches to the verb, then the seeing was done with the telescope; if it attaches to the noun, it indicates that the man had the telescope in his possession. A clear difference can be seen with the following related examples:
 
-The first thing you must do is produce features from the ppa data in the format used previously for the tennis problem. Each of the four columns in the ppa data implicitly indicates a separate attribute – let’s call them verb, noun, prep, and prep_obj, respectively. To begin, we'll just create features that are based directly on the attributes and their values. So, a line like,
+* Attach to the noun: He ate the spaghetti with meatballs.
+* Attach to the verb: He ate the spaghetti with chopsticks.
 
-    0 join board as director V
+We can deal with this decision just like any simple labeling problem: each sentence receives a label *V* or *N* indicating the attachment decision, and there is no benefit to be gained from using previous attachment decisions.
 
-becomes the following:
+For this problem, you will use a conveniently formatted [data set](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/ppa) for prepositional phrase attachment which has been made available by Adwait Ratnaparkhi. There are three files which you will use for this problem: `train.txt`, `dev.txt`, and `test.txt`. Look at the contents of training:
 
     verb=join,noun=board,prep=as,prep_obj=director,V
+    verb=is,noun=chairman,prep=of,prep_obj=N.V.,N
+    verb=named,noun=director,prep=of,prep_obj=conglomerate,N
+    verb=caused,noun=percentage,prep=of,prep_obj=deaths,N
+    verb=using,noun=crocidolite,prep=in,prep_obj=filters,V
+    ...
 
-The program ppa_features.py reads in a ppa file and produce the features in the above format. Using this program, produce files for training and development as follows:
+Each row lists an abbreviated form of a prepositional phrase attachment. The four words correspond to the head verb, head noun, preposition, and head noun object of the preposition, in that order. The final element indicates whether the attachment was to the verb (V) or to the noun (N).
 
-    $ mkdir out
-    $ ./ppa_features.py --input data/ppa/training > out/ppa.basic.train
-    $ ./ppa_features.py --input data/ppa/devset > out/ppa.basic.dev
-    $ ./ppa_features.py --input data/ppa/test > out/ppa.basic.test
+For this exercise, you will train a classifier that learns a model from the data in training and use it to classify new instances. You will develop your model using the material in `dev.txt`. You must not personally inspect the contents of the test data — you will run your classifier on `test.txt` only once, when you are done developing.
 
-You can run tennis_cat.py on the feature files that are produced and score the output with score.py:
+The first thing you should do is train your unsmoothed naive Bayes classifier on the ppa data:
 
-    $ ./tennis_cat.py -t out/ppa.basic.train -p out/ppa.basic.dev | ./score.py -g out/ppa.basic.dev 
+    $ sbt "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab N"
     Accuracy: 67.39
 
 Ratnaparkhi et al (1994) obtain accuracies of around 80%, so we clearly should be able to do much better.  One obvious problem shows up if you look at the actual output:
@@ -347,7 +497,7 @@ Coding check. If you have implemented things correctly, you should get the follo
     Accuracy: 76.92
 
 
-## Problem 4 - Computing with logarithms [15 pts]
+## Problem 4 - Computing with logarithms (15 pts)
 
 When you calculated the values to determine the most probable label for problems 1 and 2, you (probably) followed the equation directly and used multiplication to combine the various probabilities. Doing so works fine on small examples like those in problems 1 and 2, but ior problems 4 and 5 you will be using a much wider set of attributes with even more values than those used so far. This means that you will be combining a much larger group of much smaller probabilities, so you might easily end up exceeding the floating point precision when many more probabilties are to be combined. A straightforward way of getting around this is to convert the probabilities to logarithms and use addition of log probabilities instead of multiplication of probabilities.
 
@@ -381,7 +531,7 @@ Note. You can do logs in various bases; which base you use doesn’t matter, as 
 Note. Since working in log space involves addition and since the log of zero is undefined, unseen events don’t directly produce a probability of zero. You can nonetheless simulate this by having unseen features contribute a large negative amount, such as -50, to the calculation. 
 
 
-## Problem 5 - Extending the feature set [20 pts]
+## Problem 5 - Extending the feature set (20 pts)
 
 The simple set of features used for the ppa data above can definitely be improved upon. For example, you could
 have features that:

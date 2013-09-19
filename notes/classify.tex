@@ -365,9 +365,9 @@ Add-$\lambda$ smoothing
 \begin{itemize}
   \item The count of each (Feature, Label) pair goes up by 1, but the total count for the label across all features goes up by $(1 \cdot (\#~of~Feature~Values))$
     \begin{itemize}
-      \item Since we add 1 additional count for each (F,L) --- even the ones we've never seen before --- and there is one (F,L) pair for each possible F, there are $1 \cdot |Feature~Values|$ additional counts for the label.
-      \item $\sum_{f \in Features} (C(f,L)+1) = \left(\sum_{f \in Feature~Values} C(f,L)\right) + |Feature~Values|$
-      \item So now, $p(feature \mid label) = \frac{C(feature,label)+1}{C(label) + (1 \cdot |Feature~Values|)}$
+      \item Since we add 1 additional count for each (F,L) --- even the ones we've never seen before --- and there is one (F,L) pair for each possible F, there are $1 \cdot |FeatureValues|$ additional counts for the label.
+      \item $\sum_{f \in Features} (C(f,L)+1) = \left(\sum_{f \in FeatureValues} C(f,L)\right) + |FeatureValues|$
+      \item So now, $p(feature \mid label) = \frac{C(feature,label)+1}{C(label) + (1 \cdot |FeatureValues|)}$
       \\
       \item If we didn't increase the denominator: \\\\
           $p(start=B \mid label=location) = \frac{C(start=B, label=location)+1}{C(label=location)} = \frac{2+1}{6} = \frac{3}{6} = 0.50$ \\
@@ -453,11 +453,11 @@ Classify \textit{Austria} with Add-1 smoothing
 
   \item Likelihood of the evidence
     \begin{itemize}
-      \item $p(end=ia \mid label=location) = \frac{C(end=ia, label=location)+1}{C(label=location)+|Feature~Values|} = \frac{4+1}{6+4} = \frac{5}{10} = 0.50$
-      \item $p(end=ia \mid label=person) = \frac{C(end=ia, label=person)}{C(label=person))+|Feature~Values|} = \frac{1+1}{4+4} = \frac{2}{8} = 0.25$
+      \item $p(end=ia \mid label=location) = \frac{C(end=ia, label=location)+1}{C(label=location)+|end~values|} = \frac{4+1}{6+4} = \frac{5}{10} = 0.50$
+      \item $p(end=ia \mid label=person) = \frac{C(end=ia, label=person)}{C(label=person)+|end~values|} = \frac{1+1}{4+4} = \frac{2}{8} = 0.25$
       \\
-      \item $p(start=A \mid label=location) = \frac{C(start=A, label=location)}{C(label=location))+|Feature~Values|} = \frac{0+1}{6+6} = \frac{1}{12} = 0.08$
-      \item $p(start=A \mid label=person) = \frac{C(start=A, label=person)}{C(label=person))+|Feature~Values|} = \frac{1+1}{4+6} = \frac{2}{10} = 0.20$
+      \item $p(start=A \mid label=location) = \frac{C(start=A, label=location)}{C(label=location)+|start~values|} = \frac{0+1}{6+6} = \frac{1}{12} = 0.08$
+      \item $p(start=A \mid label=person) = \frac{C(start=A, label=person)}{C(label=person)+|start~values|} = \frac{1+1}{4+6} = \frac{2}{10} = 0.20$
       \\
       \item No longer have zeros (this is essential)
       \item $start=A$ relative probabilities are pushed closer together than $end=ia$ since there is less evidence for either label
@@ -480,6 +480,45 @@ Classify \textit{Austria} with Add-1 smoothing
 
 
 
+
+\section{Smoothing over unknowable things}
+
+\begin{itemize}
+  \item In the tennis example, we have four features, and all of their possible values are known.
+  \item What happens if the set of possible values is unknown?
+  \item What if we want to classify the word ``Zambia'' as a person or location?
+    \begin{itemize}
+      \item $p_{+1}(end=ia \mid location) = \frac{C(end=ia \mid location) + 1}{C(location) + |end~values|} = \frac{4+1}{6+4} = \frac{5}{10} = 0.50$
+      \item $p_{+1}(end=ia \mid person) = \frac{C(end=ia \mid person) + 1}{C(person) + |end~values|} = \frac{1+1}{4+4} = \frac{2}{8} = 0.25$
+      \\
+      \item $p_{+1}(start=Z \mid location) = \frac{C(start=Z \mid location)}{C(location) + |start~values|} = \frac{0+1}{6+6} = \frac{1}{12} = 0.08$
+      \item $p_{+1}(start=Z \mid person) = \frac{C(start=Z \mid person)}{C(person) + |start~values|} = \frac{0+1}{4+6} = \frac{1}{10} = 0.10$
+    \end{itemize}
+  \item So where does $start=Z$ fit in to the PD?
+    \begin{itemize}
+      \item $p_{+1}(start=B \mid location) = \frac{C(start=B \mid location)}{C(location) + |start~values|} = \frac{2+1}{6+6} = \frac{3}{12} = 0.25$
+      \item $p_{+1}(start=M \mid location) = \frac{C(start=M \mid location)}{C(location) + |start~values|} = \frac{0+1}{6+6} = \frac{1}{12} = 0.08$
+      \item $p_{+1}(start=L \mid location) = \frac{C(start=L \mid location)}{C(location) + |start~values|} = \frac{1+1}{6+6} = \frac{2}{12} = 0.17$
+      \item $p_{+1}(start=N \mid location) = \frac{C(start=N \mid location)}{C(location) + |start~values|} = \frac{2+1}{6+6} = \frac{3}{12} = 0.25$
+      \item $p_{+1}(start=E \mid location) = \frac{C(start=E \mid location)}{C(location) + |start~values|} = \frac{1+1}{6+6} = \frac{2}{12} = 0.17$
+      \item $p_{+1}(start=A \mid location) = \frac{C(start=A \mid location)}{C(location) + |start~values|} = \frac{0+1}{6+6} = \frac{1}{12} = 0.08$
+      \item $p_{+1}(start=Z \mid location) = \frac{C(start=Z \mid location)}{C(location) + |start~values|} = \frac{0+1}{6+6} = \frac{1}{12} = 0.08$
+
+      \item But $(3+1+2+3+2+1+1)/12 = 13/12$!
+      \item We had to add $|start~values|$ to the denominator to keep the PD valid, but we failed.
+      \item We should have accounted for $Z$ by adding it to the set of start values
+      \item So how many unseen start values are there?  $A$-$Z$?  Plus $a$-$z$?  Plus $A$-$\Omega$?
+      \item Sometimes we don't know how many possible values there are.  Like when its all of the words.
+      \item Add-$\lambda$ smoothing doesn't handle this nicely.
+      \item Solution? Use the set of known values and hope for the best.
+    \end{itemize}
+
+
+\end{itemize}
+
+
+
+
 \section{Features occurring more than once per instance}
 
 \begin{itemize}
@@ -488,6 +527,7 @@ Classify \textit{Austria} with Add-1 smoothing
   \item A canoncial example of this is when we are classifying text and we simply use the words in the text as features.
 
   \item The dataset:
+\end{itemize}
     \begin{verbatim}
     the movie was great and the acting was great , so i loved it, positive
     i loved the movie dispite the terrible acting, positive
@@ -497,7 +537,9 @@ Classify \textit{Austria} with Add-1 smoothing
     what a terrible movie, negative
     i've never seen anything so terrible, negative\end{verbatim}
 
+\begin{itemize}
   \item Could have stopwords removed and be transformed to:
+\end{itemize}
     \begin{verbatim}
     word=movie,word=great,word=acting,word=great,word=loved,5words=true,positive
     word=loved,word=movie,word=terrible,word=acting,5words=true,positive
@@ -507,20 +549,33 @@ Classify \textit{Austria} with Add-1 smoothing
     word=terrible,word=movie,5words=false,negative
     word=terrible,5words=true,negative\end{verbatim}
 
+\begin{itemize}
   \item 2 features: \textit{word} and \textit{5words}
 \end{itemize}
 
 Counting with duplicate features
 
 \begin{itemize}
+  \item If a feature can appear multiple times per instance, we have to count them all
+  \item So the full counts are $C(feature=F,label=L)$.
+  \item But we also need to make our probability calculation more precise
+  \item Before, we said: $p(feature=F \mid label=L) = \frac{C(feature=F,label=L)}{C(label=L)}$
+    \begin{itemize}
+      \item This would mean, for our data:
+      \item $p(word=great \mid label=positive) = \frac{C(word=great, label=positive)}{C(label=positive)} = \frac{3}{3} = 1.0$
+      \item This would mean that if the instance is \textit{positive}, then it \textit{definitely} has ``great'' in it... which is false.
+      \item Moreover, this would not make a valid probability distribution, since there are other words that also appear with \textit{positive}.
+      \item The probability is wrong because we counted multiple \textit{word} features per instance, but only one \textit{label} feature per instance.
+    \end{itemize}
   \item Since there is no longer one feature of each time per instance, we have to make our probability calculations more precise.
   \item $p(feature=F \mid label=L) = \frac{C(feature=F,label=L)}{\sum_f C(feature=f,label=L)}$
-  \item So we are no longer dividing the number of instance with the label and feature by the number of instances with the label.
-  \item Instead, we have to count the number of (label,value) pairs extracted from the data for the particular feature, including multiple identical pairs in the same instance
+    \begin{itemize}
+      \item So we are no longer dividing the number of instance with the label and feature by the number of instances with the label.
+      \item Instead, we have to count the number of (label,value) pairs extracted from the data for the particular feature, including multiple identical pairs in the same instance
+    \end{itemize}
   \item The probability $p(feature=F \mid label=L)$ is the proportion of times the particular feature was $F$ in an instance with label $L$ out of the total number of times the particular feature appeared in an instance with label $L$
   \item $p(word=great \mid label=positive) = \frac{C(word=great,label=positive)}{\sum_f C(word=f,label=positive)} = \frac{3}{13} = 0.23$ \\
   $p(word=great \mid label=negative) = \frac{C(word=great,label=negative)}{\sum_f C(word=f,label=negative)} = \frac{1}{8} = 0.13$
-  \item If we only used the count of instances as the denominator, we would not end up with a probability distribution.
   \item Note that we still calculate the prior the same way: percentage of \textit{instances} that have the particular label.
 \end{itemize}
 
