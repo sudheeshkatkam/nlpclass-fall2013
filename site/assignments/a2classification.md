@@ -4,7 +4,7 @@ title: Assignment 2 - Classification
 root: "../"
 ---
 
-**Due: Thursday, October 1.  Written portion by 2pm, programming by noon**
+**Due: Tuesday, October 1.  Written portion by 2pm, programming by noon**
 
 
 ## Introduction

@@ -1,0 +1,602 @@
+\documentclass[11pt,letterpaper]{article}
+\topmargin -.5truein
+\textheight 9.0truein
+\oddsidemargin 0truein
+\evensidemargin 0truein
+\textwidth 6.5truein
+\setlength{\parskip}{5pt}
+\setlength\parindent{0pt}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{qtree}
+\usepackage{algorithmic}
+\usepackage{wrapfig}
+\usepackage{subfig}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usepackage{multirow}
+\usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
+
+\newcommand{\bs}{\textbackslash}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+\newcommand{\ngramstart}{\ensuremath{\langle b \rangle}}
+\newcommand{\ngramend}{\ensuremath{\langle \backslash b \rangle}}
+\newcommand{\ngramunk}{\ensuremath{\langle unk \rangle}}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\title{NLP: N-Grams}
+\author{Dan Garrette\\\small{dhg@cs.utexas.edu}}
+
+\begin{document}
+\maketitle
+
+
+
+\section{Language Modeling Tasks}
+
+\begin{itemize}
+  \item Language idenfication / Authorship identification
+  \item Machine Translation
+  \item Speech recognition
+  \item Optical character recognition (OCR)
+  \item Context-sensitive spelling correction
+  \item Predictive text (text messaging clients, search engines, etc)
+  \item Generating spam
+  \item Code-breaking (e.g. decipherment)
+\end{itemize}
+
+
+\section{Kinds of Language Models}
+
+\begin{itemize}
+  \item Bag of words
+  \item Sequences of words
+  \item Sequences of tagged words
+  \item Grammars
+  \item Topic models
+\end{itemize}
+
+
+\section{Language as a sequence of words}
+
+\begin{itemize}
+  \item What is the probability of seeing a particular sequence of words?
+  \item Simplified model of langauge: words in order
+  \item $p($some words in sequence$)$
+    \begin{itemize}
+      \item $p($``an interesting story''$)$ ?
+      \item $p($``a interesting story''$)$ ?
+      \item $p($``a story interesting''$)$ ?
+    \end{itemize}
+  \item $p($next $\mid$ some sequence of previous words$)$
+    \begin{itemize}
+      \item $p($``austin'' $\mid$ ``university of texas at''$)$ ?
+      \item $p($``dallas'' $\mid$ ``university of texas at''$)$ ?
+      \item $p($``giraffe'' $\mid$ ``university of texas at''$)$ ?
+    \end{itemize}
+\end{itemize}
+
+Use as a language model
+
+\begin{itemize}
+  \item Language ID: This sequence is most likely to be seen in what language?
+  \item Authorship ID: What is the most likely person to have produced this sequence of words?
+  \item Machine Translation: Which sentence (word choices, ordering) seems most like the target language?
+  \item Text Prediction: What's the most likely next word in the sequence
+\end{itemize}
+
+Notation
+
+\begin{itemize}
+  \item Probability of a sequence is a joint probability of words
+  \item But the order of the words matters, so each gets its own feature
+  \item $p($``an interesting story''$) = p(w_{-3}=an, ~ w_{-2}=interesting, ~ w_{-1}=story)$
+  \item $p($``austin'' $\mid$ ``university of texas at''$)$\\
+        $= p(w_{0}=austin \mid w_{-4}=university, ~ w_{-3}=of, ~ w_{-2}=texas, ~ w_{-1}=at)$
+  \item So $w_0$ means ``current word'' and $w_{-1}$ is ``the previous word''.
+  \item We will typically use the short-hand
+\end{itemize}
+
+
+\section{Estimating Sequence Probabilities}
+
+\begin{itemize}
+  \item To build a statistical model, we need to set parameters.
+  \item Our parameters: probabilities of various sequences of text
+  \item Maximum Likelihood Estimate (MLE): of all the sequences of length N, what proportion are the relevant sequence?
+  \item $p(\textsl{university of texas at austin}) \\
+        = p(w_{-5}=university, ~ w_{-4}=of, ~ w_{-3}=texas, ~ w_{-2}=at, ~ w_{-1}=austin)\\
+        = \frac{C(\text{``university of texas at austin''})}{C(\textit{all 5-word sequences})}
+        = \frac {3}{25,000,000}$
+  \\
+  \item $p(\textsl{a bank}) = \frac{C(\text{``a bank''})}{C(\textit{all 2-word sequences})} = \frac{609}{50,000,000}$
+  \item $p(\textsl{in the}) = \frac{C(\text{``in the''})}{C(\textit{all 2-word sequences})} = \frac{312,776}{50,000,000}$
+  \\
+  \item Long sequences are unlikely to have any counts: \\
+  $p($\textsl{the university of texas football team started the season off right by scoring a touchdown in the final seconds of play to secure a stunning victory over the out-of-town challengers}$) \\
+  = \frac{C(\text{... that sentence ...})}{C(\textit{all 30-word sequences})} = \textbf{0.0}$
+  \item Even shorter sentences may not have counts, even if they make sense, are perfecty grammatical, and not improbable that someone might say them: 
+    \begin{itemize} \item ``\textsl{university of texas in amarillo}'' \end{itemize}
+  \item We need a way of estimating the probability of a long sequence, even though counts will be low.
+\end{itemize}
+
+Make a ``na\"{i}ve'' assumption?
+
+\begin{itemize}
+  \item With na\"{i}ve Bayes, we dealt with this problem by assuming that all features were independent.
+  \item $p(w_{-5}=university, ~ w_{-4}=of, ~ w_{-3}=texas, ~ w_{-2}=in, ~ w_{-1}=amarillo) = \\
+         p(w=university) \cdot p(w=of) \cdot p(w=texas) \cdot p(w=in) \cdot p(w=amarillo)$
+  \item But this loses the difference between ``university of texas in amarillo'', which seems likely, and ``university texas amarillo in of'', which does not
+  \item This amounts to a ``bag of words'' model
+\end{itemize}
+
+Use Chain Rule?
+
+\begin{itemize}
+  \item Long sequences are sparse, short sequences are less so
+  \item Break down long sequences using the chain rule
+  \item $p(university~of~texas~in~amarillo) = \\
+         p(university) \cdot 
+         p(of \mid university) \cdot 
+         p(texas \mid university~of) \cdot 
+         p(in \mid university~of~texas) \\
+  ~~~~~~ \cdot p(amarillo \mid university~of~texas~in)$
+  \item ``p(seeing `university') times p(seeing `of' given that the previous word was `university') times p(seeing `texas' given that the previous two words were `university of') ...''
+  \item 
+     $p(\text{university}) = 
+     \frac{C(\text{university})}{\sum_x C(x)} = 
+     \frac{C(\text{university})}{C(all~words)}$; easy to estimate
+  \\ $p(\text{of} \mid \text{university}) = 
+     \frac{C(\text{university of})}{\sum_w C(\text{university } x)} = 
+     \frac{C(\text{university of})}{C(\text{university})}$; easy to estimate
+  \\ $p(\text{texas} \mid \text{university of}) = 
+     \frac{C(\text{university of texas})}{\sum_w C(u\text{university of } x)} = 
+     \frac{C(\text{university of texas})}{C(\text{university of})}$; easy to estimate
+  \\ $p(\text{in} \mid \text{university of texas}) = 
+     \frac{C(\text{university of texas in})}{\sum_w C(u\text{university of texas } x)} = 
+     \frac{C(\text{university of texas in})}{C(\text{university of texas})}$; easy to estimate
+  \\ $p(\text{amarillo} \mid \text{university of texas in}) = 
+     \frac{C(\text{university of texas in amarillo})}{\sum_w C(u\text{university of texas in } x)} = 
+     \frac{C(\text{university of texas in amarillo})}{C(\text{university of texas in})}$; \textbf{same problem}
+  \item So this doesn't help us at all.
+\end{itemize}
+
+
+\section{N-Grams}
+
+\begin{itemize}
+  \item We don't necessarily want a ``fully na\"{i}ve'' solution
+    \begin{itemize}
+      \item Partial independence: limit how far back we look
+    \end{itemize}
+  \item ``Markov assumption'': future behavior depends only on recent history
+    \begin{itemize}
+      \item $k^{th}$-order Markov model: depend only on $k$ most recent states
+    \end{itemize}
+  \item \textbf{n-gram}: sequence of $n$ words
+  \item \textbf{n-gram model}: statistical model of word sequences using n-grams.
+
+  \item $p(university~of~texas~in~amarillo)$
+    \begin{itemize}
+      \item 5+ -gram: \\
+            $p(university) \cdot 
+             p(of \mid university) \cdot 
+             p(texas \mid university~of) \cdot 
+             p(in \mid university~of~texas) \\
+      ~~~~~~ \cdot p(amarillo \mid university~of~texas~in)$
+      \item 3-gram (trigram): \\
+            $p(university) \cdot 
+             p(of \mid university) \cdot 
+             p(texas \mid university~of) \cdot 
+             p(in \mid of~texas) \\
+      ~~~~~~ \cdot p(amarillo \mid texas~in)$
+      \item 2-gram (bigram): \\
+            $p(university) \cdot 
+             p(of \mid university) \cdot 
+             p(texas \mid of) \cdot 
+             p(in \mid texas) \cdot
+             p(amarillo \mid in)$
+      \item 1-gram (unigram) / bag-of-words model / full independence: \\
+            $p(university) \cdot 
+             p(of) \cdot 
+             p(texas) \cdot 
+             p(in) \cdot
+             p(amarillo)$
+    \end{itemize}
+
+  \item Idea: reduce necessary probabilities to an estimatble size.
+  \item Estimating bigrams: \\ \vspace{2mm}
+            $p(university) \cdot 
+             p(of \mid university) \cdot 
+             p(texas \mid of) \cdot 
+             p(in \mid texas) \cdot
+             p(amarillo \mid in) = 
+             \\ \vspace{2mm}
+             \frac{C(\text{university})}{\sum_x C(x)} \cdot 
+             \frac{C(\text{university of})}{\sum_x C(\text{university } x)} \cdot 
+             \frac{C(\text{of texas})}{\sum_x C(\text{of } x)} \cdot 
+             \frac{C(\text{texas in})}{\sum_x C(\text{texas } x)} \cdot 
+             \frac{C(\text{in amarillio})}{\sum_x C(\text{in } x)} =
+             \\ \vspace{2mm}
+             \frac{C(\text{university})}{C(all~words)} \cdot 
+             \frac{C(\text{university of})}{C(\text{university})} \cdot 
+             \frac{C(\text{of texas})}{C(\text{of})} \cdot 
+             \frac{C(\text{texas in})}{C(\text{texas})} \cdot 
+             \frac{C(\text{in amarillio})}{C(\text{in})} $
+  \item All of these should be easy to estimate!
+
+\end{itemize}
+
+
+\section{N-Gram Model of Sentences}
+
+\begin{itemize}
+  \item Sentences are sequences of words, but with starts and ends.
+  \item We also want to model the likelihood of words being at the beginning/end of a sentence.
+  \item Append special ``words'' to the sentence
+    \begin{itemize}
+      \item $n$--1 \ngramstart\ symbols to beginning 
+      \item only one \ngramend\ to then end needed
+        \begin{itemize}
+          \item $p(\ngramend\ \mid\ .\ \ngramend) = 1.0$ since \ngramend\ would always be followed by \ngramend.
+        \end{itemize}
+    \end{itemize}
+  \item ``the man walks the dog .'' (trigrams)
+    \begin{itemize}
+      \item Becomes ``\ngramstart\ \ngramstart\ the man walks the dog . \ngramend''
+      \item $p(\text{\ngramstart\ \ngramstart\ the man walks the dog . \ngramend}) = \\
+      ~~~~~~ p(\text{the} \mid \text{\ngramstart\ \ngramstart}) \\
+      ~~~~~~ \cdot p(\text{man} \mid \text{\ngramstart\ the}) \\
+      ~~~~~~ \cdot p(\text{walks} \mid \text{the man}) \\
+      ~~~~~~ \cdot p(\text{the} \mid \text{man walks}) \\
+      ~~~~~~ \cdot p(\text{dog} \mid \text{walks the}) \\
+      ~~~~~~ \cdot p(\text{.} \mid \text{the dog}) \\
+      ~~~~~~ \cdot p(\ngramend \mid \text{dog .})$
+    \end{itemize}
+  \item Can be generalized to model longer texts: paragraphs, documents, etc:
+    \begin{itemize}
+      \item Good: can model ngrams that cross sentences (e.g. $p(w_0 \mid .)$ or $p(w_0 \mid\ ?)$)
+      \item Bad: more sparsity on \ngramstart\ and \ngramend\
+    \end{itemize}  
+\end{itemize}
+
+
+\section{Sentence Likelihood Examples}
+
+Example dataset:
+\vspace{-2mm}
+\begin{verbatim}
+    <b> the dog runs . </b>
+    <b> the dog walks . </b>
+    <b> the man walks . </b>
+    <b> a man walks the dog . </b>
+    <b> the cat walks . </b>
+    <b> the dog chases the cat . </b>
+\end{verbatim}
+
+Sentence Likelihood with Bigrams:
+
+~~~~ $p(\ngramstart\ \text{the dog walks . \ngramend}) \vspace{2mm} \\
+~~~~~~~~~~ =  p(\text{the} \mid \ngramstart) \cdot 
+              p(\text{dog} \mid \text{the}) \cdot 
+              p(\text{walks} \mid \text{dog}) \cdot
+              p(\text{.} \mid \text{walks}) \cdot
+              p(\text{\ngramend} \mid \text{.}) \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ the})}{\sum_x C(\text{\ngramstart\ } x)} \cdot 
+              \frac{C(\text{the dog})}{\sum_x C(\text{the } x)} \cdot 
+              \frac{C(\text{dog walks})}{\sum_x C(\text{dog } x)} \cdot
+              \frac{C(\text{walks .})}{\sum_x C(\text{walks } x)} \cdot
+              \frac{C(\text{. \ngramend})}{\sum_x C(\text{. } x)} \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ the})}{C(\text{\ngramstart})} \cdot 
+              \frac{C(\text{the dog})}{C(\text{the})} \cdot 
+              \frac{C(\text{dog walks})}{C(\text{dog})} \cdot
+              \frac{C(\text{walks .})}{C(\text{walks})} \cdot
+              \frac{C(\text{. \ngramend})}{C(\text{.})} \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{5}{6} \cdot 
+              \frac{4}{7} \cdot 
+              \frac{1}{4} \cdot
+              \frac{3}{4} \cdot
+              \frac{6}{6} = 
+              0.83 \cdot 0.57 \cdot 0.25 \cdot 0.75 \cdot 1.0 = \mathbf{0.089} $
+\\\\
+
+~~~~ $p(\ngramstart\ \text{the cat walks the dog . \ngramend}) \vspace{2mm} \\
+~~~~~~~~~~ =  p(\text{the} \mid \ngramstart) \cdot 
+              p(\text{cat} \mid \text{the}) \cdot 
+              p(\text{walks} \mid \text{cat}) \cdot
+              p(\text{the} \mid \text{walks}) \cdot
+              p(\text{dog} \mid \text{the}) \cdot
+              p(\text{.} \mid \text{dog}) \cdot
+              p(\text{\ngramend} \mid \text{.}) \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ the})}{\sum_x C(\text{\ngramstart\ } x)} \cdot 
+              \frac{C(\text{the cat})}{\sum_x C(\text{the } x)} \cdot 
+              \frac{C(\text{cat walks})}{\sum_x C(\text{cat } x)} \cdot
+              \frac{C(\text{walks the})}{\sum_x C(\text{walks } x)} \cdot
+              \frac{C(\text{the dog})}{\sum_x C(\text{the } x)} \cdot
+              \frac{C(\text{dog .})}{\sum_x C(\text{dog } x)} \cdot
+              \frac{C(\text{. \ngramend})}{\sum_x C(\text{. } x)} \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ the})}{C(\text{\ngramstart})} \cdot 
+              \frac{C(\text{the cat})}{C(\text{the})} \cdot 
+              \frac{C(\text{cat walks})}{C(\text{cat})} \cdot
+              \frac{C(\text{walks the})}{C(\text{walks})} \cdot
+              \frac{C(\text{the dog})}{C(\text{the})} \cdot
+              \frac{C(\text{dog .})}{C(\text{dog})} \cdot
+              \frac{C(\text{. \ngramend})}{C(\text{.})} \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{5}{6} \cdot 
+              \frac{1}{7} \cdot 
+              \frac{1}{1} \cdot
+              \frac{1}{4} \cdot
+              \frac{4}{7} \cdot 
+              \frac{1}{4} \cdot
+              \frac{6}{6} = 
+              0.83 \cdot 0.14 \cdot 1.0 \cdot 0.25 \cdot 0.57 \cdot 0.25 \cdot 1.0 = \mathbf{0.004} $
+\\\\
+
+~~~~ $p(\ngramstart\ \text{the cat runs . \ngramend}) \vspace{2mm} \\
+~~~~~~~~~~ =  p(\text{the} \mid \ngramstart) \cdot 
+              p(\text{cat} \mid \text{the}) \cdot 
+              p(\text{runs} \mid \text{cat}) \cdot
+              p(\text{.} \mid \text{runs}) \cdot
+              p(\text{\ngramend} \mid \text{.}) \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ the})}{\sum_x C(\text{\ngramstart\ } x)} \cdot 
+              \frac{C(\text{the cat})}{\sum_x C(\text{the } x)} \cdot 
+              \frac{C(\text{cat runs})}{\sum_x C(\text{cat } x)} \cdot
+              \frac{C(\text{runs .})}{\sum_x C(\text{runs } x)} \cdot
+              \frac{C(\text{. \ngramend})}{\sum_x C(\text{. } x)} \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ the})}{C(\text{\ngramstart})} \cdot 
+              \frac{C(\text{the cat})}{C(\text{the})} \cdot 
+              \frac{C(\text{cat runs})}{C(\text{cat})} \cdot
+              \frac{C(\text{runs .})}{C(\text{runs})} \cdot
+              \frac{C(\text{. \ngramend})}{C(\text{.})} \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{5}{6} \cdot 
+              \frac{1}{7} \cdot 
+              \frac{\mathbf{0}}{1} \cdot
+              \frac{1}{1} \cdot
+              \frac{6}{6} = 
+              0.83 \cdot 0.14 \cdot \mathbf{0.0} \cdot 1.0 \cdot 1.0 = \mathbf{0.000} $
+
+\begin{itemize}
+  \item Longer sentences have lower likelihoods.
+    \begin{itemize}
+      \item This makes sense because longer sequences are harder to match exactly.
+    \end{itemize}
+  \item Zeros happen when an n-gram isn't seen.
+\end{itemize}
+
+
+
+\section{Handling Sparsity}
+
+How big of a problem is sparsity?
+
+\begin{itemize}
+  \item Alice's Adventures in Wonderland
+    \begin{itemize}
+      \item Vocabulary (all word types) size: $V=$ 3,569
+      \item Distinct bigrams:  17,149; $\frac{17,149}{|V|^2}$, or 99.8\% of possible bigrams unseen
+      \item Distinct trigrams: 28,540; $\frac{17,149}{|V|^3}$, or 99.9999994\% of possible trigrams unseen
+    \end{itemize}
+  \item If a sequence contains an unseen ngram, it will have likelihood zero: an impossible sequence.
+  \item Many legitimate ngrams will simply be absent from the corpus.
+  \item This does not mean they are impossible.
+  \item Even ungrammatical/nonsense ngrams should not cause an entire sequence's likelihood to be zero.
+  \item Many others will be too infrequent to estimate well.
+\end{itemize}
+
+
+Add-$\lambda$ Smoothing
+
+\begin{itemize}
+  \item Add some constant $\lambda$ to every count, including unseen ngrams
+  \item $V$ is the Vocabulary --- all word types --- including \ngramend\ (if necessary $n>1$)
+  \item $p(w_0 \mid w_{1-n}~...~w_{-1}) = 
+         \frac{C(w_{1-n}~...~w_{-1}~w_0)+1}{\sum_x (C(w_{1-n}~...~w_{-1}~x) + 1)} =
+         \frac{C(w_{1-n}~...~w_{-1}~w_0)+1}{(\sum_x C(w_{1-n}~...~w_{-1}~x))+|V|} =
+         \frac{C(w_{1-n}~...~w_{-1}~w_0)+1}{C(w_{1-n}~...~w_{-1})+|V|}$
+  \item Add $|V|$ to the denominator to account for the fact that there is an extra count for every $x$
+  \item In practice it over-smoothes, even when $\lambda < 1$
+\end{itemize}
+
+
+Good-Turing Smoothing
+
+\begin{itemize}
+  \item Estimate counts of things you haven't seen from counts of things you have
+  \item Estimate probability of things which occur $c$ times with the probability of things which occur $c+1$ times
+  \item $c^* = (c+1) \frac{N_{c+1}}{N_c}$ \vspace{2mm} \\
+        $p^*_{GT}(\textit{things with freq 0}) = \frac{N_1}{N}$
+  \item $p_{GT}(w_0 \mid w_{1-n}~...~w_{-1}) = 
+         \frac{C^*(w_{1-n}~...~w_{-1}~w_0)}{C^*(w_{1-n}~...~w_{-1})}$
+\end{itemize}
+
+
+Stupid Backoff
+
+\begin{itemize}
+  \item If p(n-gram)=0, use p((n-1)-gram)
+  \item Works shockingly well for huge datasets
+\end{itemize}
+
+
+Interpolation
+
+\begin{itemize}
+  \item Mix n-gram probability with probabilities from lower-order models
+    \begin{align*}
+      \hat{p}(w_0 \mid w_{-2}~w_{-1}) &= \lambda_3 \cdot p(w_0 \mid w_{-2}~w_{-1}) &&&& \\
+                                      &= \lambda_2 \cdot p(w_0 \mid w_{-1}) \\
+                                      &= \lambda_1 \cdot p(w_0)
+    \end{align*}
+  \item $\lambda_i$ terms used to decide how much to smooth
+  \item $\sum_i \lambda_i = 1$, because they are proportions
+  \item Use \textit{dev} dataset to tune $\lambda$ hyperparameters
+  \item Also useful for combining models trained on different data:
+  \begin{itemize}
+    \item Can interpolate ``customized'' models with ``general'' models
+    \item Baseline English + regional English + user-specific English
+    \item Little in-domain data, lots of out-of-domain
+  \end{itemize}
+\end{itemize}
+
+
+Knesser-Ney Smoothing
+
+\begin{itemize}
+  \item Intuition: interpolate based on ``openness'' of the context
+  \item Words seen in more contexts are more likely to appear in others
+  \item Even if we haven't seen $w_0$ following the context, if the context is ``open'' (supports a wide variety of ``next words''), then it is more likely to support $w_0$
+  \item Boost counts based on $|\{x : C(w_{1-n}~...~w_{-1}~x)>0\}|$, the number of different ``next words'' seen after $w_{1-n}~...~w_{-1}$
+\end{itemize}
+
+
+
+\section{Out-of-Vocabulary Words (OOV)}
+
+Add-$\lambda$
+
+\begin{itemize}
+  \item If ngram contains OOV item, assume count of $\lambda$, just like for all other ngrams.
+  \item Probability distributions become invalid.  We can't know the full vocabulary size, so we can't normalize counts correctly.
+\end{itemize}
+
+
+\ngramunk
+
+\begin{itemize}
+  \item Create special token \ngramunk
+  \item Create a fixed lexicon $L$
+    \begin{itemize}
+      \item All types in some subset of training data?
+      \item All types appearing more than $k$ times?
+    \end{itemize}
+  \item $V = L + \ngramunk$, ~ $|V| = |L|+1$
+  \item Before training, change any word not in $L$ to \ngramunk
+  \item Then train as usual as if \ngramunk was a normal word
+  \item For new sentence, again replace words not in $L$ with \ngramunk before using model
+  \item Probabilities containing \ngramunk\ measure likelihood with \textit{some rare word}
+  \item Problem: the ``rare'' word is no longer rare since there are many \ngramunk tokens
+    \begin{itemize}
+      \item Ngrams with \ngramunk will have higher probabilities than those with any particular rare word
+      \item Not so bad when comparing same sequence under multiple models.  All will have inflated probabilities.
+      \item More problematic when comparing probabilities of different sequences under the same model
+        \begin{itemize}
+          \item p(i \textbf{totes} know) $<$ p(i \textbf{totally} know) $<$ p(i $\mathbf{\langle unk \rangle}$\ know)
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+
+
+
+\section{Evaluation}
+
+Extrinsic
+
+\begin{itemize}
+  \item Use the model in some larger task.  See if it helps.
+  \item More realistic
+  \item Harder
+\end{itemize}
+
+Intrinsic
+
+\begin{itemize}
+  \item Evaluate on a test corpus
+  \item Easier
+\end{itemize}
+
+Perplexity
+
+\begin{itemize}
+  \item Intrinsic measure of model quality
+  \item How well does the model ``fit'' the test data?
+  \item How ``perplexed'' is the model whe it sees the test data?
+  \item Measure the probability of the test corpus, normalize for number of words.
+  \item $PP(W) = \sqrt[|W|]{\frac{1}{p(w_1~w_2~...~w_{|W|}}}$
+\end{itemize}
+
+
+
+
+\section{Limitations}
+
+\begin{itemize}
+  \item Long-range dependencies
+\end{itemize}
+
+
+
+
+\section{Generative Models}
+
+\begin{itemize}
+  \item Generative models are designed to model how the data \textit{could have been generated}.
+  \item The best parameters are those that would most likely generate the data.
+  \item MLE maximizes that likelihood that the training data was generated by the model.
+  \item As such, we can \textit{actually generate} data from a model.
+ 
+  \item Trigram model:
+    \begin{itemize}
+      \item General:
+        \begin{itemize}
+          \item[] \hspace{-4mm} For each sequence:
+            \begin{enumerate}
+              \item Sample a word $w_0$ according to $w_0 \sim p(w_0)$
+              \item Sample a second word $w_1$ according to $w_1 \sim p(w_1 \mid w_0)$
+              \item Sample a next word $w_k$ according to $w_k \sim p(w_k \mid w_{k-2}~w_{k-1})$
+              \item Repeat step 3 until you feel like stopping.
+            \end{enumerate}
+        \end{itemize}
+      \item Sentences:
+        \begin{itemize}
+          \item[] \hspace{-4mm} For each sentence:
+            \begin{enumerate}
+              \item Sample a word $w_0$ according to $w_0 \sim p(w_0 \mid \ngramstart~\ngramstart)$
+              \item Sample a second word $w_1$ according to $w_1 \sim p(w_1 \mid w_0~\ngramstart)$
+              \item Sample a next word $w_k$ according to $w_k \sim p(w_k \mid w_{k-2}~w_{k-1})$
+              \item Repeat until $\ngramend$ is drawn.
+            \end{enumerate}
+        \end{itemize}
+    \end{itemize}
+
+  \item Longer $n$ generates more coherent text
+  \item Too-large $n$ just ends up generating sentences from the training data because most counts will be 1 (no choice of next word).
+
+  \item Na\"{i}ve Bayes was a generative model too!
+    \begin{itemize}
+      \item[] \hspace{-4mm} For each instance:
+        \begin{enumerate}
+          \item Sample a label $l$ according to $l \sim p(Label=l)$          
+          \item For each feature $F$: sample a value $v$ according to $v \sim p(F=v \mid Label=l)$
+        \end{enumerate}
+    \end{itemize}
+
+  \item We will see many more generative models throughout this course
+\end{itemize}
+
+
+
+
+\section{Citations}
+
+Some content adapted from:
+
+\begin{itemize}
+  \item \url{http://courses.washington.edu/ling570/gina_fall11/slides/ling570_class8_smoothing.pdf}
+\end{itemize}
+
+
+\end{document}
+
