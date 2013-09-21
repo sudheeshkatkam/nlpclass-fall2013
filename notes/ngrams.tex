@@ -6,6 +6,8 @@
 \textwidth 6.5truein
 \setlength{\parskip}{5pt}
 \setlength\parindent{0pt}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage[round]{natbib}
 \usepackage{graphicx}
 \usepackage{listings}
@@ -14,7 +16,6 @@
 \usepackage{qtree}
 \usepackage{algorithmic}
 \usepackage{wrapfig}
-\usepackage{subfig}
 \usepackage{tikz}
 \usepackage{dsfont}
 \usepackage{multirow}
@@ -108,6 +109,33 @@ Notation
   \item So $w_0$ means ``current word'' and $w_{-1}$ is ``the previous word''.
   \item We will typically use the short-hand
 \end{itemize}
+
+
+\section{Counting Words}
+
+\begin{itemize}
+  \item Terminology:
+    \begin{itemize}
+      \item \textbf{Type:} Distinct word \\
+            \textbf{Token:} Particular occurrence of a word
+      \item ``the man saw the saw'': 3 types, 5 tokens
+    \end{itemize}
+\end{itemize}
+
+What is a word?  What do we count?
+
+\begin{itemize}
+  \item Punctuation?  Separate from neighboring words?  Keep it at all?
+  \item Stopwords?
+  \item Lowercase everything?
+  \item Distinct numbers vs. $\langle number \rangle$
+  \item Hyphenated words?
+  \item Lemmas only?
+  \item Disfluencies?  (um, uh)
+\end{itemize}
+
+
+
 
 
 \section{Estimating Sequence Probabilities}
@@ -529,12 +557,53 @@ Perplexity
 
 
 
+\section{How much data?}
 
-\section{Limitations}
-
+Choosing $n$
 \begin{itemize}
-  \item Long-range dependencies
+  \item Large $n$
+    \begin{itemize}
+      \item More context for probabilities: \\ $p(\text{phone})$ vs \\
+                                               $p(\text{phone} \mid \text{cell})$ vs \\
+                                               $p(\text{phone} \mid \text{your cell})$ vs \\
+                                               $p(\text{phone} \mid \text{off your cell})$ vs \\
+                                               $p(\text{phone} \mid \text{turn off your cell})$
+      \item Long-range dependencies
+    \end{itemize}
+  \item Small $n$
+    \begin{itemize}
+      \item Better generalization
+      \item Better estimates
+      \item Long-range dependencies
+    \end{itemize}
 \end{itemize}
+
+How much training data?
+\begin{itemize}
+  \item \textit{As much as possible.}
+  \item More data means better estimates
+  \item Google N-Gram corpus uses 10-grams
+  \item[] 
+      \begin{figure}[h]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=0.95\textwidth]{banko-brill-graph.png}
+                \caption{Data size matters more than algorithm (Banko and Brill, 2001)}
+        \end{subfigure}%
+        ~~~
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=0.95\textwidth]{unreasonable-bleu.png}
+                \caption{Results keep improving with more data (Norvig: Unreasonable ...)}
+        \end{subfigure}
+        ~~~
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=0.95\textwidth]{stupid-backoff.png}
+                \caption{With enough data, stupid backoff approaches Knesser-Ney accuracy  (Brants et al., 2007)}
+        \end{subfigure}
+      \end{figure}
+      \vspace{-6mm}
+\end{itemize}
+
 
 
 
