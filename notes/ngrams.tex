@@ -103,7 +103,7 @@ Notation
 \begin{itemize}
   \item Probability of a sequence is a joint probability of words
   \item But the order of the words matters, so each gets its own feature
-  \item $p($``an interesting story''$) = p(w_{-3}=an, ~ w_{-2}=interesting, ~ w_{-1}=story)$
+  \item $p($``an interesting story''$) = p(w_1=an, ~ w_2=interesting, ~ w_3=story)$
   \item $p($``austin'' $\mid$ ``university of texas at''$)$\\
         $= p(w_{0}=austin \mid w_{-4}=university, ~ w_{-3}=of, ~ w_{-2}=texas, ~ w_{-1}=at)$
   \item So $w_0$ means ``current word'' and $w_{-1}$ is ``the previous word''.
@@ -145,7 +145,7 @@ What is a word?  What do we count?
   \item Our parameters: probabilities of various sequences of text
   \item Maximum Likelihood Estimate (MLE): of all the sequences of length N, what proportion are the relevant sequence?
   \item $p(\textsl{university of texas at austin}) \\
-        = p(w_{-5}=university, ~ w_{-4}=of, ~ w_{-3}=texas, ~ w_{-2}=at, ~ w_{-1}=austin)\\
+        = p(w_1=university, ~ w_2=of, ~ w_3=texas, ~ w_4=at, ~ w_5=austin)\\
         = \frac{C(\text{``university of texas at austin''})}{C(\textit{all 5-word sequences})}
         = \frac {3}{25,000,000}$
   \\
@@ -164,7 +164,7 @@ Make a ``na\"{i}ve'' assumption?
 
 \begin{itemize}
   \item With na\"{i}ve Bayes, we dealt with this problem by assuming that all features were independent.
-  \item $p(w_{-5}=university, ~ w_{-4}=of, ~ w_{-3}=texas, ~ w_{-2}=in, ~ w_{-1}=amarillo) = \\
+  \item $p(w_1=university, ~ w_2=of, ~ w_3=texas, ~ w_4=in, ~ w_5=amarillo) = \\
          p(w=university) \cdot p(w=of) \cdot p(w=texas) \cdot p(w=in) \cdot p(w=amarillo)$
   \item But this loses the difference between ``university of texas in amarillo'', which seems likely, and ``university texas amarillo in of'', which does not
   \item This amounts to a ``bag of words'' model
@@ -245,24 +245,24 @@ Use Chain Rule?
     \end{itemize}
 
   \item Idea: reduce necessary probabilities to an estimatble size.
-  \item Estimating bigrams: \\ \vspace{2mm}
-            $p(university) \cdot 
-             p(of \mid university) \cdot 
-             p(texas \mid of) \cdot 
-             p(in \mid texas) \cdot
-             p(amarillo \mid in) = 
-             \\ \vspace{2mm}
+  \item Estimating trigrams: \vspace{1mm} \\ 
+            $p(\text{university}) \cdot 
+             p(\text{of} \mid \text{university}) \cdot 
+             p(\text{texas} \mid \text{university of}) \cdot 
+             p(\text{in} \mid \text{of texas}) \\ ~~~~~~~~~~~~ \cdot
+             p(\text{amarillo} \mid \text{texas in}) 
+             \vspace{3mm} \\ =
              \frac{C(\text{university})}{\sum_x C(x)} \cdot 
              \frac{C(\text{university of})}{\sum_x C(\text{university } x)} \cdot 
-             \frac{C(\text{of texas})}{\sum_x C(\text{of } x)} \cdot 
-             \frac{C(\text{texas in})}{\sum_x C(\text{texas } x)} \cdot 
-             \frac{C(\text{in amarillio})}{\sum_x C(\text{in } x)} =
-             \\ \vspace{2mm}
+             \frac{C(\text{university of texas})}{\sum_x C(\text{university of } x)} \cdot 
+             \frac{C(\text{of texas in})}{\sum_x C(\text{of texas } x)} \cdot 
+             \frac{C(\text{texas in amarillio})}{\sum_x C(\text{texas in } x)}
+             \vspace{2mm} \\ =
              \frac{C(\text{university})}{C(all~words)} \cdot 
              \frac{C(\text{university of})}{C(\text{university})} \cdot 
-             \frac{C(\text{of texas})}{C(\text{of})} \cdot 
-             \frac{C(\text{texas in})}{C(\text{texas})} \cdot 
-             \frac{C(\text{in amarillio})}{C(\text{in})} $
+             \frac{C(\text{university of texas})}{C(\text{university of})} \cdot 
+             \frac{C(\text{of texas in})}{C(\text{of texas})} \cdot 
+             \frac{C(\text{texas in amarillio})}{C(\text{texas in})} $
   \item All of these should be easy to estimate!
 
 \end{itemize}
@@ -275,8 +275,8 @@ Use Chain Rule?
   \item We also want to model the likelihood of words being at the beginning/end of a sentence.
   \item Append special ``words'' to the sentence
     \begin{itemize}
-      \item $n$--1 \ngramstart\ symbols to beginning 
-      \item only one \ngramend\ to then end needed
+      \item $n$--1 `\ngramstart' symbols to beginning 
+      \item only one `\ngramend' to then end needed
         \begin{itemize}
           \item $p(\ngramend\ \mid\ .\ \ngramend) = 1.0$ since \ngramend\ would always be followed by \ngramend.
         \end{itemize}

@@ -3,6 +3,9 @@ layout: default
 title: Schedule
 ---
 
+This is a tentative schedule of the course.  All dates are subject to change based on how the class progresses.
+
+
 ## Week 1
 
 ###Thursday, Aug 29
@@ -107,7 +110,7 @@ Topics
 Topics
 
 * Language Modeling
-* N-Gram Language Models (1/3)
+* N-Gram Language Models (1/4)
 
 Materials
 
@@ -121,7 +124,7 @@ Materials
 
 Topics
 
-* N-Gram Language Models (2/3)
+* N-Gram Language Models (2/4)
 * Smoothing, Backoff, Interpolation
 
 
@@ -131,7 +134,7 @@ Topics
 
 Topics
 
-* N-Gram Language Models (3/3)
+* N-Gram Language Models (3/4)
 * Perplexity
 
 <span style="color: red">Assignments</span>
@@ -144,7 +147,7 @@ Topics
 
 Topics
 
-* ???
+* N-Gram Language Models (4/4) ?
 
 
 ## Week 7
