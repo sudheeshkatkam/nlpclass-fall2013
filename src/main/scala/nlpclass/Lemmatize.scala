@@ -1,6 +1,5 @@
 package nlpclass
 
-import scala.collection.JavaConverters._
 import dhg.util.CollectionUtil._
 
 /**
@@ -9,11 +8,10 @@ import dhg.util.CollectionUtil._
 object Lemmatize extends (String => String) {
 
   /**
-   * Turn raw text into a Vector of tokenized sentences
+   * Turn a raw word into its lemma
    */
   override def apply(word: String): String = {
-    val Vector(Vector(Token(_, lemma))) = Tokenize(word)
-    lemma
+    Tokenize(word).flatten.map(_.lemma).mkString(" ")
   }
 
 }

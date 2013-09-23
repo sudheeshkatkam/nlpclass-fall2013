@@ -248,10 +248,28 @@ If you use Eclipse, then after you modify the dependency you will once again hav
 
 The discrete probability distribution classes to implement are as follows:
 
-1. A class that represents a probability distribution: {% highlight scala %}nlp.a1.ProbabilityDistribution{% endhighlight %} that extends {% highlight scala %}nlpclass.ProbabilityDistributionToImplement{% endhighlight %}
+1. A class that represents a probability distribution: 
+{% highlight scala %}
+package nlp.a1
+
+import nlpclass.ProbabilityDistributionToImplement
+
+class ProbabilityDistribution[B](...) extends ProbabilityDistributionToImplement[B] {
+  override def apply(x: B): Double = ???
+  override def sample(): B = ???
+}{% endhighlight %}
 
 
-2. A class that represents a conditional probability distribution: {% highlight scala %}nlp.a1.ConditionalProbabilityDistribution{% endhighlight %} that extends {% highlight scala %}nlpclass.ConditionalProbabilityDistributionToImplement{% endhighlight %}
+2. A class that represents a conditional probability distribution: 
+{% highlight scala %}
+package nlp.a1
+
+import nlpclass.ConditionalProbabilityDistributionToImplement
+
+class ConditionalProbabilityDistribution[A,B](...) extends ConditionalProbabilityDistributionToImplement[A,B] {
+  override def apply(x: B, given: A): Double = ???
+  override def sample(given: A): B = ???
+}{% endhighlight %}
 
 Each of these classes must store relevant training data extracted from a file of features and labels.  Each class has two methods: `apply` and `sample`.  The `apply` method takes an item and returns its probability according to the distribution.  The `sample` method returns an item from the distribution with likelihood according to its probability.  These classes will allow us to interact with the probability distributions is a simple way.
 
@@ -272,7 +290,12 @@ val pd = new ProbabilityDistribution[String](...something...)
 pd("Yes")  // 0.6, since p(Yes) = 0.6
 {% endhighlight %}
 
-Similarly, if the training data contained 10 instances labeled "Yes", 7 of which had value "hello", then a `ConditionalProbabilityDistribution` trained on that data might work like this:
+Similarly, if the training data contained 
+
+* 10 instances labeled "Yes", 7 of which had value "hello" and 3 "goodbye"
+* 5 instances labeledd "No", 2 of which had value "hello", and 3 "goodbye"
+
+then a `ConditionalProbabilityDistribution` trained on that data might work like this:
 
 {% highlight scala %}
 import nlp.a1.ConditionalProbabilityDistribution 
@@ -293,18 +316,21 @@ cpd("hello", "unknown")  // 0.0
 
 In order to be able to generate random data for a model, it is useful to have a way to randomly sample items from a probability distribution.  Therefore, you should implement a `sample` method on each discrete distribution class.  
 
-It is important that your `sample` method not simply pick an item uniformally; it should choose items with frequencies determined by the distribution.  For example, if the training data contained 10 labels, 6 of which were "Yes" and 4 "No", then a `ProbabilityDistribution` trained on that data might work like this:
+It is important that your `sample` method not simply pick an item uniformally; it should choose items with frequencies determined by the distribution.  For example, if the training data described above was used, then we might get results similar to this work like this:
 
 {% highlight scala %}
 import dhg.util.CollectionUtil._
-import nlp.a1.ProbabilityDistribution 
-val pd = new ProbabilityDistribution[String](...something...)
-Vector.fill(1000)(pd.sample).counts  // Map(No -> 393, Yes -> 607)
+Vector.fill(1000)(pd.sample).counts         
+// Map(No -> 393, Yes -> 607)
+Vector.fill(1000)(cpd.sample("Yes")).counts 
+// Map(goodbye -> 296, hello -> 704)
+Vector.fill(1000)(cpd.sample("No")).counts  
+// Map(goodbye -> 597, hello -> 403)
 {% endhighlight %}
 
 The conditional version works similarly, but requires a parameter for the conditioning item.
 
-*Note:* If you sample 1000 items, you are unlikely to get *exactly* 600 "Yes" since the sampling is, after all, random.
+*Note:* You are unlikely to get *exactly* these numbers since the sampling is, after all, random.
 
 Sampling from a probability distribution can easily be accomplished with the following algorithm:
 
@@ -320,7 +346,12 @@ This algorithm can be made more efficient by first sorting the items by their pr
 
 In order to make it easy for me to test your code, you will also need to implement an `object` for building these representations from a feature file:
 
-{% highlight scala %}nlp.a1.FeatureFileAsDistributions{% endhighlight %} that extends {% highlight scala %}nlpclass.FeatureFileAsDistributionsToImplement{% endhighlight %}
+{% highlight scala %}
+package nlp.a1
+
+import nlpclass.FeatureFileAsDistributionsToImplement
+
+object FeatureFileAsDistributions extends FeatureFileAsDistributionsToImplement{% endhighlight %}
 
 This `object` will require a method `fromFile(filename: String)` to be implemented that reads a file of features and labels (as was done for [Assingment 0, Part 6](a0programming.html#part_6_reading_a_data_file)) and produce three things:
 

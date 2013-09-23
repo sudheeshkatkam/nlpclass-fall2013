@@ -77,9 +77,10 @@ trait NaiveBayesScorerToImplement {
 /**
  * For Assignment 2 - Part 2:
  */
-trait FeatureExtender[Feature, Value] {
+trait FeatureExtender[Feature, Value] extends (Vector[(Feature, Value)] => Vector[(Feature, Value)]) {
 
   def extendFeatures(features: Vector[(Feature, Value)]): Vector[(Feature, Value)]
+  final override def apply(features: Vector[(Feature, Value)]) = extendFeatures(features)
 
 }
 
@@ -99,7 +100,7 @@ class CompositeFeatureExtender[Feature, Value](featureExtenders: Vector[FeatureE
   extends FeatureExtender[Feature, Value] {
 
   override def extendFeatures(features: Vector[(Feature, Value)]) = {
-    featureExtenders.flatMap(fe => fe.extendFeatures(features))
+    featureExtenders.foldLeft(features)((z, fe) => fe(z))
   }
 
 }

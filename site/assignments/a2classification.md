@@ -19,9 +19,9 @@ To complete the homework, use the stub programs and data found in the class GitH
 There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.
 
 
-The used here classes will extend traits that are found version **0003** of the `nlpclass-fall2013` dependency.  In order to get these updates, you will need to edit your root `build.sbt` file and update the version of the dependency:
+The used here classes will extend traits that are found version **0004** of the `nlpclass-fall2013` dependency.  In order to get these updates, you will need to edit your root `build.sbt` file and update the version of the dependency:
 
-    libraryDependencies += "com.utcompling" % "nlpclass-fall2013_2.10" % "0003" changing()
+    libraryDependencies += "com.utcompling" % "nlpclass-fall2013_2.10" % "0004" changing()
 
 If you use Eclipse, then after you modify the dependency you will once again have to run `sbt "eclipse with-source=true"` and refresh your project in Eclipse.
 
@@ -208,8 +208,8 @@ The structure in which you store the underlying data within the `NaiveBayesModel
 {% highlight scala %}
 class NaiveBayesModel[Label, Feature, Value](
   labels: Set[Label],
-  pLabel: ProbabilityDistribution[Label],
-  pValue: Map[Feature, ConditionalProbabilityDistribution[Label, Value]])
+  pLabel: ProbabilityDistributionToImplement[Label],
+  pValue: Map[Feature, ConditionalProbabilityDistributionToImplement[Label, Value]])
   extends NaiveBayesModelToImplement[Label, Feature, Value]
 {% endhighlight %}
 
@@ -254,7 +254,7 @@ When trained on the tennis [training file](https://raw.github.com/utcompling/nlp
 
 {% highlight scala %}
 scala> val instances = ... from tennis training file ...
-scala> val nbt = new UnsmoothedNaiveBayesTrainer(...)
+scala> val nbt = new UnsmoothedNaiveBayesTrainer[String, String, String](...)
 scala> val nbm = nbt.train(instances)
 scala> nbm.predict(Vector("Outlook"->"Sunny", "Temperature"->"Cool", "Humidity"->"High", "Wind"->"Strong"))
 res0: String = No
@@ -310,7 +310,7 @@ When trained on the tennis [training file](https://raw.github.com/utcompling/nlp
 
 {% highlight scala %}
 scala> val trainInstances = ... from tennis training file ...
-scala> val nbt = new UnsmoothedNaiveBayesTrainer(...)
+scala> val nbt = new UnsmoothedNaiveBayesTrainer[String, String, String](...)
 scala> val nbm = nbt.train(trainInstances)
 scala> val testInstances = ... from tennis test file ...
 scala> NaiveBayesScorer.score(nbm, testInstances, "Yes")
@@ -392,7 +392,7 @@ For this assignment, you should add log statements to the `predict` method of `N
 
 When `predict` receieves a feature vector, it will have to compute the probabilities of each of the labels in order to make a decision about which label is best.  So, for each prediction, you should compute the probability of each label given the features, normalize them so that they sum to 1, sort them from greatest to least, and log them at the INFO level.  
 
-If all probabilities are zero, then there will be no way to normalize them to 1, so you should instead log the statement "All posteriors are zero!".  In such a case, you should simply return the label with the highest prior, since the feature counts contain zeros.
+If all probabilities are zero, then there will be no way to normalize them to 1, so you should instead log the statement "All posteriors are zero!".  In such a case, you should simply return the label with the highest prior, since all labels have feature counts with zeros.
 
 So I should be able to do this (minus sbt output noise and logging line noise):
 
@@ -504,26 +504,42 @@ We can fix this by using add-λ smoothing. For example, we can smooth the prior 
 
 Here, L is the set of labels, like {V, N} or {yes, no}, and |L| is the size of that set. Quite simply, we've added an extra λ count to both labels, so we've added λ|L| hallucinated counts. We ensure it still is a probability distribution by adding λ|L| to the denominator.
 
-**Part (a) [5 pts].** Written answer. Provide the general formula for a similar smoothed estimate for p(Attribute=x|Label=y) in terms of the relevant frequencies of x and y and the set ValuesAttribute consisting of the values associated with the attribute. (For example, ValuesOutlook from the tennis example is {sunny,rainy,overcast}.) If it helps, first write it down as the estimate for a specific parameter, like p(Outlook=sunny|Label=yes), and then do the more general formula.
+**Part (a) [5 pts].** Written answer. Provide the general formula for a similar smoothed estimate for p(Feature=x|Label=y) in terms of the relevant frequencies of x and y and the set ValuesFeature consisting of the values associated with the attribute. (For example, ValuesOutlook from the tennis example is {sunny,rainy,overcast}.) If it helps, first write it down as the estimate for a specific parameter, like p(Outlook=sunny|Label=yes), and then do the more general formula.
 
 
 **Part (b) [20 pts].** Implementation. 
 
-Similar to what you did for [Problem 2](#problem_2__implement_basic_naive_bayes_30_pts), you should create a class
-
-    nlp.a2.AddLambdaNaiveBayesTrainer[Label, Feature, Value]
-
-that extends
-
-    nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]
+Similar to what you did for [Problem 2](#problem_2__implement_basic_naive_bayes_30_pts), you should create a class {% highlight scala %}nlp.a2.AddLambdaNaiveBayesTrainer[Label, Feature, Value]{% endhighlight %} that extends {% highlight scala %}nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]{% endhighlight %}
 
 Again, you will need to implement the `train` method, but this time it should perform smoothing on the training data.  The λ class-level parameter should be configurable.
 
-There are a few changes you should make to your code.
+Be sure that, when calculating the demonminator for the smoothed probability, your code should be sure to take into account even the values that are not seen with a particular label.
 
-First, you should update your `ProbabilityDistribution` class to allow for a "default" parameter so that if a previously-unseen key is looked up in the distribution, the default will be used to return the probability based on there being λ counts.
+You should also update your `ProbabilityDistribution` class to allow for a "default" parameter so that if a previously-unseen key is looked up in the distribution, the default will be used to return the probability based on there being λ counts.
 
-Next, you should update the `main` method of the NaiveBayes object to support an extra `--lambda` option where the λ parameter can be specified from the command line.  If specified, the option should specify the parameter lambda for the `AddLambdaNaiveBayesTrainer`.  If the `--lambda` option is not specified, then `UnsmoothedNaiveBayesTrainer` should be used.  Using this should yield these results:
+With λ=2.0, you should see this behavior using the `tennis` training set:
+
+`\[
+    \begin{align}
+      p_{+1}(Outlook=Overcast \mid No) 
+        &= \frac{C(Overcast \mid No)}{C(Rain \mid No) + C(Sunny \mid No) + C(Overcast \mid No)} \\ 
+        &= \frac{0+2}{(2+2) + (3+2) + (0+2)}
+        = \frac{2}{11}
+    \end{align}
+\]`
+
+And this behavior:
+
+{% highlight scala %}
+val instances = ... from tennis train ...
+val nbt = new AddLambdaNaiveBayesTrainer[String, String, String](...)  // with lambda=2.0
+val nbm = nbt.train(instances)
+nbm.predict(Vector("Outlook" -> "Overcast", "Temperature" -> "Hot", "Humidity" -> "High", "Wind" -> "Strong"))
+// Yes
+{% endhighlight %}
+
+
+Finally, you should update the `main` method of the NaiveBayes object to support an extra `--lambda` option where the λ parameter can be specified from the command line.  If specified, the option should specify the parameter lambda for the `AddLambdaNaiveBayesTrainer`.  If the `--lambda` option is not specified, then `UnsmoothedNaiveBayesTrainer` should be used.  Using this should yield these results:
 
     $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 1.0"
     accuracy = 61.54
@@ -574,11 +590,13 @@ First, here's a reminder of the basic property of interest:
 
 Try it out in Scala:
 
-    scala> import scala.math
-    scala> 6 * 7
-    42
-    scala> math.exp(math.log(6) + math.log(7))
-    41.999999999999986
+{% highlight scala %}
+scala> import scala.math
+scala> 6 * 7
+42
+scala> math.exp(math.log(6) + math.log(7))
+41.999999999999986
+{% endhighlight %}
 
 More generally:
 
@@ -601,23 +619,15 @@ Thus, when determining the most probable label, we can do the following:
 
 **Part (b) [12 pts].** Implementation. 
 
-Create a new class
+Create a new class {% highlight scala %}nlp.a2.LogNaiveBayesModel[Label, Feature, Value]{% endhighlight %} 
 
-    nlp.a2.LogNaiveBayesModel[Label, Feature, Value]
+that, like the previous version, extends {% highlight scala %}nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]{% endhighlight %}
 
-that, like the previous version, extends
-
-    nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]
-
-As before, you will have to implement the `predict` method:
-
-    def predict(features: Vector[(Feature, Value)]): Label
+As before, you will have to implement the `predict` method: {% highlight scala %}def predict(features: Vector[(Feature, Value)]): Label{% endhighlight %}
 
 But, this time, you will compute the argmax using logarithms of probabilities instead of multiplying simple probabilities together.
 
-You should also create a class
-
-    nlp.a2.LogAddLambdaNaiveBayesTrainer[Label, Feature, Value]
+You should also create a class {% highlight scala %}nlp.a2.LogAddLambdaNaiveBayesTrainer[Label, Feature, Value]{% endhighlight %}
 
 That is exactly the same as your `AddLambdaNaiveBayesTrainer` except that it returns a `LogNaiveBayesModel` instead of a `NaiveBayesModel`.  Feel free to reuse code as much as possible here.
 
@@ -625,15 +635,15 @@ Finally, add an option `--log` to the `main` function of `NaiveBayes` that takes
 
 You should verify that your new class yields the same results as your previous version:
 
-    $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 1.0 --log true"
-    accuracy = 61.54
-    precision (Yes) = 66.67
-    recall (Yes) = 75.00
-    f1 = 70.59
+    $ sbt "run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 4.0 --log true"
+    accuracy = 76.92
+    precision (Yes) = 72.73
+    recall (Yes) = 100.00
+    f1 = 84.21
 
 Keep in mind that you must exponentiate the log scores for each label before you normalize to get the probabilities for logging to the console.
 
-Note. You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base *e*.  Since working in log space involves addition and since the log of zero is undefined, unseen events don’t directly produce a probability of zero. You can nonetheless simulate this by having unseen features contribute a large negative amount, such as -50, to the calculation. 
+Notes: You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base *e*.  Also, the log of zero corresponds to negative infinity in log-space (`Double.NegativeInfinity` in Scala). 
 
 
 ## Problem 5 - Extending the feature set (20 pts)
@@ -658,7 +668,7 @@ nlpclass.FeatureExtender[Feature, Value]
 Your implementation will have to implement a method `extendFeatures` that takes an instance's feature vector and produces a new feature vector containing any new features you want the classifier to use.  Be sure to include the original features in the output unless you intentionally want to exclude them.
 
 {% highlight scala %}
-def extendFeatures(features: Vector[(Feature, Value)]) = features
+def extendFeatures(features: Vector[(Feature, Value)]): Vector[(Feature, Value)]
 {% endhighlight %}
 
 You may call your implementation class whatever you want (maybe `PpaFeatureExtender`?).  
@@ -674,9 +684,9 @@ To keep your code modular, you may want to create a variety of `FeatureExtender`
 {% highlight scala %}
 val featureExtender = 
   new CompositeFeatureExtender[String, String](Vector(
-    new NumberFeatureExtender[String, StringV](),
-    new LemmaFeatureExtender[String, String],
-    new WordShapeFeatureExtender[String, String]))
+    new NumberFeatureExtender(),
+    new LemmaFeatureExtender(),
+    new WordShapeFeatureExtender()))
 {% endhighlight %}
 
 You should come up with at least five new features, but are encouraged to do much more. Be creative!
