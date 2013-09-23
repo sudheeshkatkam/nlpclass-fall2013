@@ -88,9 +88,9 @@
 
 <p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
 
-<p>The used here classes will extend traits that are found version <strong>0003</strong> of the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+<p>The used here classes will extend traits that are found version <strong>0004</strong> of the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
 
-<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0003&quot; changing()</code></pre>
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0004&quot; changing()</code></pre>
 
 <p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
 
@@ -262,8 +262,8 @@ Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
 <p>The structure in which you store the underlying data within the <code>NaiveBayesModel</code> class is ultimately up to you, but I highly encourage you to make use of the <code>ProbabilityDistribution</code> and <code>ConditionalProbabilityDistribution</code> classes that you wrote for <a href='http://utcompling.github.io/nlpclass-fall2013/assignments/a1prob.html#problem_5_30_points'>Assignment 1, Problem 5</a>. In fact, you&#8217;ll probably want something like this, which should look familiar:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>NaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>](</span>
   <span class='n'>labels</span><span class='k'>:</span> <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Label</span><span class='o'>],</span>
-  <span class='n'>pLabel</span><span class='k'>:</span> <span class='kt'>ProbabilityDistribution</span><span class='o'>[</span><span class='kt'>Label</span><span class='o'>],</span>
-  <span class='n'>pValue</span><span class='k'>:</span> <span class='kt'>Map</span><span class='o'>[</span><span class='kt'>Feature</span>, <span class='kt'>ConditionalProbabilityDistribution</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Value</span><span class='o'>]])</span>
+  <span class='n'>pLabel</span><span class='k'>:</span> <span class='kt'>ProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>Label</span><span class='o'>],</span>
+  <span class='n'>pValue</span><span class='k'>:</span> <span class='kt'>Map</span><span class='o'>[</span><span class='kt'>Feature</span>, <span class='kt'>ConditionalProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Value</span><span class='o'>]])</span>
   <span class='k'>extends</span> <span class='nc'>NaiveBayesModelToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div>
 <p>When trained on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a>, you should get the following behavior:</p>
@@ -292,7 +292,7 @@ Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
 
 <p>When trained on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a>, you should get the following behavior:</p>
 <div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>instances</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>tennis</span> <span class='n'>training</span> <span class='n'>file</span> <span class='o'>...</span>
-<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNaiveBayesTrainer</span><span class='o'>(...)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
 <span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbm</span> <span class='k'>=</span> <span class='n'>nbt</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='o'>)</span>
 <span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>nbm</span><span class='o'>.</span><span class='n'>predict</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;Outlook&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Sunny&quot;</span><span class='o'>,</span> <span class='s'>&quot;Temperature&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Cool&quot;</span><span class='o'>,</span> <span class='s'>&quot;Humidity&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;High&quot;</span><span class='o'>,</span> <span class='s'>&quot;Wind&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Strong&quot;</span><span class='o'>))</span>
 <span class='n'>res0</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='nc'>No</span>
@@ -341,7 +341,7 @@ Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
 
 <p>When trained on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a> and tested on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/test.txt'>testing file</a>, you should get the following behavior:</p>
 <div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>trainInstances</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>tennis</span> <span class='n'>training</span> <span class='n'>file</span> <span class='o'>...</span>
-<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNaiveBayesTrainer</span><span class='o'>(...)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
 <span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbm</span> <span class='k'>=</span> <span class='n'>nbt</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainInstances</span><span class='o'>)</span>
 <span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>testInstances</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>tennis</span> <span class='n'>test</span> <span class='n'>file</span> <span class='o'>...</span>
 <span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>NaiveBayesScorer</span><span class='o'>.</span><span class='n'>score</span><span class='o'>(</span><span class='n'>nbm</span><span class='o'>,</span> <span class='n'>testInstances</span><span class='o'>,</span> <span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>
@@ -416,7 +416,7 @@ f1 = 44.44</code></pre>
 
 <p>When <code>predict</code> receieves a feature vector, it will have to compute the probabilities of each of the labels in order to make a decision about which label is best. So, for each prediction, you should compute the probability of each label given the features, normalize them so that they sum to 1, sort them from greatest to least, and log them at the INFO level.</p>
 
-<p>If all probabilities are zero, then there will be no way to normalize them to 1, so you should instead log the statement &#8220;All posteriors are zero!&#8221;. In such a case, you should simply return the label with the highest prior, since the feature counts contain zeros.</p>
+<p>If all probabilities are zero, then there will be no way to normalize them to 1, so you should instead log the statement &#8220;All posteriors are zero!&#8221;. In such a case, you should simply return the label with the highest prior, since all labels have feature counts with zeros.</p>
 
 <p>So I should be able to do this (minus sbt output noise and logging line noise):</p>
 
@@ -530,25 +530,39 @@ f1 = 57.35</code></pre>
 
 <p>Here, L is the set of labels, like {V, N} or {yes, no}, and |L| is the size of that set. Quite simply, we&#8217;ve added an extra λ count to both labels, so we&#8217;ve added λ|L| hallucinated counts. We ensure it still is a probability distribution by adding λ|L| to the denominator.</p>
 
-<p><strong>Part (a) <span>5 pts</span>.</strong> Written answer. Provide the general formula for a similar smoothed estimate for p(Attribute=x|Label=y) in terms of the relevant frequencies of x and y and the set ValuesAttribute consisting of the values associated with the attribute. (For example, ValuesOutlook from the tennis example is {sunny,rainy,overcast}.) If it helps, first write it down as the estimate for a specific parameter, like p(Outlook=sunny|Label=yes), and then do the more general formula.</p>
+<p><strong>Part (a) <span>5 pts</span>.</strong> Written answer. Provide the general formula for a similar smoothed estimate for p(Feature=x|Label=y) in terms of the relevant frequencies of x and y and the set ValuesFeature consisting of the values associated with the attribute. (For example, ValuesOutlook from the tennis example is {sunny,rainy,overcast}.) If it helps, first write it down as the estimate for a specific parameter, like p(Outlook=sunny|Label=yes), and then do the more general formula.</p>
 
 <p><strong>Part (b) <span>20 pts</span>.</strong> Implementation.</p>
 
-<p>Similar to what you did for <a href='#problem_2__implement_basic_naive_bayes_30_pts'>Problem 2</a>, you should create a class</p>
-
-<pre><code>nlp.a2.AddLambdaNaiveBayesTrainer[Label, Feature, Value]</code></pre>
-
-<p>that extends</p>
-
-<pre><code>nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]</code></pre>
+<p>Similar to what you did for <a href='#problem_2__implement_basic_naive_bayes_30_pts'>Problem 2</a>, you should create a class <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>AddLambdaNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div> that extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>NaiveBayesTrainerToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div></p>
 
 <p>Again, you will need to implement the <code>train</code> method, but this time it should perform smoothing on the training data. The λ class-level parameter should be configurable.</p>
 
-<p>There are a few changes you should make to your code.</p>
+<p>Be sure that, when calculating the demonminator for the smoothed probability, your code should be sure to take into account even the values that are not seen with a particular label.</p>
 
-<p>First, you should update your <code>ProbabilityDistribution</code> class to allow for a &#8220;default&#8221; parameter so that if a previously-unseen key is looked up in the distribution, the default will be used to return the probability based on there being λ counts.</p>
+<p>You should also update your <code>ProbabilityDistribution</code> class to allow for a &#8220;default&#8221; parameter so that if a previously-unseen key is looked up in the distribution, the default will be used to return the probability based on there being λ counts.</p>
 
-<p>Next, you should update the <code>main</code> method of the NaiveBayes object to support an extra <code>--lambda</code> option where the λ parameter can be specified from the command line. If specified, the option should specify the parameter lambda for the <code>AddLambdaNaiveBayesTrainer</code>. If the <code>--lambda</code> option is not specified, then <code>UnsmoothedNaiveBayesTrainer</code> should be used. Using this should yield these results:</p>
+<p>With λ=2.0, you should see this behavior using the <code>tennis</code> training set:</p>
+
+<p><code>\[
+    \begin{align}
+      p_{+1}(Outlook=Overcast \mid No) 
+        &amp;= \frac{C(Overcast \mid No)}{C(Rain \mid No) + C(Sunny \mid No) + C(Overcast \mid No)} \\ 
+        &amp;= \frac{0+2}{(2+2) + (3+2) + (0+2)}
+        = \frac{2}{11}
+    \end{align}
+\]</code></p>
+
+<p>And this behavior:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>instances</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>tennis</span> <span class='n'>train</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>nbt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>  <span class='c1'>// with lambda=2.0</span>
+<span class='k'>val</span> <span class='n'>nbm</span> <span class='k'>=</span> <span class='n'>nbt</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='o'>)</span>
+<span class='n'>nbm</span><span class='o'>.</span><span class='n'>predict</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;Outlook&quot;</span> <span class='o'>-&gt;</span> <span class='s'>&quot;Overcast&quot;</span><span class='o'>,</span> <span class='s'>&quot;Temperature&quot;</span> <span class='o'>-&gt;</span> <span class='s'>&quot;Hot&quot;</span><span class='o'>,</span> <span class='s'>&quot;Humidity&quot;</span> <span class='o'>-&gt;</span> <span class='s'>&quot;High&quot;</span><span class='o'>,</span> <span class='s'>&quot;Wind&quot;</span> <span class='o'>-&gt;</span> <span class='s'>&quot;Strong&quot;</span><span class='o'>))</span>
+<span class='c1'>// Yes</span>
+</code></pre></div>
+<p>Finally, you should update the <code>main</code> method of the NaiveBayes object to support an extra <code>--lambda</code> option where the λ parameter can be specified from the command line. If specified, the option should specify the parameter lambda for the <code>AddLambdaNaiveBayesTrainer</code>. If the <code>--lambda</code> option is not specified, then <code>UnsmoothedNaiveBayesTrainer</code> should be used. Using this should yield these results:</p>
 
 <pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 1.0&quot;
 accuracy = 61.54
@@ -595,13 +609,12 @@ f1 = 84.21</code></pre>
 \]</code></p>
 
 <p>Try it out in Scala:</p>
-
-<pre><code>scala&gt; import scala.math
-scala&gt; 6 * 7
-42
-scala&gt; math.exp(math.log(6) + math.log(7))
-41.999999999999986</code></pre>
-
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>import</span> <span class='nn'>scala.math</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='mi'>6</span> <span class='o'>*</span> <span class='mi'>7</span>
+<span class='mi'>42</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>math</span><span class='o'>.</span><span class='n'>exp</span><span class='o'>(</span><span class='n'>math</span><span class='o'>.</span><span class='n'>log</span><span class='o'>(</span><span class='mi'>6</span><span class='o'>)</span> <span class='o'>+</span> <span class='n'>math</span><span class='o'>.</span><span class='n'>log</span><span class='o'>(</span><span class='mi'>7</span><span class='o'>))</span>
+<span class='mf'>41.999999999999986</span>
+</code></pre></div>
 <p>More generally:</p>
 
 <p><code>\[
@@ -621,23 +634,19 @@ scala&gt; math.exp(math.log(6) + math.log(7))
 
 <p><strong>Part (b) <span>12 pts</span>.</strong> Implementation.</p>
 
-<p>Create a new class</p>
+<p>Create a new class <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>LogNaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div></p>
 
-<pre><code>nlp.a2.LogNaiveBayesModel[Label, Feature, Value]</code></pre>
+<p>that, like the previous version, extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>NaiveBayesModelToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div></p>
 
-<p>that, like the previous version, extends</p>
-
-<pre><code>nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]</code></pre>
-
-<p>As before, you will have to implement the <code>predict</code> method:</p>
-
-<pre><code>def predict(features: Vector[(Feature, Value)]): Label</code></pre>
+<p>As before, you will have to implement the <code>predict</code> method: <div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>predict</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Label</span>
+</code></pre></div></p>
 
 <p>But, this time, you will compute the argmax using logarithms of probabilities instead of multiplying simple probabilities together.</p>
 
-<p>You should also create a class</p>
-
-<pre><code>nlp.a2.LogAddLambdaNaiveBayesTrainer[Label, Feature, Value]</code></pre>
+<p>You should also create a class <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>LogAddLambdaNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div></p>
 
 <p>That is exactly the same as your <code>AddLambdaNaiveBayesTrainer</code> except that it returns a <code>LogNaiveBayesModel</code> instead of a <code>NaiveBayesModel</code>. Feel free to reuse code as much as possible here.</p>
 
@@ -645,15 +654,15 @@ scala&gt; math.exp(math.log(6) + math.log(7))
 
 <p>You should verify that your new class yields the same results as your previous version:</p>
 
-<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 1.0 --log true&quot;
-accuracy = 61.54
-precision (Yes) = 66.67
-recall (Yes) = 75.00
-f1 = 70.59</code></pre>
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 4.0 --log true&quot;
+accuracy = 76.92
+precision (Yes) = 72.73
+recall (Yes) = 100.00
+f1 = 84.21</code></pre>
 
 <p>Keep in mind that you must exponentiate the log scores for each label before you normalize to get the probabilities for logging to the console.</p>
 
-<p>Note. You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base <em>e</em>. Since working in log space involves addition and since the log of zero is undefined, unseen events don’t directly produce a probability of zero. You can nonetheless simulate this by having unseen features contribute a large negative amount, such as -50, to the calculation.</p>
+<p>Notes: You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base <em>e</em>. Also, the log of zero corresponds to negative infinity in log-space (<code>Double.NegativeInfinity</code> in Scala).</p>
 
 <h2 id='problem_5__extending_the_feature_set_20_pts'>Problem 5 - Extending the feature set (20 pts)</h2>
 
@@ -677,7 +686,7 @@ f1 = 70.59</code></pre>
 <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>FeatureExtender</span><span class='o'>[</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div>
 <p>Your implementation will have to implement a method <code>extendFeatures</code> that takes an instance&#8217;s feature vector and produces a new feature vector containing any new features you want the classifier to use. Be sure to include the original features in the output unless you intentionally want to exclude them.</p>
-<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>extendFeatures</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span> <span class='k'>=</span> <span class='n'>features</span>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>extendFeatures</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)]</span>
 </code></pre></div>
 <p>You may call your implementation class whatever you want (maybe <code>PpaFeatureExtender</code>?).</p>
 
@@ -690,9 +699,9 @@ f1 = 70.59</code></pre>
 <p>To keep your code modular, you may want to create a variety of <code>FeatureExtender</code> implementations that each focus on a subset of useful features: one for number features, one for lemma features, one for wordshape feature, etc. This could be useful during testing when you want to easily try different combinations of features. To make it easy to combine these separate implementations, I have created a class <code>CompositeFeatureExtender</code> (which is itself a <code>FeatureExtender</code>) that will compose separate other <code>FeatureExtender</code>s into one <code>FeatureExtender</code>:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>featureExtender</span> <span class='k'>=</span> 
   <span class='k'>new</span> <span class='nc'>CompositeFeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](</span><span class='nc'>Vector</span><span class='o'>(</span>
-    <span class='k'>new</span> <span class='nc'>NumberFeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>StringV</span><span class='o'>](),</span>
-    <span class='k'>new</span> <span class='nc'>LemmaFeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>],</span>
-    <span class='k'>new</span> <span class='nc'>WordShapeFeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]))</span>
+    <span class='k'>new</span> <span class='nc'>NumberFeatureExtender</span><span class='o'>(),</span>
+    <span class='k'>new</span> <span class='nc'>LemmaFeatureExtender</span><span class='o'>(),</span>
+    <span class='k'>new</span> <span class='nc'>WordShapeFeatureExtender</span><span class='o'>()))</span>
 </code></pre></div>
 <p>You should come up with at least five new features, but are encouraged to do much more. Be creative!</p>
 

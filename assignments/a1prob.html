@@ -223,7 +223,7 @@
 <h2 id='problem_3_15_points'>Problem 3: 15 points</h2>
 
 <p>Beavers can make three cries (and only three cries), which they use to communicate. <code>bwa</code> and <code>bwee</code> usually mean something like &#8220;come&#8221; and &#8220;go&#8221; respectively, and are used during dam maintenance. <code>kiki</code> means &#8220;watch out!&#8221; The following <strong>conditional probability table</strong> shows the probability of the various cries in different situations.</p>
-<table class='simple' style='width: 60%;'>
+<table style='width: 60%;' class='simple'>
     <tr>
         <td><i>p</i>( <i>cry</i> | <i>situation</i> )</td>
         <td>Predator!</td>
@@ -256,7 +256,7 @@
 
 <li>
 <p>(4 point) A certain colony of beavers has already cut down all the trees around their dam. As there are no more to chew, <em>p(timber)</em> = 0. Getting rid of the trees has also reduced <em>p(predator)</em> to 0.2. These facts are shown in the following <strong>joint probability table</strong>. Assuming that the three given situtation are the only possible situations in which the cries might occur, fill in the rest of the table, using the previous table and the laws of probability. (Note that the meaning of each table is given in its top left cell.)</p>
-<table class='simple' style='width: 80%;'>
+<table style='width: 80%;' class='simple'>
      <tr>
          <td><i>p</i>( <i>cry</i>, <i>situation</i> )</td>
          <td>Predator!</td>
@@ -340,19 +340,29 @@
 <p>The discrete probability distribution classes to implement are as follows:</p>
 
 <ol>
-<li>
-<p>A class that represents a probability distribution: <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a1</span><span class='o'>.</span><span class='nc'>ProbabilityDistribution</span>
-</code></pre></div> that extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>ProbabilityDistributionToImplement</span>
-</code></pre></div></p>
-</li>
-
-<li>
-<p>A class that represents a conditional probability distribution: <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a1</span><span class='o'>.</span><span class='nc'>ConditionalProbabilityDistribution</span>
-</code></pre></div> that extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>ConditionalProbabilityDistributionToImplement</span>
-</code></pre></div></p>
-</li>
+<li>A class that represents a probability distribution:</li>
 </ol>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>nlp.a1</span>
 
+<span class='k'>import</span> <span class='nn'>nlpclass.ProbabilityDistributionToImplement</span>
+
+<span class='k'>class</span> <span class='nc'>ProbabilityDistribution</span><span class='o'>[</span><span class='kt'>B</span><span class='o'>](...)</span> <span class='k'>extends</span> <span class='nc'>ProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>B</span><span class='o'>]</span> <span class='o'>{</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>apply</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>B</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='o'>???</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>sample</span><span class='o'>()</span><span class='k'>:</span> <span class='kt'>B</span> <span class='o'>=</span> <span class='o'>???</span>
+<span class='o'>}</span>
+</code></pre></div>
+<ol>
+<li>A class that represents a conditional probability distribution:</li>
+</ol>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>nlp.a1</span>
+
+<span class='k'>import</span> <span class='nn'>nlpclass.ConditionalProbabilityDistributionToImplement</span>
+
+<span class='k'>class</span> <span class='nc'>ConditionalProbabilityDistribution</span><span class='o'>[</span><span class='kt'>A</span>,<span class='kt'>B</span><span class='o'>](...)</span> <span class='k'>extends</span> <span class='nc'>ConditionalProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>A</span>,<span class='kt'>B</span><span class='o'>]</span> <span class='o'>{</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>apply</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>B</span><span class='o'>,</span> <span class='n'>given</span><span class='k'>:</span> <span class='kt'>A</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='o'>???</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>sample</span><span class='o'>(</span><span class='n'>given</span><span class='k'>:</span> <span class='kt'>A</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>B</span> <span class='o'>=</span> <span class='o'>???</span>
+<span class='o'>}</span>
+</code></pre></div>
 <p>Each of these classes must store relevant training data extracted from a file of features and labels. Each class has two methods: <code>apply</code> and <code>sample</code>. The <code>apply</code> method takes an item and returns its probability according to the distribution. The <code>sample</code> method returns an item from the distribution with likelihood according to its probability. These classes will allow us to interact with the probability distributions is a simple way.</p>
 
 <p>Note that both of these classes are <em>generic</em> in that they are written so that they can work with any type of data, not simply Strings. Your code should also be generic. This will allow you to work with probability distributions over various types like integers, characters, Vectors, or anything else. This will be useful in later assignments.</p>
@@ -368,7 +378,15 @@
 <span class='k'>val</span> <span class='n'>pd</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ProbabilityDistribution</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>](...</span><span class='n'>something</span><span class='o'>...)</span>
 <span class='n'>pd</span><span class='o'>(</span><span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.6, since p(Yes) = 0.6</span>
 </code></pre></div>
-<p>Similarly, if the training data contained 10 instances labeled &#8220;Yes&#8221;, 7 of which had value &#8220;hello&#8221;, then a <code>ConditionalProbabilityDistribution</code> trained on that data might work like this:</p>
+<p>Similarly, if the training data contained</p>
+
+<ul>
+<li>10 instances labeled &#8220;Yes&#8221;, 7 of which had value &#8220;hello&#8221; and 3 &#8220;goodbye&#8221;</li>
+
+<li>5 instances labeledd &#8220;No&#8221;, 2 of which had value &#8220;hello&#8221;, and 3 &#8220;goodbye&#8221;</li>
+</ul>
+
+<p>then a <code>ConditionalProbabilityDistribution</code> trained on that data might work like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlp.a1.ConditionalProbabilityDistribution</span> 
 <span class='k'>val</span> <span class='n'>cpd</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ConditionalProbabilityDistribution</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
 <span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.7, since p(hello | Yes) = 0.7</span>
@@ -382,15 +400,18 @@
 
 <p>In order to be able to generate random data for a model, it is useful to have a way to randomly sample items from a probability distribution. Therefore, you should implement a <code>sample</code> method on each discrete distribution class.</p>
 
-<p>It is important that your <code>sample</code> method not simply pick an item uniformally; it should choose items with frequencies determined by the distribution. For example, if the training data contained 10 labels, 6 of which were &#8220;Yes&#8221; and 4 &#8220;No&#8221;, then a <code>ProbabilityDistribution</code> trained on that data might work like this:</p>
+<p>It is important that your <code>sample</code> method not simply pick an item uniformally; it should choose items with frequencies determined by the distribution. For example, if the training data described above was used, then we might get results similar to this work like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>dhg.util.CollectionUtil._</span>
-<span class='k'>import</span> <span class='nn'>nlp.a1.ProbabilityDistribution</span> 
-<span class='k'>val</span> <span class='n'>pd</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ProbabilityDistribution</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>](...</span><span class='n'>something</span><span class='o'>...)</span>
-<span class='nc'>Vector</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>1000</span><span class='o'>)(</span><span class='n'>pd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>).</span><span class='n'>counts</span>  <span class='c1'>// Map(No -&gt; 393, Yes -&gt; 607)</span>
+<span class='nc'>Vector</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>1000</span><span class='o'>)(</span><span class='n'>pd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>).</span><span class='n'>counts</span>         
+<span class='c1'>// Map(No -&gt; 393, Yes -&gt; 607)</span>
+<span class='nc'>Vector</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>1000</span><span class='o'>)(</span><span class='n'>cpd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>(</span><span class='s'>&quot;Yes&quot;</span><span class='o'>)).</span><span class='n'>counts</span> 
+<span class='c1'>// Map(goodbye -&gt; 296, hello -&gt; 704)</span>
+<span class='nc'>Vector</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>1000</span><span class='o'>)(</span><span class='n'>cpd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>(</span><span class='s'>&quot;No&quot;</span><span class='o'>)).</span><span class='n'>counts</span>  
+<span class='c1'>// Map(goodbye -&gt; 597, hello -&gt; 403)</span>
 </code></pre></div>
 <p>The conditional version works similarly, but requires a parameter for the conditioning item.</p>
 
-<p><em>Note:</em> If you sample 1000 items, you are unlikely to get <em>exactly</em> 600 &#8220;Yes&#8221; since the sampling is, after all, random.</p>
+<p><em>Note:</em> You are unlikely to get <em>exactly</em> these numbers since the sampling is, after all, random.</p>
 
 <p>Sampling from a probability distribution can easily be accomplished with the following algorithm:</p>
 
@@ -409,11 +430,12 @@
 <h3 id='executing_the_code'>Executing the code</h3>
 
 <p>In order to make it easy for me to test your code, you will also need to implement an <code>object</code> for building these representations from a feature file:</p>
-<div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a1</span><span class='o'>.</span><span class='nc'>FeatureFileAsDistributions</span>
-</code></pre></div>
-<p>that extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>FeatureFileAsDistributionsToImplement</span>
-</code></pre></div></p>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>nlp.a1</span>
 
+<span class='k'>import</span> <span class='nn'>nlpclass.FeatureFileAsDistributionsToImplement</span>
+
+<span class='k'>object</span> <span class='nc'>FeatureFileAsDistributions</span> <span class='k'>extends</span> <span class='nc'>FeatureFileAsDistributionsToImplement</span>
+</code></pre></div>
 <p>This <code>object</code> will require a method <code>fromFile(filename: String)</code> to be implemented that reads a file of features and labels (as was done for <a href='a0programming.html#part_6_reading_a_data_file'>Assingment 0, Part 6</a>) and produce three things:</p>
 
 <ol>
