@@ -429,14 +429,62 @@ Add-$\lambda$ Smoothing
 \begin{itemize}
   \item Add some constant $\lambda$ to every count, including unseen ngrams
   \item $V$ is the Vocabulary --- all word types --- including \ngramend\ (if necessary $n>1$)
+    \begin{itemize}
+      \item Don't need \ngramstart\ because it will never be the `next word'
+    \end{itemize}
   \item $p(w_0 \mid w_{1-n}~...~w_{-1}) = 
          \frac{C(w_{1-n}~...~w_{-1}~w_0)+1}{\sum_x (C(w_{1-n}~...~w_{-1}~x) + 1)} =
          \frac{C(w_{1-n}~...~w_{-1}~w_0)+1}{(\sum_x C(w_{1-n}~...~w_{-1}~x))+|V|} =
          \frac{C(w_{1-n}~...~w_{-1}~w_0)+1}{C(w_{1-n}~...~w_{-1})+|V|}$
   \item Add $|V|$ to the denominator to account for the fact that there is an extra count for every $x$
   \item In practice it over-smoothes, even when $\lambda < 1$
-\end{itemize}
+  \item 
+Example dataset:
+\vspace{-2mm}
+\begin{verbatim}
+    <b> <b> the dog runs . </b>
+    <b> <b> the dog walks . </b>
+    <b> <b> the man walks . </b>
+    <b> <b> a man walks the dog . </b>
+    <b> <b> the cat walks . </b>
+    <b> <b> the dog chases the cat . </b>
+\end{verbatim}
 
+$V = \{the, dog, runs, walks, man, a, cat, chases, \ngramend \}$\\
+$|V| = 9$
+
+Sentence Likelihood with Trigrams:
+
+~~~~ $p(\ngramstart\ \text{the cat runs . \ngramend}) \vspace{2mm} \\
+~~~~~~~~~~ =  p(\text{the} \mid \ngramstart~\ngramstart) \cdot 
+              p(\text{cat} \mid \ngramstart \text{ the}) \cdot 
+              p(\text{runs} \mid \text{the cat}) \cdot
+              p(\text{.} \mid \text{cat runs}) \cdot
+              p(\text{\ngramend} \mid \text{runs .}) \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ \ngramstart\ the})}{\sum_x (C(\text{\ngramstart\ \ngramstart\ } x)+1)} \cdot 
+              \frac{C(\text{\ngramstart\ the cat})+1}{\sum_x (C(\text{\ngramstart\ the } x)+1)} \cdot 
+              \frac{C(\text{the cat runs})+1}{\sum_x (C(\text{the cat } x)+1)} \cdot
+              \frac{C(\text{cat runs .})+1}{\sum_x (C(\text{cat runs } x)+1)} \cdot
+              \frac{C(\text{runs . \ngramend})+1}{\sum_x (C(\text{runs . } x)+1)} \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ \ngramstart\ the})+1}{C(\text{\ngramstart\ \ngramstart})+(|V|-1)} \cdot 
+              \frac{C(\text{\ngramstart\ the cat})+1}{C(\text{\ngramstart\ the})+|V|} \cdot 
+              \frac{C(\text{the cat runs})+1}{C(\text{the cat})+|V|} \cdot
+              \frac{C(\text{cat runs .})+1}{C(\text{cat runs})+|V|} \cdot
+              \frac{C(\text{runs . \ngramend})+1}{C(\text{runs .})+|V|} \vspace{2mm} \\
+~~~~~~~~~~ =  \frac{5+1}{6+\mathbf{8}} \cdot 
+              \frac{1+1}{5+9} \cdot 
+              \frac{\mathbf{0}+1}{\mathbf{1}+9} \cdot
+              \frac{\mathbf{0}+1}{\mathbf{0}+9} \cdot
+              \frac{\mathbf{1}+1}{\mathbf{1}+9} = 
+              0.43 \cdot 0.14 \cdot \mathbf{0.10} \cdot \mathbf{0.11} \cdot 0.20 = \mathbf{0.000068} $
+
+  \item If the context was never seen, then the distribution is uniform: $\frac{0+1}{0+|V|} = \frac{1}{|V|}$
+  \item Since \ngramstart\ can never be followed by \ngramend
+    \begin{itemize}
+      \item $p(\ngramend \mid \ngramstart~\ngramstart) = 0$
+      \item The denominator $\sum_x C(\ngramstart~\ngramstart~x)$ only gets $|V|$-1 smoothing counts
+    \end{itemize}
+\end{itemize}
 
 Good-Turing Smoothing
 
@@ -553,6 +601,7 @@ Perplexity
   \item How ``perplexed'' is the model whe it sees the test data?
   \item Measure the probability of the test corpus, normalize for number of words.
   \item $PP(W) = \sqrt[|W|]{\frac{1}{p(w_1~w_2~...~w_{|W|})}}$
+  \item With individual sentences: $PP(s_1, s_2, ...) = \sqrt[(\sum_i |s_i|)]{\frac{1}{\prod_i p(s_i)}}$
 \end{itemize}
 
 
