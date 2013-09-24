@@ -104,3 +104,47 @@ class CompositeFeatureExtender[Feature, Value](featureExtenders: Vector[FeatureE
   }
 
 }
+
+////////////////////////////////
+// Assignment 3
+////////////////////////////////
+
+/**
+ * For Assignment 3 - Part 2:
+ */
+trait NgramModelToImplement {
+
+  /**
+   * Determine the (log) probability of a full sentence.  Return the probability
+   * as the logarithm of the probability.
+   *
+   * USAGE: ngramModel.sentenceProb(Vector("this", "is", "a", "complete", "sentence"))
+   */
+  def sentenceProb(sentenceTokens: Vector[String]): Double
+
+  /**
+   * Generate a sentence based on the model parameters.
+   *
+   * Return something like: Vector("this", "is", "a", "complete", "sentence")
+   */
+  def generate(): Vector[String]
+
+}
+
+/**
+ * For Assignment 3 - Part 2:
+ */
+trait NgramModelTrainerToImplement {
+
+  def train(tokenizedSentences: Vector[Vector[String]]): NgramModelToImplement
+
+}
+
+/**
+ * For Assignment 3 - Part 2:
+ */
+trait NgramModelEvaluator extends ((NgramModelToImplement, Vector[Vector[String]]) => Double) {
+
+  override def apply(model: NgramModelToImplement, tokenizedSentences: Vector[Vector[String]]): Double
+
+}
