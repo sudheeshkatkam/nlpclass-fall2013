@@ -604,7 +604,7 @@ More generally:
     \prod_{x \in X} P(x) = e^{\sum_{x \in X} \log_e P(x)}
 \]`
 
-Thus, when determining the most probable label, we can do the following:
+Since multiplying numbers becomes addition of logarithms values, when determining the most probable label we can do the following:
 
 `\[
   \begin{align*}
@@ -641,7 +641,14 @@ You should verify that your new class yields the same results as your previous v
     recall (Yes) = 100.00
     f1 = 84.21
 
-Keep in mind that you must exponentiate the log scores for each label before you normalize to get the probabilities for logging to the console.
+Keep in mind that you must exponentiate the log scores for each label before you normalize to get the probabilities for logging to the console.  You won't be able to call `math.exp(p)` directly since the values are too small, which is why we were using logarithms in the first place.  Instead, to normalize, you'll need to make the values large enough to exponentiate.  You can do this by dividing each of the values by the largest of them, since dividing all values by the same amount will increase them proportionally, making the largest value 1.0, and then exponentitating --- and remember that dividing exponents is done via subtraction.  So if *P* contains all the calculations for each of the of the labels:
+
+`\[
+    p^* = \exp(\log(p) - \max_{v \in P} \log(p))
+\]`
+
+Then you can normalize the *p** values as usual.
+
 
 Notes: You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base *e*.  Also, the log of zero corresponds to negative infinity in log-space (`Double.NegativeInfinity` in Scala). 
 
