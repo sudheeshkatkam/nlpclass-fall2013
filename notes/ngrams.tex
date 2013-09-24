@@ -463,9 +463,9 @@ Interpolation
 \begin{itemize}
   \item Mix n-gram probability with probabilities from lower-order models
     \begin{align*}
-      \hat{p}(w_0 \mid w_{-2}~w_{-1}) &= \lambda_3 \cdot p(w_0 \mid w_{-2}~w_{-1}) &&&& \\
-                                      &= \lambda_2 \cdot p(w_0 \mid w_{-1}) \\
-                                      &= \lambda_1 \cdot p(w_0)
+      \hat{p}(w_0 \mid w_{-2}~w_{-1}) &= ~~~~ \lambda_3 \cdot p(w_0 \mid w_{-2}~w_{-1}) &&&& \\
+                                        &~~~~+ \lambda_2 \cdot p(w_0 \mid w_{-1}) \\
+                                        &~~~~+ \lambda_1 \cdot p(w_0)
     \end{align*}
   \item $\lambda_i$ terms used to decide how much to smooth
   \item $\sum_i \lambda_i = 1$, because they are proportions
