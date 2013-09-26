@@ -24,8 +24,8 @@
 \newcommand{\bs}{\textbackslash}
 \renewcommand{\vec}[1]{\mathbf{#1}}
 
-\newcommand{\ngramstart}{\ensuremath{\langle b \rangle}}
-\newcommand{\ngramend}{\ensuremath{\langle \backslash b \rangle}}
+\newcommand{\ngramstart}{\ensuremath{\langle S \rangle}}
+\newcommand{\ngramend}{\ensuremath{\langle E \rangle}}
 \newcommand{\ngramunk}{\ensuremath{\langle unk \rangle}}
 
 \usepackage{hyperref}
@@ -306,12 +306,12 @@ Use Chain Rule?
 Example dataset:
 \vspace{-2mm}
 \begin{verbatim}
-    <b> the dog runs . </b>
-    <b> the dog walks . </b>
-    <b> the man walks . </b>
-    <b> a man walks the dog . </b>
-    <b> the cat walks . </b>
-    <b> the dog chases the cat . </b>
+    <S> the dog runs . <E>
+    <S> the dog walks . <E>
+    <S> the man walks . <E>
+    <S> a man walks the dog . <E>
+    <S> the cat walks . <E>
+    <S> the dog chases the cat . <E>
 \end{verbatim}
 
 Sentence Likelihood with Bigrams:
@@ -442,41 +442,41 @@ Add-$\lambda$ Smoothing
 Example dataset:
 \vspace{-2mm}
 \begin{verbatim}
-    <b> <b> the dog runs . </b>
-    <b> <b> the dog walks . </b>
-    <b> <b> the man walks . </b>
-    <b> <b> a man walks the dog . </b>
-    <b> <b> the cat walks . </b>
-    <b> <b> the dog chases the cat . </b>
+    <S> <S> the dog runs . <E>
+    <S> <S> the dog walks . <E>
+    <S> <S> the man walks . <E>
+    <S> <S> a man walks the dog . <E>
+    <S> <S> the cat walks . <E>
+    <S> <S> the dog chases the cat . <E>
 \end{verbatim}
 
-$V = \{the, dog, runs, walks, man, a, cat, chases, \ngramend \}$\\
+$V = \{a, cat, chases, dog, man, runs, the, walks, ., \ngramend \}$\\
 $|V| = 9$
 
 Sentence Likelihood with Trigrams:
 
 ~~~~ $p(\ngramstart\ \text{the cat runs . \ngramend}) \vspace{2mm} \\
-~~~~~~~~~~ =  p(\text{the} \mid \ngramstart~\ngramstart) \cdot 
+~~~~~~~~ =  p(\text{the} \mid \ngramstart~\ngramstart) \cdot 
               p(\text{cat} \mid \ngramstart \text{ the}) \cdot 
               p(\text{runs} \mid \text{the cat}) \cdot
               p(\text{.} \mid \text{cat runs}) \cdot
               p(\text{\ngramend} \mid \text{runs .}) \vspace{2mm} \\
-~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ \ngramstart\ the})}{\sum_x (C(\text{\ngramstart\ \ngramstart\ } x)+1)} \cdot 
+~~~~~~~~ =    \frac{C(\text{\ngramstart\ \ngramstart\ the})}{\sum_x (C(\text{\ngramstart\ \ngramstart\ } x)+1)} \cdot 
               \frac{C(\text{\ngramstart\ the cat})+1}{\sum_x (C(\text{\ngramstart\ the } x)+1)} \cdot 
               \frac{C(\text{the cat runs})+1}{\sum_x (C(\text{the cat } x)+1)} \cdot
               \frac{C(\text{cat runs .})+1}{\sum_x (C(\text{cat runs } x)+1)} \cdot
               \frac{C(\text{runs . \ngramend})+1}{\sum_x (C(\text{runs . } x)+1)} \vspace{2mm} \\
-~~~~~~~~~~ =  \frac{C(\text{\ngramstart\ \ngramstart\ the})+1}{C(\text{\ngramstart\ \ngramstart})+(|V|-1)} \cdot 
+~~~~~~~~ =    \frac{C(\text{\ngramstart\ \ngramstart\ the})+1}{C(\text{\ngramstart\ \ngramstart})+(|V|-1)} \cdot 
               \frac{C(\text{\ngramstart\ the cat})+1}{C(\text{\ngramstart\ the})+|V|} \cdot 
               \frac{C(\text{the cat runs})+1}{C(\text{the cat})+|V|} \cdot
               \frac{C(\text{cat runs .})+1}{C(\text{cat runs})+|V|} \cdot
               \frac{C(\text{runs . \ngramend})+1}{C(\text{runs .})+|V|} \vspace{2mm} \\
-~~~~~~~~~~ =  \frac{5+1}{6+\mathbf{8}} \cdot 
-              \frac{1+1}{5+9} \cdot 
-              \frac{\mathbf{0}+1}{\mathbf{1}+9} \cdot
-              \frac{\mathbf{0}+1}{\mathbf{0}+9} \cdot
-              \frac{\mathbf{1}+1}{\mathbf{1}+9} = 
-              0.43 \cdot 0.14 \cdot \mathbf{0.10} \cdot \mathbf{0.11} \cdot 0.20 = \mathbf{0.000068} $
+~~~~~~~~ =    \frac{5+1}{6+\mathbf{9}} \cdot 
+              \frac{1+1}{5+10} \cdot 
+              \frac{\mathbf{0}+1}{\mathbf{2}+10} \cdot
+              \frac{\mathbf{0}+1}{\mathbf{0}+10} \cdot
+              \frac{1+1}{1+10} \vspace{2mm} \\
+~~~~~~~~ =    0.40 \cdot 0.13 \cdot \mathbf{0.08} \cdot \mathbf{0.10} \cdot 0.18 = \mathbf{0.000081} $
 
   \item If the context was never seen, then the distribution is uniform: $\frac{0+1}{0+|V|} = \frac{1}{|V|}$
   \item Since \ngramstart\ can never be followed by \ngramend
@@ -484,6 +484,7 @@ Sentence Likelihood with Trigrams:
       \item $p(\ngramend \mid \ngramstart~\ngramstart) = 0$
       \item The denominator $\sum_x C(\ngramstart~\ngramstart~x)$ only gets $|V|$-1 smoothing counts
     \end{itemize}
+    \item \ngramstart\ not included in $V$ because we can't transition to it.
 \end{itemize}
 
 Good-Turing Smoothing
