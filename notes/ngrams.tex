@@ -478,7 +478,15 @@ Sentence Likelihood with Trigrams:
               \frac{1+1}{1+10} \vspace{2mm} \\
 ~~~~~~~~ =    0.40 \cdot 0.13 \cdot \mathbf{0.08} \cdot \mathbf{0.10} \cdot 0.18 = \mathbf{0.000081} $
 
-  \item If the context was never seen, then the distribution is uniform: $\frac{0+1}{0+|V|} = \frac{1}{|V|}$
+  \item If the context was never seen, then the distribution is uniform: 
+    \begin{align*}
+      p_{+\lambda}(w_0 \mid w_{-2}, w_{-1}) &= \frac{C(w_{-2}~w_{-1}~w_{0})+\lambda}{\left(\sum_x C(w_{-2}~w_{-1}~x)\right)+ \lambda \cdot |V|} \\
+                                 &= \frac{0+\lambda}{\left(\sum_x 0\right) + \lambda \cdot |V|} \\
+                                 &= \frac{0+\lambda}{0+\lambda \cdot |V|}
+                                 = \frac{\lambda}{\lambda \cdot |V|}
+                                 = \frac{1}{1 \cdot |V|}
+                                 = \frac{1}{|V|}
+    \end{align*}
   \item Since \ngramstart\ can never be followed by \ngramend
     \begin{itemize}
       \item $p(\ngramend \mid \ngramstart~\ngramstart) = 0$

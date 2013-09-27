@@ -293,7 +293,7 @@ pd("Yes")  // 0.6, since p(Yes) = 0.6
 Similarly, if the training data contained 
 
 * 10 instances labeled "Yes", 7 of which had value "hello" and 3 "goodbye"
-* 5 instances labeledd "No", 2 of which had value "hello", and 3 "goodbye"
+* 5 instances labeled "No", 2 of which had value "hello", and 3 "goodbye"
 
 then a `ConditionalProbabilityDistribution` trained on that data might work like this:
 
