@@ -57,7 +57,8 @@ trait DecipherToImplement extends Logging {
     println
 
     println("Alphabet:              " + letters.mkString)
-    println("Guess cipher encoding: " + (cipherKey zip finalGuessCipherKey).sortBy(_._1).unzip._2.mkString)
+    println("Guess cipher encoding: " + finalGuessCipherKey.mkString)
+    println("Deciphered:            " + decipher(finalGuessCipherKey, Vector(cipherKey)).head.mkString)
     println("Final score: " + finalScore)
 
     val solved = cipherKey == finalGuessCipherKey
