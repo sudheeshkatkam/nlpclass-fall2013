@@ -154,7 +154,7 @@ trait DecipherToImplement extends Logging {
   final def handle(i: Int, j: Int, currentGuessCipherKey: Vector[String], cipherText: Vector[Vector[String]], ngramModel: NgramModelToImplement) = {
     val newGuessCipherKey = swapLetters(i, j, currentGuessCipherKey)
     val score = scoreCipherKey(cipherText, newGuessCipherKey, ngramModel)
-    logger.debug(f"     ${currentGuessCipherKey(i)} <-> ${currentGuessCipherKey(j)};  $score%.2f;  ${decipher(newGuessCipherKey, cipherText).flatten.take(20).mkString(" ")}")
+    logger.debug(f"     ${letters(i)} <-> ${letters(j)};  $score%.2f;  ${decipher(newGuessCipherKey, cipherText).flatten.take(20).mkString(" ")}")
     (newGuessCipherKey, score)
   }
 
