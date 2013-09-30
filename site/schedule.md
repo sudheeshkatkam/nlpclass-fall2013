@@ -111,6 +111,7 @@ Topics
 
 * Language Modeling
 * N-Gram Language Models (1/4)
+* Maximum Likelihood Estimation for N-Gram Models
 
 Materials
 
@@ -125,7 +126,7 @@ Materials
 Topics
 
 * N-Gram Language Models (2/4)
-* Smoothing, Backoff, Interpolation
+* Add-Lambda Smoothing
 
 
 ## Week 6
@@ -135,6 +136,7 @@ Topics
 Topics
 
 * N-Gram Language Models (3/4)
+* Backoff, Interpolation
 * Perplexity
 
 <span style="color: red">Assignments</span>
@@ -188,6 +190,10 @@ Materials
 
 * [An Interactive Spreadsheet for Teaching the Forward-Backward Algorithm](http://www.aclweb.org/anthology-new/W/W02/W02-0102.pdf) (by Jason Eisner)
 
+<span style="color: red">Assignments</span>
+
+* [Assignment 3: N-Gram Language Models]({{ page.root }}assignments/a3ngrams.html), **Due (programming submitted by noon, written by 2pm)**
+
 
 ###Thursday, Oct 17
 
@@ -202,7 +208,6 @@ Materials
 
 <span style="color: red">Assignments</span>
 
-* [Assignment 3: N-Gram Language Models]({{ page.root }}assignments/a3ngrams.html), **Due (programming submitted by noon, written by 2pm)**
 * [Assignment 4: HMMs]({{ page.root }}assignments/a4.html), Assigned
 
 

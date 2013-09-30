@@ -457,10 +457,10 @@ For this exercise, you will train a classifier that learns a model from the data
 The first thing you should do is train your unsmoothed naive Bayes classifier on the ppa data:
 
     $ sbt "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V"
-    accuracy = 67.37
-    precision (V) = 74.27
-    recall (V) = 46.71
-    f1 = 57.35
+    accuracy = 68.63
+    precision (V) = (1596 / 2562) 62.30
+    recall (V) = (1596 / 1897) 84.13
+    f1 = 71.59
 
 Ratnaparkhi et al (1994) obtain accuracies of around 80%, so we clearly should be able to do much better.  One obvious problem shows up if you look at the actual output (minus sbt output junk and logging line noise):
 
