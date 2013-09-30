@@ -13,9 +13,31 @@ This assignment is based in part on on problems from [Jason Eisner](http://www.c
 
 
 
-## Overview
 
-This assignment will guide you though the implementation of an NGram language model with various kinds of smoothing.
+## Introduction
+
+This assignment will guide you though the implementation of an ngram language model with various approaches to handling sparse data.  You will also apply your model to the task of decipherment.
+
+To complete the homework, use the stub programs and data found in the class GitHub repository.
+
+* Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.
+* Programming portions should be turned in via GitHub by noon on the assignment due date.
+
+There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.
+
+The used here classes will extend traits that are found version **0005** of the `nlpclass-fall2013` dependency.  In order to get these updates, you will need to edit your root `build.sbt` file and update the version of the dependency:
+
+    libraryDependencies += "com.utcompling" % "nlpclass-fall2013_2.10" % "0005" changing()
+
+If you use Eclipse, then after you modify the dependency you will once again have to run `sbt "eclipse with-source=true"` and refresh your project in Eclipse.
+
+
+**If you have any questions or problems with any of the materials, don't hesitate to ask!**
+
+**Tip:** Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.
+
+Finally: if possible, don't print this homework out! Just read it online, which ensures you'll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won't waste paper.
+
 
 
 
@@ -94,7 +116,7 @@ By manipulating the notation, show that the two models are identical (i.e., `\( 
 
 
 
-## Problem 2: N-Gram Model Implementation
+## Problem 2: N-Gram Model Implementation (30 points)
 
 An **ngram** is a sequences of *n* words.  Ngrams are useful for modeling the probabilities of sequences of words (i.e., modeling language).  With an ngram language model, we want to know the probability of the *nth* word in a sequence given that the *n-1* previous words.  
 
@@ -356,7 +378,7 @@ It should train an `NgramModel` using the `UnsmoothedNgramModelTrainer`, compute
     3.4401466695417047
 
 
-## Problem 3: Add-λ Smoothed NgramModelTrainer
+## Problem 3: Add-λ Smoothed NgramModelTrainer (20 points)
 
 To improve our ngram model, we will implement add-λ smoothing.  You will implement a new `NgramModelTrainerToImplement` called `AddLambdaNgramModelTrainer`.  This class will take a parameter λ and add it to each of the ngram counts, including counts of ngrams that do not appear.
 
@@ -453,7 +475,7 @@ sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --test sherlock
 
 
 
-## Problem 4: Interpolation
+## Problem 4: Interpolation (20 points)
 
 ### Model
 
@@ -486,7 +508,7 @@ Create a class `InterpolatedNgramModelTrainer` that extends `NgramModelTrainerTo
 
 For simplicity, you should use the same λ to smooth all the models
 
-Also for simplicity, we will assign weights in a veryspecific way: each order-*n* model will have twice the weight of the order-(*n*-1) model.  So the unigram model will have weight proportional to 1, bigram proportional to 2, trigram proportional to 4, and so forth such that a model with order *n* has weight proportional to `\( 2^{(n-1)} \)`.  Of course, the weights must be normalized so that they sum to 1.
+Also for simplicity, we will assign weights in a very specific way: each order-*n* model will have twice the weight of the order-(*n*-1) model.  So the unigram model will have weight proportional to 1, bigram proportional to 2, trigram proportional to 4, and so forth such that a model with order *n* has weight proportional to `\( 2^{(n-1)} \)`.  Of course, the weights must be normalized so that they sum to 1.
 
 In a more sophisticated implementation you would likely want to allow a different λ and weight for each sub-model, but that is more complex than what is required for this assignment.
 
@@ -514,7 +536,7 @@ sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --interp true -
 
 
 
-## Problem 5: Decipherment
+## Problem 5: Decipherment (15 points)
 
 For this problem, you will use your ngram language model implementation to break a substituion cipher.  A substituion cipher is an encoding scheme in which each letter in a text is replaced with another letter.  So if 'a' maps to 'z' and 'b' maps to 'r', then a word like "Abba" would map to "Zrrz".  Note that, for simplicity, we always map capital letters and lowercase letters the same way, and that we will not change non-alphabetic characters.
 
@@ -645,11 +667,11 @@ Because the algorithm uses a hill-climbing approach, it is possible that sometim
 
 > **Written Answer (a):**  Why is a *character* ngram model more effective than a token model for this task?
 
-> **Written Answer (b):**  Try reducing the `--trainsize` argument to use less data to train the language model.  Why does less data cause the program to fail more often?
+> **Written Answer (b):**  Try reducing the `--trainsize` argument to use less data to train the language model.  At each training size, run the program a few times and report how often it gets the right answer.  Why does less data cause the program to fail more often?
 
-> **Written Answer (c):**  Try reducing the `--ciphersize` argument to generate a smaller cipher text.  Why does a smaller cipher text cause the program to fail more often?
+> **Written Answer (c):**  Try reducing the `--ciphersize` argument to generate a smaller cipher text.  At each size, run the program a few times and report how often it gets the right answer.  Why does a smaller cipher text cause the program to fail more often?
 
-> **Written Answer (d):**  Try different values for `--n`.  What order of ngrams works the best?
+> **Written Answer (d):**  Try different values for `--n`.  At each *n*, run the program a few times and report how often it gets the right answer.  Also report how many iterations it takes to reach that answer (use INFO logging to see iterations).  What order of ngrams works the best?
 
 > **Written Answer (e):**  For step 2, the code makes a *random* initial guess for the key.  Why is it useful for this guess to be random, instead of starting with the same key every time?
 
