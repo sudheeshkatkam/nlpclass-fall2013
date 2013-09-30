@@ -659,10 +659,9 @@ The simple set of features used for the ppa data above can definitely be improve
 have features that:
 
 * are combinations of the head noun and verb, e.g. `verb+noun=join+board`
-* are a stemmed version of the verb, e.g. `verb_lemma=cause` from *cause*, *causes*, *caused*, and *causing*
+* are a lemmatized version of the verb, e.g. `verb_lemma=cause` from *cause*, *causes*, *caused*, and *causing*
 * identify all numbers, e.g. noun_form=number for 42, 1.5, 100,000, etc.
 * identify capitalized forms, e.g. noun_form=Xx for Texas and noun_form=XX for USA.
-* use word clusters derived from a large corpus (see the discussion of bitstrings in [Ratnaparkhi et al (1994)](http://aclweb.org/anthology/H/H94/H94-1048.pdf)
 
 **Implementation.** 
 
