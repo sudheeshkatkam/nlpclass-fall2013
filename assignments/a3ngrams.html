@@ -71,7 +71,7 @@
       </div>
       <div id='content'>
         <h1>Assignment 3 - N-Grams</h1>
-        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#problem_1_ngram_models_15_points">Problem 1: N-Gram Models (15 points)</a></li><li><a href="#problem_2_ngram_model_implementation">Problem 2: N-Gram Model Implementation</a></li><li><a href="#problem_3_add_smoothed_ngrammodeltrainer">Problem 3: Add-λ Smoothed NgramModelTrainer</a></li><li><a href="#problem_4_interpolation">Problem 4: Interpolation</a></li><li><a href="#problem_5_decipherment">Problem 5: Decipherment</a></li></ol>
+        <ol class="toc"><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_ngram_models_15_points">Problem 1: N-Gram Models (15 points)</a></li><li><a href="#problem_2_ngram_model_implementation_30_points">Problem 2: N-Gram Model Implementation (30 points)</a></li><li><a href="#problem_3_add_smoothed_ngrammodeltrainer_20_points">Problem 3: Add-λ Smoothed NgramModelTrainer (20 points)</a></li><li><a href="#problem_4_interpolation_20_points">Problem 4: Interpolation (20 points)</a></li><li><a href="#problem_5_decipherment_15_points">Problem 5: Decipherment (15 points)</a></li></ol>
         <p><strong>Due: Tuesday, October 15. Programming at noon. Written portions at 2pm.</strong></p>
 
 <p>This assignment is based in part on on problems from <a href='http://www.cs.jhu.edu/~jason/'>Jason Eisner</a>&#8217;s <a href='https://18d120ec-a-e22e9223-s-sites.googlegroups.com/a/utcompling.com/nlp-s11/assignments/homework-1/eisner_lm_homework.pdf?attachauth=ANoY7crnvOj8DTMuEPniMbpaM6TsNW7G1t807GXUnn8-rZO14f7G_L8KTzU4c0c5E5rhcL0WVmS_yyfTN5B045b9SyrXABL8vTbH9ydSWRFcO8PbwlgbDqSbmYKa6VQk4evqMOfM12ArQ9VzhWd-SeHA6xkhiMFxULD7bAUkY5_bb3yIMj10NSm5lnUo_xIpoJy9kv8v6C2lh3sztweVkqhRJy0XfT0rCNbU8lJfp5RayzYAx0yLMDKeLfTrVQBYRoEnBaFwzr_P&amp;attredirects=0'>language modeling homework</a>. Many thanks to Jason E. for making this and other materials for teaching NLP available!</p>
@@ -82,9 +82,31 @@
 <li>Coding portions must be turned in via GitHub using the tag <code>a3</code>.</li>
 </ul>
 
-<h2 id='overview'>Overview</h2>
+<h2 id='introduction'>Introduction</h2>
 
-<p>This assignment will guide you though the implementation of an NGram language model with various kinds of smoothing.</p>
+<p>This assignment will guide you though the implementation of an ngram language model with various approaches to handling sparse data. You will also apply your model to the task of decipherment.</p>
+
+<p>To complete the homework, use the stub programs and data found in the class GitHub repository.</p>
+
+<ul>
+<li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
+
+<li>Programming portions should be turned in via GitHub by noon on the assignment due date.</li>
+</ul>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
+
+<p>The used here classes will extend traits that are found version <strong>0005</strong> of the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0005&quot; changing()</code></pre>
+
+<p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
+
+<p><strong>If you have any questions or problems with any of the materials, don&#8217;t hesitate to ask!</strong></p>
+
+<p><strong>Tip:</strong> Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.</p>
+
+<p>Finally: if possible, don&#8217;t print this homework out! Just read it online, which ensures you&#8217;ll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won&#8217;t waste paper.</p>
 
 <h2 id='problem_1_ngram_models_15_points'>Problem 1: N-Gram Models (15 points)</h2>
 
@@ -158,7 +180,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 </li>
 </ol>
 
-<h2 id='problem_2_ngram_model_implementation'>Problem 2: N-Gram Model Implementation</h2>
+<h2 id='problem_2_ngram_model_implementation_30_points'>Problem 2: N-Gram Model Implementation (30 points)</h2>
 
 <p>An <strong>ngram</strong> is a sequences of <em>n</em> words. Ngrams are useful for modeling the probabilities of sequences of words (i.e., modeling language). With an ngram language model, we want to know the probability of the <em>nth</em> word in a sequence given that the <em>n-1</em> previous words.</p>
 
@@ -402,7 +424,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 <pre><code>$ sbt &quot;run-main nlp.a3.Ngrams --n 3 --train alice.txt --test alice.txt&quot;
 3.4401466695417047</code></pre>
 
-<h2 id='problem_3_add_smoothed_ngrammodeltrainer'>Problem 3: Add-λ Smoothed NgramModelTrainer</h2>
+<h2 id='problem_3_add_smoothed_ngrammodeltrainer_20_points'>Problem 3: Add-λ Smoothed NgramModelTrainer (20 points)</h2>
 
 <p>To improve our ngram model, we will implement add-λ smoothing. You will implement a new <code>NgramModelTrainerToImplement</code> called <code>AddLambdaNgramModelTrainer</code>. This class will take a parameter λ and add it to each of the ngram counts, including counts of ngrams that do not appear.</p>
 
@@ -496,7 +518,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 <p><strong>Written Answer (d):</strong> Repeat part (c) for unigram, bigram, and 4-gram models. Does each model have the same optimal λ? If not, give the best perplexity (and corresponding λ) you find for each model.</p>
 </blockquote>
 
-<h2 id='problem_4_interpolation'>Problem 4: Interpolation</h2>
+<h2 id='problem_4_interpolation_20_points'>Problem 4: Interpolation (20 points)</h2>
 
 <h3 id='model'>Model</h3>
 
@@ -528,7 +550,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 
 <p>For simplicity, you should use the same λ to smooth all the models</p>
 
-<p>Also for simplicity, we will assign weights in a veryspecific way: each order-<em>n</em> model will have twice the weight of the order-(<em>n</em>-1) model. So the unigram model will have weight proportional to 1, bigram proportional to 2, trigram proportional to 4, and so forth such that a model with order <em>n</em> has weight proportional to <code>\( 2^{(n-1)} \)</code>. Of course, the weights must be normalized so that they sum to 1.</p>
+<p>Also for simplicity, we will assign weights in a very specific way: each order-<em>n</em> model will have twice the weight of the order-(<em>n</em>-1) model. So the unigram model will have weight proportional to 1, bigram proportional to 2, trigram proportional to 4, and so forth such that a model with order <em>n</em> has weight proportional to <code>\( 2^{(n-1)} \)</code>. Of course, the weights must be normalized so that they sum to 1.</p>
 
 <p>In a more sophisticated implementation you would likely want to allow a different λ and weight for each sub-model, but that is more complex than what is required for this assignment.</p>
 
@@ -554,7 +576,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 <p><strong>Written Answer (c):</strong> Repeat part (b) for unigram, bigram, and 4-gram models. Does each model have the same optimal λ? If not, give the best perplexity (and corresponding λ) you find for each model. Are they different the normal, non-interpolated add-λ smoothed models?</p>
 </blockquote>
 
-<h2 id='problem_5_decipherment'>Problem 5: Decipherment</h2>
+<h2 id='problem_5_decipherment_15_points'>Problem 5: Decipherment (15 points)</h2>
 
 <p>For this problem, you will use your ngram language model implementation to break a substituion cipher. A substituion cipher is an encoding scheme in which each letter in a text is replaced with another letter. So if &#8216;a&#8217; maps to &#8216;z&#8217; and &#8216;b&#8217; maps to &#8216;r&#8217;, then a word like &#8220;Abba&#8221; would map to &#8220;Zrrz&#8221;. Note that, for simplicity, we always map capital letters and lowercase letters the same way, and that we will not change non-alphabetic characters.</p>
 
@@ -698,15 +720,15 @@ solved?: true</code></pre>
 </blockquote>
 
 <blockquote>
-<p><strong>Written Answer (b):</strong> Try reducing the <code>--trainsize</code> argument to use less data to train the language model. Why does less data cause the program to fail more often?</p>
+<p><strong>Written Answer (b):</strong> Try reducing the <code>--trainsize</code> argument to use less data to train the language model. At each training size, run the program a few times and report how often it gets the right answer. Why does less data cause the program to fail more often?</p>
 </blockquote>
 
 <blockquote>
-<p><strong>Written Answer (c):</strong> Try reducing the <code>--ciphersize</code> argument to generate a smaller cipher text. Why does a smaller cipher text cause the program to fail more often?</p>
+<p><strong>Written Answer (c):</strong> Try reducing the <code>--ciphersize</code> argument to generate a smaller cipher text. At each size, run the program a few times and report how often it gets the right answer. Why does a smaller cipher text cause the program to fail more often?</p>
 </blockquote>
 
 <blockquote>
-<p><strong>Written Answer (d):</strong> Try different values for <code>--n</code>. What order of ngrams works the best?</p>
+<p><strong>Written Answer (d):</strong> Try different values for <code>--n</code>. At each <em>n</em>, run the program a few times and report how often it gets the right answer. Also report how many iterations it takes to reach that answer (use INFO logging to see iterations). What order of ngrams works the best?</p>
 </blockquote>
 
 <blockquote>
