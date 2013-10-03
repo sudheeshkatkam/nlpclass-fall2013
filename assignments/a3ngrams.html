@@ -148,15 +148,15 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 </li>
 
 <li>
-<p>(3 points) In the data you will use in questions 6 and 14, sentences are delimited by <code>&lt;s&gt;</code> at the start and <code>&lt;/s&gt;</code> at the end. For example, the following data set consists of a sequence of 3 sentences:</p>
+<p>(3 points) In the data you will use in questions 6 and 14, sentences are delimited by <code>&lt;S&gt;</code> at the start and <code>&lt;E&gt;</code> at the end. For example, the following data set consists of a sequence of 3 sentences:</p>
 
-<pre><code> &lt;s&gt; do you think so &lt;/s&gt; 
- &lt;s&gt; yes &lt;/s&gt; 
- &lt;s&gt; at least i thought so &lt;/s&gt;</code></pre>
+<pre><code> &lt;S&gt; do you think so &lt;E&gt; 
+ &lt;S&gt; yes &lt;E&gt; 
+ &lt;S&gt; at least i thought so &lt;E&gt;</code></pre>
 
 <p>Given English training data, the probability of</p>
 
-<pre><code> &lt;s&gt; do you think the &lt;/s&gt;</code></pre>
+<pre><code> &lt;S&gt; do you think the &lt;E&gt;</code></pre>
 
 <p>should be extremely low under any good language model. Why? In the case of the trigram model, which parameter or parameters are responsible for making this probability low?</p>
 </li>
@@ -168,7 +168,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 
 <p>The expression</p>
 
-<p>(A)&#160; <code>\( p(\text{Do}) \cdot p(\text{you} \mid \text{Do}) \cdot p(\text{think} \mid \text{Do you}) \)</code><br /> (B)&#160; <code>\( p(\text{Do} \mid \text{&lt;s&gt;}) \cdot p(\text{you} \mid \text{&lt;s&gt; Do}) \cdot p(\text{think} \mid \text{Do you}) \cdot p(\text{&lt;/s&gt;} \mid \text{you think}) \)</code><br /> (C)&#160; <code>\( p(\text{Do} \mid \text{&lt;s&gt;}) \cdot p(\text{you} \mid \text{&lt;s&gt; Do}) \cdot p(\text{think} \mid \text{Do you}) \)</code></p>
+<p>(A)&#160; <code>\( p(\text{Do}) \cdot p(\text{you} \mid \text{Do}) \cdot p(\text{think} \mid \text{Do you}) \)</code><br /> (B)&#160; <code>\( p(\text{Do} \mid \text{&lt;S&gt;}) \cdot p(\text{you} \mid \text{&lt;S&gt; Do}) \cdot p(\text{think} \mid \text{Do you}) \cdot p(\text{&lt;E&gt;} \mid \text{you think}) \)</code><br /> (C)&#160; <code>\( p(\text{Do} \mid \text{&lt;S&gt;}) \cdot p(\text{you} \mid \text{&lt;S&gt; Do}) \cdot p(\text{think} \mid \text{Do you}) \)</code></p>
 
 <p>represents the probability that</p>
 
@@ -335,19 +335,19 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 </code></pre></div>
 <p>With a trained model, we can check the probabilities of sentences:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>alice</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>fileTokens</span><span class='o'>(</span><span class='s'>&quot;alice.txt&quot;</span><span class='o'>))</span>
-<span class='n'>alice</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;at last came a little bird , so there was that .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
-<span class='c1'>// -40.994921232755416</span>
+<span class='n'>alice</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;the last came a little bird , so there was that .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// -41.39217559191104</span>
 <span class='n'>alice</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;so there was that .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
 <span class='c1'>// -19.451400403614677</span>
-<span class='n'>alice</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;at last came a little bird .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='n'>alice</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;the last came a little bird .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
 <span class='c1'>// -Infinity</span>
 </code></pre></div>
 <blockquote>
-<p><strong>Written Answer (b):</strong> Why is the probability of &#8220;so there was that .&#8221; lower than that of &#8220;at last came a little bird , so there was that .&#8221;?</p>
+<p><strong>Written Answer (b):</strong> Why is the probability of &#8220;so there was that .&#8221; lower than that of &#8220;the last came a little bird , so there was that .&#8221;?</p>
 </blockquote>
 
 <blockquote>
-<p><strong>Written Answer (c):</strong> Why does &#8220;at last came a little bird .&#8221; have a zero probability (negative infinity in log-space)? Why did this zero not drive the probability of &#8220;at last came a little bird , so there was that .&#8221; to zero as well?</p>
+<p><strong>Written Answer (c):</strong> Why does &#8220;the last came a little bird .&#8221; have a zero probability (negative infinity in log-space)? Why did this zero not drive the probability of &#8220;the last came a little bird , so there was that .&#8221; to zero as well?</p>
 </blockquote>
 
 <p>You can also use your trained models to generate random sentences:</p>
@@ -606,7 +606,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 <li>Repeat steps 3-4 until the score does not improve.</li>
 </ol>
 
-<p>This is a fairly basic kind of <a href='http://en.wikipedia.org/wiki/Hill-climbing'>&#8220;hill-climbing&#8221;</a> optimization algorithm: you start at an initial point, look at each direction in which you could take a &#8220;step&#8221; (by swapping two letters), find the step that is most &#8220;uphill&#8221; (the swap that results in the best looking deciphered text), take that step, and repeat until no improvements can be made.</p>
+<p>This is a fairly basic kind of <a href='http://en.wikipedia.org/wiki/Hill-climbing'>&#8220;hill-climbing&#8221;</a> optimization algorithm: you start at an initial point, look at each direction in which you could take a &#8220;step&#8221; (by swapping two letters), find the step that is most &#8220;uphill&#8221; (the swap that results in the best-looking deciphered text), take that step, and repeat until no improvements can be made.</p>
 
 <p>In <code>DecipherToImplement</code>, the cipher key is represented as a vector of 26 strings, where each string is a different single lowercase letter; the first letter in the vector indicates the letter that &#8216;a&#8217; maps to, the second is the mapping for &#8216;b&#8217;, etc. Texts are represented as vectors of sentences, where each sentence is a vector of string tokens.</p>
 
@@ -626,7 +626,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 <li><code>--ciphersize</code>: the number of tokens in the cipher text</li>
 </ul>
 
-<p>The main method of <code>DecipherToImplement</code> starts by generating a random secret cipher key, reading <code>-ciphersize</code> number of tokens from the <code>--cipher</code> file and enciphering the text using the key. Next, it reads <code>-trainsize</code> number of tokens from the <code>--train</code> file and calls the <code>train</code> method to construct a language model. It then proceeds to iteratively try to find the best cipher key by making letter swaps and checking the deciphered output.</p>
+<p>The main method of <code>DecipherToImplement</code> starts by generating a random secret cipher key, reading <code>--ciphersize</code> number of tokens from the <code>--cipher</code> file and enciphering the text using the key. Next, it reads <code>-trainsize</code> number of tokens from the <code>--train</code> file and calls the <code>train</code> method to construct a language model. It then proceeds to iteratively try to find the best cipher key by making letter swaps and checking the deciphered output.</p>
 
 <p>You will define a class <code>nlp.a3.Decipher</code> that extends <code>nlpclass.DecipherToImplement</code>. You will have to implement the following methods:</p>
 <div class='highlight'><pre><code class='scala'>  <span class='cm'>/**</span>
