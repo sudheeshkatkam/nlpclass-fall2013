@@ -144,7 +144,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
                                                      p(w_2 \mid w_3 w_4) \cdot
                                                      p(w_1 \mid w_2 w_3)
 \end{align}
-\]</code> By manipulating the notation, show that the two models are identical (i.e., <code>\( p(\vec{w}) = p_{reversed}(\vec{w}) \)</code> for any <code>\( \vec{w} \)</code> provided that both models use MLE parameters estimated from the same training data (see problem (5.1))).</p>
+\]</code> By manipulating the notation, show that the two models are identical (i.e., <code>\( p(\vec{w}) = p_{reversed}(\vec{w}) \)</code> for any <code>\( \vec{w} \)</code> provided that both models use MLE parameters estimated from the same training data (see problem (1.1) above)).</p>
 </li>
 
 <li>
@@ -463,7 +463,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 
 <span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>      <span class='c1'>// 0.7, since p(hello | Yes) = 7/10 = 0.7</span>
 <span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;No&quot;</span><span class='o'>)</span>       <span class='c1'>// 0.4, since p(hello | No) = 2/5 = 0.4</span>
-<span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;unknown&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.375, since p(hello | No) = 3/8 = 0.375</span>
+<span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;unknown&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.375, since p_default(hello) = 3/8 = 0.375</span>
 
 <span class='n'>cpd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>(</span><span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>        <span class='c1'>// &quot;hello&quot; (70% of the time) or &quot;goodbye&quot; (30%)</span>
 <span class='n'>cpd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>(</span><span class='s'>&quot;unknown&quot;</span><span class='o'>)</span>    <span class='c1'>// &quot;hello&quot; (60% of the time) or &quot;goodbye&quot; (40%)</span>
