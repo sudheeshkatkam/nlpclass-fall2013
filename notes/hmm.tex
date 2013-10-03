@@ -1,0 +1,173 @@
+\documentclass[11pt,letterpaper]{article}
+\topmargin -.5truein
+\textheight 9.0truein
+\oddsidemargin 0truein
+\evensidemargin 0truein
+\textwidth 6.5truein
+\setlength{\parskip}{5pt}
+\setlength\parindent{0pt}
+\usepackage[table]{xcolor}% http://ctan.org/pkg/xcolor
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{qtree}
+\usepackage{algorithmic}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usepackage{multirow}
+\usepackage[all]{xy}
+\usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
+
+\newcommand{\bs}{\textbackslash}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+\newcommand{\ngramstart}{\ensuremath{\langle S \rangle}}
+\newcommand{\ngramend}{\ensuremath{\langle E \rangle}}
+\newcommand{\ngramunk}{\ensuremath{\langle unk \rangle}}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\title{NLP: Hidden Markov Models}
+\author{Dan Garrette\\\small{dhg@cs.utexas.edu}}
+
+\begin{document}
+\maketitle
+
+
+Example dataset:
+\vspace{-2mm}
+\begin{verbatim}
+    <S>|<S> the|D dog|N runs|V   .|.   <E>|<E> 
+    <S>|<S> the|D dog|N walks|V  .|.   <E>|<E> 
+    <S>|<S> the|D man|N walks|V  .|.   <E>|<E> 
+    <S>|<S> a|D   man|N walks|V  the|D dog|N   .|. <E>|<E> 
+    <S>|<S> the|D cat|N walks|V  .|.   <E>|<E> 
+    <S>|<S> the|D dog|N chases|V the|D cat|N   .|. <E>|<E> 
+\end{verbatim}
+
+
+
+\newsavebox{\starttable}
+\sbox{\starttable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}\ngramstart}} \tabularnewline
+      \hline
+      \ngramstart & 1.0
+    \end{tabular}
+}
+
+\newsavebox{\Dtable}
+\sbox{\Dtable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}D}} \tabularnewline
+      \hline
+      the & 0.87 \tabularnewline
+      a   & 0.13
+    \end{tabular}
+}
+
+\newsavebox{\Ntable}
+\sbox{\Ntable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}N}} \tabularnewline
+      \hline
+      man & 0.25 \tabularnewline
+      dog & 0.50 \tabularnewline
+      cat & 0.25
+    \end{tabular}
+}
+
+\newsavebox{\Vtable}
+\sbox{\Vtable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}V}} \tabularnewline
+      \hline
+      walks  & 0.66 \tabularnewline
+      runs   & 0.17 \tabularnewline
+      chases & 0.17
+    \end{tabular}
+}
+
+\newsavebox{\stoptable}
+\sbox{\stoptable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}.}} \tabularnewline
+      \hline
+      . & 1.0
+    \end{tabular}
+}
+
+\newsavebox{\ngramendtable}
+\sbox{\ngramendtable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}\ngramend}} \tabularnewline
+      \hline
+      \ngramend & 1.0
+    \end{tabular}
+}
+
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[rectangle, thick, draw =black!80, node distance = 40mm]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[node distance = 16mm]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  \node[main] (start) []           {\usebox{\starttable}};
+  \node[main] (D)     [right of =start]          {\usebox{\Dtable}};
+  \node[main] (N)     [right of =D, yshift= 70]  {\usebox{\Ntable}};
+  \node[main] (V)     [right of =D, yshift=-70]  {\usebox{\Vtable}};
+  \node[main] (stop)  [right of =D, xshift=40mm] {\usebox{\stoptable}};
+  \node[main] (end)   [right of =stop]           {\usebox{\ngramendtable}};
+
+
+  \path (start) edge [connect] node [pos=0.5, above, blue, sloped] {1.0} (D);
+  \path (D) edge [connect] node [pos=0.5, above, blue, sloped] {1.0} (N);
+  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.80} (V);
+  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.20} (stop);
+  \path (V) edge [connect, red] node [pos=0.5, above, blue, sloped] {0.33} (D);
+  \path (V) edge [connect] node [pos=0.5, above, blue, sloped] {0.67} (stop);
+  \path (stop) edge [connect] node [pos=0.5, above, blue, sloped] {1.0} (end);
+  
+
+\end{tikzpicture}
+\caption{Finite state machine.  Missing arrows are assumed to be zero probabilities.  With smoothing, there would be an arrow in \textit{both directions} between \textit{every} pair of words.}
+\end{figure} 
+
+
+
+
+
+
+\section{Citations}
+
+Some content adapted from:
+
+\begin{itemize}
+  \item \url{http://courses.washington.edu/ling570/gina_fall11/slides/ling570_class8_smoothing.pdf}
+\end{itemize}
+
+
+\end{document}
+
