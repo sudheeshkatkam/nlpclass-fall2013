@@ -79,7 +79,7 @@ on the assumption that the sequence was generated in the order `\( w_1, w_2, w_3
                                                         p(w_1 \mid w_2 w_3)
   \end{align}
 \]`
-By manipulating the notation, show that the two models are identical (i.e., `\( p(\vec{w}) = p_{reversed}(\vec{w}) \)` for any `\( \vec{w} \)` provided that both models use MLE parameters estimated from the same training data (see problem (5.1))).
+By manipulating the notation, show that the two models are identical (i.e., `\( p(\vec{w}) = p_{reversed}(\vec{w}) \)` for any `\( \vec{w} \)` provided that both models use MLE parameters estimated from the same training data (see problem (1.1) above)).
 
 3. (3 points) In the data you will use in questions 6 and 14, sentences are delimited by `<s>` at the start and `</s>` at the end. For example, the following data set consists of a sequence of 3 sentences:
 
@@ -415,7 +415,7 @@ val cpd = new ConditionalProbabilityDistribution(..., default)
 
 cpd("hello", "Yes")      // 0.7, since p(hello | Yes) = 7/10 = 0.7
 cpd("hello", "No")       // 0.4, since p(hello | No) = 2/5 = 0.4
-cpd("hello", "unknown")  // 0.375, since p(hello | No) = 3/8 = 0.375
+cpd("hello", "unknown")  // 0.375, since p_default(hello) = 3/8 = 0.375
 
 cpd.sample("Yes")        // "hello" (70% of the time) or "goodbye" (30%)
 cpd.sample("unknown")    // "hello" (60% of the time) or "goodbye" (40%)
