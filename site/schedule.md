@@ -142,7 +142,6 @@ Topics
 <span style="color: red">Assignments</span>
 
 * [Assignment 2: Text Classification]({{ page.root }}assignments/a2classification.html), **Due (programming submitted by noon, written by 2pm)**
-* [Assignment 3: N-Gram Language Models]({{ page.root }}assignments/a3ngrams.html), Assigned
 
 
 ###Thursday, Oct 3
@@ -150,6 +149,10 @@ Topics
 Topics
 
 * N-Gram Language Models (4/4) ?
+
+<span style="color: red">Assignments</span>
+
+* [Assignment 3: N-Gram Language Models]({{ page.root }}assignments/a3ngrams.html), Assigned
 
 
 ## Week 7

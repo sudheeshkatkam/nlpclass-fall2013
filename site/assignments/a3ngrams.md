@@ -81,15 +81,15 @@ on the assumption that the sequence was generated in the order `\( w_1, w_2, w_3
 \]`
 By manipulating the notation, show that the two models are identical (i.e., `\( p(\vec{w}) = p_{reversed}(\vec{w}) \)` for any `\( \vec{w} \)` provided that both models use MLE parameters estimated from the same training data (see problem (1.1) above)).
 
-3. (3 points) In the data you will use in questions 6 and 14, sentences are delimited by `<s>` at the start and `</s>` at the end. For example, the following data set consists of a sequence of 3 sentences:
+3. (3 points) In the data you will use in questions 6 and 14, sentences are delimited by `<S>` at the start and `<E>` at the end. For example, the following data set consists of a sequence of 3 sentences:
 
-        <s> do you think so </s> 
-        <s> yes </s> 
-        <s> at least i thought so </s>
+        <S> do you think so <E> 
+        <S> yes <E> 
+        <S> at least i thought so <E>
 
     Given English training data, the probability of
 
-        <s> do you think the </s>
+        <S> do you think the <E>
 
     should be extremely low under any good language model. Why? In the case of the trigram model, which parameter or parameters are responsible for making this probability low?
 
@@ -100,8 +100,8 @@ By manipulating the notation, show that the two models are identical (i.e., `\( 
     The expression  
 
     (A)&nbsp; `\( p(\text{Do}) \cdot p(\text{you} \mid \text{Do}) \cdot p(\text{think} \mid \text{Do you}) \)`  
-    (B)&nbsp; `\( p(\text{Do} \mid \text{<s>}) \cdot p(\text{you} \mid \text{<s> Do}) \cdot p(\text{think} \mid \text{Do you}) \cdot p(\text{</s>} \mid \text{you think}) \)`  
-    (C)&nbsp; `\( p(\text{Do} \mid \text{<s>}) \cdot p(\text{you} \mid \text{<s> Do}) \cdot p(\text{think} \mid \text{Do you}) \)`  
+    (B)&nbsp; `\( p(\text{Do} \mid \text{<S>}) \cdot p(\text{you} \mid \text{<S> Do}) \cdot p(\text{think} \mid \text{Do you}) \cdot p(\text{<E>} \mid \text{you think}) \)`  
+    (C)&nbsp; `\( p(\text{Do} \mid \text{<S>}) \cdot p(\text{you} \mid \text{<S> Do}) \cdot p(\text{think} \mid \text{Do you}) \)`  
 
     represents the probability that
 
@@ -283,17 +283,17 @@ With a trained model, we can check the probabilities of sentences:
 
 {% highlight scala %}
 val alice = trainer.train(fileTokens("alice.txt"))
-alice.sentenceProb("at last came a little bird , so there was that .".split(" ").toVector)
-// -40.994921232755416
+alice.sentenceProb("the last came a little bird , so there was that .".split(" ").toVector)
+// -41.39217559191104
 alice.sentenceProb("so there was that .".split(" ").toVector)
 // -19.451400403614677
-alice.sentenceProb("at last came a little bird .".split(" ").toVector)
+alice.sentenceProb("the last came a little bird .".split(" ").toVector)
 // -Infinity
 {% endhighlight %}
 
-> **Written Answer (b):** Why is the probability of "so there was that ." lower than that of "at last came a little bird , so there was that ."?
+> **Written Answer (b):** Why is the probability of "so there was that ." lower than that of "the last came a little bird , so there was that ."?
 
-> **Written Answer (c):** Why does "at last came a little bird ." have a zero probability (negative infinity in log-space)?  Why did this zero not drive the probability of "at last came a little bird , so there was that ." to zero as well?
+> **Written Answer (c):** Why does "the last came a little bird ." have a zero probability (negative infinity in log-space)?  Why did this zero not drive the probability of "the last came a little bird , so there was that ." to zero as well?
 
 You can also use your trained models to generate random sentences:
 
@@ -559,7 +559,7 @@ Your starting point is `nlpclass.DecipherToImplement`.  The program starts with 
 4. Take the highest-scoring cipher key resulting from a letter-swap.
 5. Repeat steps 3-4 until the score does not improve.
 
-This is a fairly basic kind of ["hill-climbing"](http://en.wikipedia.org/wiki/Hill-climbing) optimization algorithm: you start at an initial point, look at each direction in which you could take a "step" (by swapping two letters), find the step that is most "uphill" (the swap that results in the best looking deciphered text), take that step, and repeat until no improvements can be made.
+This is a fairly basic kind of ["hill-climbing"](http://en.wikipedia.org/wiki/Hill-climbing) optimization algorithm: you start at an initial point, look at each direction in which you could take a "step" (by swapping two letters), find the step that is most "uphill" (the swap that results in the best-looking deciphered text), take that step, and repeat until no improvements can be made.
 
 In `DecipherToImplement`, the cipher key is represented as a vector of 26 strings, where each string is a different single lowercase letter; the first letter in the vector indicates the letter that 'a' maps to, the second is the mapping for 'b', etc.  Texts are represented as vectors of sentences, where each sentence is a vector of string tokens.
 
@@ -572,7 +572,7 @@ The program takes the following options:
 * `--cipher`: the file that will be enciphered at the start of the program
 * `--ciphersize`: the number of tokens in the cipher text
 
-The main method of `DecipherToImplement` starts by generating a random secret cipher key, reading `-ciphersize` number of tokens from the `--cipher` file and enciphering the text using the key.  Next, it reads `-trainsize` number of tokens from the `--train` file and calls the `train` method to construct a language model.  It then proceeds to iteratively try to find the best cipher key by making letter swaps and checking the deciphered output.
+The main method of `DecipherToImplement` starts by generating a random secret cipher key, reading `--ciphersize` number of tokens from the `--cipher` file and enciphering the text using the key.  Next, it reads `-trainsize` number of tokens from the `--train` file and calls the `train` method to construct a language model.  It then proceeds to iteratively try to find the best cipher key by making letter swaps and checking the deciphered output.
 
 You will define a class `nlp.a3.Decipher` that extends `nlpclass.DecipherToImplement`.  You will have to implement the following methods:
 
