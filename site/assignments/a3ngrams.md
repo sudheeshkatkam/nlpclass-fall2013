@@ -347,7 +347,7 @@ that takes a model and a *test* corpus of tokenized sentences and outputs the pe
 
 `\[ 
     PP(s_1, s_2, ...) = \sqrt[(\sum_i |s_i|)]{\frac{1}{\prod_i p(s_i)}}
-                      = \exp\left(\frac{-\log\left(\sum_i \log(p(s_i))\right)}{\sum_i |s_i|}\right)
+                      = \exp\left(\frac{-\sum_i \log(p(s_i))}{\sum_i |s_i|}\right)
 \]`
 
 
