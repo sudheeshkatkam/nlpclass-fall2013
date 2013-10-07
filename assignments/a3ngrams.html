@@ -395,7 +395,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 
 <p><code>\[ 
     PP(s_1, s_2, ...) = \sqrt[(\sum_i |s_i|)]{\frac{1}{\prod_i p(s_i)}}
-                      = \exp\left(\frac{-\log\left(\sum_i \log(p(s_i))\right)}{\sum_i |s_i|}\right)
+                      = \exp\left(\frac{-\sum_i \log(p(s_i))}{\sum_i |s_i|}\right)
 \]</code></p>
 
 <p>To test this, you can build a model of <code>alice.txt</code> and measure perplexity on the same text. Note that typically you will measure perplexity on a different text, but without smoothing, we would end up with zero probabilities and perplexity would be infinite.</p>
