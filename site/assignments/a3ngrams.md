@@ -142,8 +142,8 @@ trait NgramModelToImplement {
   def n: Int
   
   /**
-   * Determine the (log) probability of a full sentence.  Return the probability
-   * as the logarithm of the probability.
+   * Determine the (log) probability of a full sentence.  Return 
+   * the probability as the logarithm of the probability.
    *
    * USAGE: 
    *    val sent = Vector("this", "is", "a", "complete", "sentence")
@@ -183,7 +183,7 @@ class NgramModel(
 
 Notice that we are re-using `ConditionalProbabilityDistribution` that was written for Assignment 1, but for this assignment we are conditioning on a Vector of Strings (the preceding n-1 words) instead of a single String.
 
-There are three methods that must be implemented:
+There are two methods that must be implemented:
 
 1. `sentenceProb`, which takes a complete sentence and returns its *log* probability according to the model.  **You must compute this value in log-space and return the logarithm of the sentence probability**.  The input to this method might be something like `Vector("this", "is", "a", "complete", "sentence")`.  Remember that in order to assess the probability of a complete sentence, we must append the special start and end symbols to ensure that we are incorporating the probabilities of the words being at the beginning or end of a sentence.
 
@@ -225,6 +225,8 @@ The `train` method of this class should take a Vector of tokenized training sent
 First, we can try the model on a sample dataset:
 
 {% highlight scala %}
+import nlp.a3.UnsmoothedNgramModelTrainer
+
 val data =
   Vector(
     "the dog runs .",
@@ -354,11 +356,13 @@ that takes a model and a *test* corpus of tokenized sentences and outputs the pe
 To test this, you can build a model of `alice.txt` and measure perplexity on the same text.  Note that typically you will measure perplexity on a different text, but without smoothing, we would end up with zero probabilities and perplexity would be infinite.
 
 {% highlight scala %}
+import nlp.a3.PerplexityNgramModelEvaluator
+
 val aliceText = fileTokens("alice.txt")
 val trainer = new UnsmoothedNgramModelTrainer(2)
 val aliceModel = trainer.train(aliceText)
 println(PerplexityNgramModelEvaluator(aliceModel, aliceText))
-// 3.4401466695417047
+// 20.763056026820063
 {% endhighlight %} 
 
 Note that this gives us an extremely low perplexity, which we would expect given that we are evaluating on the training data.
@@ -375,7 +379,7 @@ In order for us to run your model, you should create an object `nlp.a3.Ngrams` w
 It should train an `NgramModel` using the `UnsmoothedNgramModelTrainer`, compute a perplexity score using `PerplexityNgramModelEvaluator`, and output the score calculated.  When run from the command line, you should see this:
 
     $ sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --test alice.txt"
-    3.4401466695417047
+    3.6424244121974905
 
 
 ## Problem 3: Add-λ Smoothed NgramModelTrainer (20 points)
@@ -417,8 +421,8 @@ cpd("hello", "Yes")      // 0.7, since p(hello | Yes) = 7/10 = 0.7
 cpd("hello", "No")       // 0.4, since p(hello | No) = 2/5 = 0.4
 cpd("hello", "unknown")  // 0.375, since p_default(hello) = 3/8 = 0.375
 
-cpd.sample("Yes")        // "hello" (70% of the time) or "goodbye" (30%)
-cpd.sample("unknown")    // "hello" (60% of the time) or "goodbye" (40%)
+cpd.sample("Yes")     // "hello" (70% of the time) or "goodbye" (30%)
+cpd.sample("unknown") // "hello" (37.5% of the time) or "goodbye" (62.5%)
 {% endhighlight %}
 
 
@@ -456,11 +460,11 @@ Now you should be able to train an ngram language model and evaluate it on new t
 
 {% highlight scala %}
 sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --test alice.txt"
-// 1391.801594767926
+// 1173.074757950973
 sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --test lookingglass.txt"
-// 2604.5715494089172
+// 2179.3556392538153
 sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --test sherlock.txt"
-// 4220.892095528981
+// 3598.0431975169186
 {% endhighlight %} 
 
 
@@ -519,11 +523,11 @@ Add a new option `--interp` that takes an argument `true` or `false` indicating 
 
 {% highlight scala %}
 sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --interp true --test alice.txt"
-// 544.3633625782513
+// 351.53175535531716
 sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --interp true --test lookingglass.txt"
-// 752.8283281605925
+// 419.7316785985396
 sbt "run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --interp true --test sherlock.txt"
-// 1297.8163595433548
+// 693.092620494836
 {% endhighlight %} 
 
 
@@ -577,37 +581,37 @@ The main method of `DecipherToImplement` starts by generating a random secret ci
 You will define a class `nlp.a3.Decipher` that extends `nlpclass.DecipherToImplement`.  You will have to implement the following methods:
 
 {% highlight scala %}
-  /**
-   * Train an ngram language model on the given tokens
-   *
-   * @param text    Tokenized sentences to train the language model
-   * @param n       The order of the ngram language model
-   * @param lambda  The add-lambda smoothing parameter of the model
-   * @return        An ngram language model
-   */
-  def train(text: Vector[Vector[String]], n: Int, lambda: Double): NgramModelToImplement
+/**
+ * Train an ngram language model on the given tokens
+ *
+ * @param text    Tokenized sentences to train the language model
+ * @param n       The order of the ngram language model
+ * @param lambda  The add-lambda smoothing parameter of the model
+ * @return        An ngram language model
+ */
+def train(text: Vector[Vector[String]], n: Int, lambda: Double): NgramModelToImplement
 
-  /**
-   * Swap two letter mappings in the cipher key.
-   *
-   * @param i          The cipher key mapping position to swap with j
-   * @param j          The cipher key mapping position to swap with i
-   * @param cipherKey  The current cipher key, to be manipulated
-   * @return           A new cipher key, with swapped letter mappings
-   */
-  def swapLetters(i: Int, j: Int, cipherKey: Vector[String]): Vector[String]
+/**
+ * Swap two letter mappings in the cipher key.
+ *
+ * @param i          The cipher key mapping position to swap with j
+ * @param j          The cipher key mapping position to swap with i
+ * @param cipherKey  The current cipher key, to be manipulated
+ * @return           A new cipher key, with swapped letter mappings
+ */
+def swapLetters(i: Int, j: Int, cipherKey: Vector[String]): Vector[String]
 
-  /**
-   * Assign a score for the cipher key.  The score should be based on how much
-   * the output of deciphering the ciphertext with the key looks like the
-   * underlying language.
-   *
-   * @param cipherText  Text that has been deciphered: tokenized sentences
-   * @param cipherKey   Mapping from letters to letters
-   * @param ngramModel  An ngram language model
-   * @return            A score.  (Lower is better)
-   */
-  def scoreCipherKey(cipherText: Vector[Vector[String]], cipherKey: Vector[String], ngramModel: NgramModelToImplement): Double  
+/**
+ * Assign a score for the cipher key.  The score should be based on
+ * how much the output of deciphering the ciphertext with the key 
+ * looks like the underlying language.
+ *
+ * @param cipherText  Tokenized sentences that have been enciphered
+ * @param cipherKey   Mapping from letters to letters
+ * @param ngramModel  An ngram language model
+ * @return            A score.  (Lower is better)
+ */
+def scoreCipherKey(cipherText: Vector[Vector[String]], cipherKey: Vector[String], ngramModel: NgramModelToImplement): Double  
   
 {% endhighlight %}
 

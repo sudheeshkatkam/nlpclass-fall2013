@@ -111,7 +111,6 @@ Topics
 
 * Language Modeling
 * N-Gram Language Models (1/4)
-* Maximum Likelihood Estimation for N-Gram Models
 
 Materials
 
@@ -126,7 +125,7 @@ Materials
 Topics
 
 * N-Gram Language Models (2/4)
-* Add-Lambda Smoothing
+* Maximum Likelihood Estimation for N-Gram Models
 
 
 ## Week 6
@@ -136,8 +135,8 @@ Topics
 Topics
 
 * N-Gram Language Models (3/4)
-* Backoff, Interpolation
-* Perplexity
+* Add-Lambda Smoothing
+* Good-Turing, Knesser Ney
 
 <span style="color: red">Assignments</span>
 
@@ -148,7 +147,9 @@ Topics
 
 Topics
 
-* N-Gram Language Models (4/4) ?
+* N-Gram Language Models (4/4)
+* Interpolation, Backoff
+* Perplexity
 
 <span style="color: red">Assignments</span>
 
