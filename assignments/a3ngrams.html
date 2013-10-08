@@ -246,7 +246,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 
 <ol>
 <li>
-<p><code>sentenceProb</code>, which takes a complete sentence and returns its <em>log</em> probability according to the model. <strong>You must compute this value in log-space and return the logarithm of the sentence probability</strong>. The input to this method might be something like <code>Vector(&quot;this&quot;, &quot;is&quot;, &quot;a&quot;, &quot;complete&quot;, &quot;sentence&quot;)</code>. Remember that in order to assess the probability of a complete sentence, we must append the special start and end symbols to ensure that we are incorporating the probabilities of the words being at the beginning or end of a sentence.</p>
+<p><code>sentenceProb</code>, which takes a complete sentence and returns its <em>log</em> probability according to the model. <strong>You must compute this value in log-space and return the logarithm of the sentence probability</strong>. The input to this method might be something like <code>Vector(&quot;this&quot;, &quot;is&quot;, &quot;a&quot;, &quot;complete&quot;, &quot;sentence&quot;)</code>. Remember that in order to assess the probability of a complete sentence, we must append the special start and end symbols to ensure that we are incorporating the probabilities of the words being at the beginning or end of a sentence. However, these sentence boundary markers are not needed for unigram models.</p>
 </li>
 
 <li>
@@ -279,6 +279,8 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 <span class='o'>}</span>
 </code></pre></div>
 <p>The <code>train</code> method of this class should take a Vector of tokenized training sentences (each as its own Vector) and return a new <code>NgramModel</code> with parameters based on Maximum Likelihood Estimates from the training data.</p>
+
+<p>Since we are modeling full sentences, be sure to make use of the special start and end tokens during training. However, you should not use them for unigram models.</p>
 
 <h3 id='trying_out_the_model'>Trying out the model</h3>
 
