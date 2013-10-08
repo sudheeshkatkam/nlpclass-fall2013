@@ -46,6 +46,229 @@
 \maketitle
 
 
+
+\section{Tagging}
+
+\begin{itemize}
+  \item Named entities
+  \item Parts of speech
+\end{itemize}
+
+
+
+
+\section{Parts of Speech}
+
+Tagsets
+
+\begin{itemize}
+  \item Google Universal Tagset, 12: Noun, Verb, Adjective, Adverb, Pronoun, Determiner, Adposition (prepositions and postpositions), Numerals, Conjunctions, Particles, Punctuation, Other
+  \item Penn Treebank, 45.  Includes 4 categores of noun, 4 categories of pronoun, and 6 categories of verb.
+  \item Brown Corpus, 87
+\end{itemize}
+
+Deciding what categories
+
+\begin{itemize}
+  \item Auxilliary verbs?  ``I \textit{had} gone''
+  \item Numbers as adjectives? ``I saw 4 cars''
+  \item Count vs. mass nouns?  ``some apple'' vs. ``two apples'', ``some snow'' vs. ``two snows''
+\end{itemize}
+
+Uses
+
+\begin{itemize}
+  \item Parsing: determiner and noun should connect first, then to verb
+  \item Speech synthesis: OBject (noun) vs. obJECT (verb), CONtent (noun) vs. conTENT (adj)
+\end{itemize}
+
+Rule-based
+
+\begin{itemize}
+  \item ``if it ends in `-tion' '' $\rightarrow$ Noun
+  \item ``if it ends in `-ize' '' $\rightarrow$ Verb
+  \item ``if it starts with `re-' '' $\rightarrow$ Verb
+  \item ``if it starts with a capital letter'' $\rightarrow$ Proper Noun
+  \item ``if it's preceded by `the' '' $\rightarrow$ Noun
+  \item ``if it's followed by \textit{'s} '' $\rightarrow$ Noun
+  \item ``if it's preceded by an adjective'' $\rightarrow$ Noun
+  \item Or just memorize a big list of words and tags?
+    \begin{itemize}
+      \item Ambiguity?
+      \item Picking the most common tag for a word $\rightarrow$ 90\% accuracy (thought state-of-the-art is 90\%)
+    \end{itemize}
+\end{itemize}
+
+Open vs. Closed
+
+\begin{itemize}
+  \item Open class tags: new words are frequently added
+    \begin{itemize}
+      \item noun, verb, adjective, adverb
+      \item ``Twitter'', to ``tweet'', ``twitterish''
+    \end{itemize}
+  \item Closed class tags: new words are rarely added
+    \begin{itemize}
+      \item determiner, preposition, pronouns
+      \item Don't want to completely close off new words
+      \item Maybe \textit{alongside} (preposition) wasn't seen in training, only test
+      \item New domains: ``u'' as a pronoun
+    \end{itemize}
+\end{itemize}
+
+Complexitites:
+
+\begin{itemize}
+  \item Ambiguity:
+    \begin{itemize}
+      \item ``buy a book'' (noun) vs. ``book a flight'' (verb)
+      \item ``talk over the deal'' (particle) vs. ``talk over the phone'' (prep)
+    \end{itemize}
+  \item Phrasal verbs: ``turn down'', ``rule out''
+    \begin{itemize}
+      \item ``he went on for days''
+      \item ``he went on a boat''
+    \end{itemize}
+\end{itemize}
+
+
+
+\section{Hidden Markov Models}
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, minimum size = 13mm, thick, draw =black!80, node distance = 20mm]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[node distance = 16mm]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  \node[main] (t1)                {$t_1$};
+  \node[obsv] (w1) [below of =t1] {$w_1$};
+  \node[main] (t2) [right of =t1] {$t_2$};
+  \node[obsv] (w2) [below of =t2] {$w_2$};
+  \node[main] (t3) [right of =t2] {$t_3$};
+  \node[obsv] (w3) [below of =t3] {$w_3$};
+  \node[main] (t4) [right of =t3] {$t_4$};
+  \node[obsv] (w4) [below of =t4] {$w_4$};
+  \node[hidden] (tI1) [right of =t4, xshift=-5mm] {$\dots$};
+  \node[hidden] (wI1) [below of =tI1] {$\dots$};
+  \node[hidden] (tI2) [right of =tI1, xshift=-8mm] {$\dots$};
+  \node[hidden] (wI2) [below of =tI2] {$\dots$};
+  \node[main] (tT) [right of=tI2, xshift=-1mm] {$w_T$};
+  \node[obsv] (wT) [below of=tT] {$w_T$};
+
+  \path (t2) edge [connect] (t1)
+        (t3) edge [connect] (t2)
+        (t4) edge [connect] (t3)
+        (tT) edge [connect] (tI2)
+        (t1) edge [connect] (w1)
+        (t2) edge [connect] (w2)
+        (t3) edge [connect] (w3)
+        (t4) edge [connect] (w4)
+        (tT) edge [connect] (wT);
+
+\end{tikzpicture}
+\caption{Second-order HMM showing conditional dependencies}
+\end{figure} 
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, minimum size = 13mm, thick, draw =black!80, node distance = 20mm]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[node distance = 16mm]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  \node[main] (t1)                {\ngramstart};
+  \node[obsv] (w1) [below of =t1] {\ngramstart};
+  \node[main] (t2) [right of =t1] {D};
+  \node[obsv] (w2) [below of =t2] {the};
+  \node[main] (t3) [right of =t2] {N};
+  \node[obsv] (w3) [below of =t3] {man};
+  \node[main] (t4) [right of =t3] {V};
+  \node[obsv] (w4) [below of =t4] {walked};
+  \node[main] (t7) [right of =t4] {.};
+  \node[obsv] (w7) [below of =t7] {.};
+  \node[main] (tT) [right of =t7, xshift=-1mm] {\ngramend};
+  \node[obsv] (wT) [below of =tT] {\ngramend};
+
+  \path (t2) edge [connect] (t1)
+        (t3) edge [connect] (t2)
+        (t4) edge [connect] (t3)
+        (t7) edge [connect] (t4)
+        (tT) edge [connect] (t7)
+
+        (t1) edge [connect] (w1)
+        (t2) edge [connect] (w2)
+        (t3) edge [connect] (w3)
+        (t4) edge [connect] (w4)
+        (t7) edge [connect] (w7)
+        (tT) edge [connect] (wT);
+
+\end{tikzpicture}
+\caption{Second-order HMM for the sentence ``the man walks .''}
+\end{figure} 
+
+
+
+Similar to N-Gram models
+
+\begin{itemize}
+  \item Model the text as a \textit{sequence}
+    \begin{itemize}
+      \item Bad assumption, but less sparse
+    \end{itemize}
+  \item For ngrams, we modeled the probability of each word conditioned on the previous n-1 words.
+  \item Here, we model each \textit{tag} conditioned on previous \textit{tags}
+  \item Still uses Markov assumption: only look back a few tags
+    \begin{itemize}
+      \item Again, bad assumption, but less sparse
+    \end{itemize}
+  \item Note that we have to condition words on tags because otherwise 
+\end{itemize}
+
+Derivation
+
+\begin{itemize}
+  \item We want the most likely tag sequence for a sequence of words: 
+        $p(t_1, t_2, ..., t_n \mid w_1, w_2, ..., w_n)$
+  \item For simplicity, we'll write this as $p(t_1^n \mid w_1^n)$
+  \item So we want  $\hat{t}_1^n = \text{argmax}_{t_1^n}~p(t_1^n \mid w_1^n)$, but it's hard to estimate
+  \item Bayes rule: $\hat{t}_1^n = \text{argmax}_{t_1^n}~\frac{p(w_1^n \mid t_1^n) \cdot p(t_1^n)}{p(w_1^n)}
+                                 = \text{argmax}_{t_1^n}~p(w_1^n \mid t_1^n) \cdot p(t_1^n)$
+  \item Two major independence assumptions:
+    \begin{itemize}
+      \item Like ngrams, assume probability of a sequence is recent past: \vspace{2mm} \\
+            $p(t_1^n) \approx p(t_2 \mid t_1) \cdot 
+                              p(t_2 \mid t_2) \cdot 
+                              ...  \cdot 
+                              p(t_n \mid t_{n-1})
+                       = \prod_{i=1}^n p(t_i \mid t_{i-1})$
+      \item Also assume word is only dependent on its tag: \vspace{2mm} \\
+            $p(w_1^n \mid t_1^n) \approx p(w_1 \mid t_n) \cdot 
+                                         p(w_2 \mid t_n) \cdot 
+                                         ...  \cdot 
+                                         p(w_n \mid t_n)
+                                 = \prod_{i=1}^n p(w_i \mid t_i)$
+      \item Together: 
+        \begin{align*}
+        \hat{t}_1^n &= \text{argmax}_{t_1^n}~p(t_1^n \mid w_1^n) \\
+                    &= \text{argmax}_{t_1^n}~p(w_1^n \mid t_1^n) \cdot p(t_1^n) \\
+                    &\approx \text{argmax}_{t_1^n}~\prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1})
+        \end{align*}
+    \end{itemize}
+\end{itemize}
+
+
+
+
+
+
+
 Example dataset:
 \vspace{-2mm}
 \begin{verbatim}
@@ -125,7 +348,7 @@ Example dataset:
 }
 
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[rectangle, thick, draw =black!80, node distance = 40mm]
@@ -158,15 +381,6 @@ Example dataset:
 
 
 
-
-
-\section{Citations}
-
-Some content adapted from:
-
-\begin{itemize}
-  \item \url{http://courses.washington.edu/ling570/gina_fall11/slides/ling570_class8_smoothing.pdf}
-\end{itemize}
 
 
 \end{document}
