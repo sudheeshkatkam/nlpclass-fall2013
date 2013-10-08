@@ -185,7 +185,7 @@ Notice that we are re-using `ConditionalProbabilityDistribution` that was writte
 
 There are two methods that must be implemented:
 
-1. `sentenceProb`, which takes a complete sentence and returns its *log* probability according to the model.  **You must compute this value in log-space and return the logarithm of the sentence probability**.  The input to this method might be something like `Vector("this", "is", "a", "complete", "sentence")`.  Remember that in order to assess the probability of a complete sentence, we must append the special start and end symbols to ensure that we are incorporating the probabilities of the words being at the beginning or end of a sentence.
+1. `sentenceProb`, which takes a complete sentence and returns its *log* probability according to the model.  **You must compute this value in log-space and return the logarithm of the sentence probability**.  The input to this method might be something like `Vector("this", "is", "a", "complete", "sentence")`.  Remember that in order to assess the probability of a complete sentence, we must append the special start and end symbols to ensure that we are incorporating the probabilities of the words being at the beginning or end of a sentence.  However, these sentence boundary markers are not needed for unigram models.
 
 2. `generate`, which generates a random sentence with likelihood according to the model.  For models with *n*>1, you should start the generation with *n*-1 'begin' symbols to sample the first word, and then sample each consecutive word using the previous *n*-1 words, stopping when you draw the 'end' symbol.  (Be sure that you do not include the start and end in the output.)  However, for unigram models (*n*=1), this will not work very well since we don't want to have to rely on drawing an 'end' symbol.  Thus, for unigram models, the `generate` method should simply sample a sequence of 10 words.
 
@@ -218,6 +218,7 @@ class UnsmoothedNgramModelTrainer(n: Int) extends NgramModelTrainerToImplement {
 
 The `train` method of this class should take a Vector of tokenized training sentences (each as its own Vector) and return a new `NgramModel` with parameters based on Maximum Likelihood Estimates from the training data.
 
+Since we are modeling full sentences, be sure to make use of the special start and end tokens during training.  However, you should not use them for unigram models.
 
 
 ### Trying out the model
