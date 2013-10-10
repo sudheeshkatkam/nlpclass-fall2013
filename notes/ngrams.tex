@@ -305,14 +305,14 @@ Use Chain Rule?
   \node[hidden] (wI2) [right of =wI1, xshift=-8mm] {$\dots$};
   \node[obsv] (wT) [right of=wI2, xshift=-1mm] {$w_T$};
 
-  \path (w3) edge [connect, bend right=40] (w1)
-        (w3) edge [connect, bend right=30] (w2)
-        (w4) edge [connect, bend right=40] (w2)
-        (w4) edge [connect, bend right=30] (w3)
-        (w5) edge [connect, bend right=40] (w3)
-        (w5) edge [connect, bend right=30] (w4)
-        (wT) edge [connect, bend right=40] (wI1)
-        (wT) edge [connect, bend right=30] (wI2);
+  \path (w1) edge [connect, bend left=40] (w3)
+        (w2) edge [connect, bend left=30] (w3)
+        (w2) edge [connect, bend left=40] (w4)
+        (w3) edge [connect, bend left=30] (w4)
+        (w3) edge [connect, bend left=40] (w5)
+        (w4) edge [connect, bend left=30] (w5)
+        (wI1) edge [connect, bend left=40] (wT)
+        (wI2) edge [connect, bend left=30] (wT);
 
 \end{tikzpicture}
 \caption{Trigram model showing conditional dependencies}
@@ -335,16 +335,16 @@ Use Chain Rule?
   \node[obsv] (w6) [right of =w5] {.};
   \node[obsv] (w7) [right of =w6] {\ngramend};
 
-  \path (w3) edge [connect, bend right=40] (w1)
-        (w3) edge [connect, bend right=30] (w2)
-        (w4) edge [connect, bend right=40] (w2)
-        (w4) edge [connect, bend right=30] (w3)
-        (w5) edge [connect, bend right=40] (w3)
-        (w5) edge [connect, bend right=30] (w4)
-        (w6) edge [connect, bend right=40] (w4)
-        (w6) edge [connect, bend right=30] (w5)
-        (w7) edge [connect, bend right=40] (w5)
-        (w7) edge [connect, bend right=30] (w6);
+  \path (w1) edge [connect, bend left=40] (w3)
+        (w2) edge [connect, bend left=30] (w3)
+        (w2) edge [connect, bend left=40] (w4)
+        (w3) edge [connect, bend left=30] (w4)
+        (w3) edge [connect, bend left=40] (w5)
+        (w4) edge [connect, bend left=30] (w5)
+        (w4) edge [connect, bend left=40] (w6)
+        (w5) edge [connect, bend left=30] (w6)
+        (w5) edge [connect, bend left=40] (w7)
+        (w6) edge [connect, bend left=30] (w7);
 
 \end{tikzpicture}
 \caption{Trigram Model for the sentence ``the dog walks .''}

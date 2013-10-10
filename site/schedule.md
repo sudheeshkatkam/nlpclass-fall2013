@@ -249,10 +249,18 @@ Topics
 Topics
 
 * Maximum entropy Markov models (3/4)
+* Information extraction (NER, Relation Extraction, Coref?)
 
 Materials
 
 * JM 6: 207-212
+* JM 22: 725-743
+* [Information extraction slides](http://nlp-s11.utcompling.com/schedule/martin_ie.ppt) (by Jim Martin, slightly remixed)
+
+<span style="color: red">Assignments</span>
+
+* [Assignment 4: HMMs]({{ page.root }}assignments/a4.html), **Due (programming submitted by noon, written by 2pm)**
+* [Assignment 5: Sentiment]({{ page.root }}assignments/a5.html), Assigned
 
 
 
@@ -262,18 +270,10 @@ Materials
 
 Topics
 
-* Maximum entropy Markov models (4/4)
-* Information extraction (NER, Relation Extraction, Coref?)
+* ?
 
 Materials
 
-* JM 22: 725-743
-* [Information extraction slides](http://nlp-s11.utcompling.com/schedule/martin_ie.ppt) (by Jim Martin, slightly remixed)
-
-<span style="color: red">Assignments</span>
-
-* [Assignment 4: HMMs]({{ page.root }}assignments/a4.html), **Due (programming submitted by noon, written by 2pm)**
-* [Assignment 5: Sentiment]({{ page.root }}assignments/a5.html), Assigned
 
 
 ###Thursday, Nov 7

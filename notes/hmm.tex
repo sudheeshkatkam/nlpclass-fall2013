@@ -26,8 +26,8 @@
 \newcommand{\bs}{\textbackslash}
 \renewcommand{\vec}[1]{\mathbf{#1}}
 
-\newcommand{\ngramstart}{\ensuremath{\langle S \rangle}}
-\newcommand{\ngramend}{\ensuremath{\langle E \rangle}}
+\newcommand{\ngramstart}{\ensuremath{\langle \textsc{s} \rangle}}
+\newcommand{\ngramend}{\ensuremath{\langle \textsc{e} \rangle}}
 \newcommand{\ngramunk}{\ensuremath{\langle unk \rangle}}
 
 \usepackage{hyperref}
@@ -95,7 +95,7 @@ Rule-based
   \item Or just memorize a big list of words and tags?
     \begin{itemize}
       \item Ambiguity?
-      \item Picking the most common tag for a word $\rightarrow$ 90\% accuracy (thought state-of-the-art is 90\%)
+      \item Picking the most common tag for a word $\rightarrow$ 90\% accuracy (thought state-of-the-art is 97\%)
     \end{itemize}
 \end{itemize}
 
@@ -109,7 +109,7 @@ Open vs. Closed
     \end{itemize}
   \item Closed class tags: new words are rarely added
     \begin{itemize}
-      \item determiner, preposition, pronouns
+      \item determiner, preposition, pronouns, ...
       \item Don't want to completely close off new words
       \item Maybe \textit{alongside} (preposition) wasn't seen in training, only test
       \item New domains: ``u'' as a pronoun
@@ -160,10 +160,10 @@ Complexitites:
   \node[main] (tT) [right of=tI2, xshift=-1mm] {$w_T$};
   \node[obsv] (wT) [below of=tT] {$w_T$};
 
-  \path (t2) edge [connect] (t1)
-        (t3) edge [connect] (t2)
-        (t4) edge [connect] (t3)
-        (tT) edge [connect] (tI2)
+  \path (t1) edge [connect] (t2)
+        (t2) edge [connect] (t3)
+        (t3) edge [connect] (t4)
+        (tI2) edge [connect] (tT)
         (t1) edge [connect] (w1)
         (t2) edge [connect] (w2)
         (t3) edge [connect] (w3)
@@ -196,11 +196,11 @@ Complexitites:
   \node[main] (tT) [right of =t7, xshift=-1mm] {\ngramend};
   \node[obsv] (wT) [below of =tT] {\ngramend};
 
-  \path (t2) edge [connect] (t1)
-        (t3) edge [connect] (t2)
-        (t4) edge [connect] (t3)
-        (t7) edge [connect] (t4)
-        (tT) edge [connect] (t7)
+  \path (t1) edge [connect] (t2)
+        (t2) edge [connect] (t3)
+        (t3) edge [connect] (t4)
+        (t4) edge [connect] (t7)
+        (t7) edge [connect] (tT)
 
         (t1) edge [connect] (w1)
         (t2) edge [connect] (w2)
@@ -231,54 +231,229 @@ Similar to N-Gram models
   \item Note that we have to condition words on tags because otherwise 
 \end{itemize}
 
+
+~\\ \bs\bs~ Day 2 \\
+
 Derivation
 
 \begin{itemize}
-  \item We want the most likely tag sequence for a sequence of words: 
-        $p(t_1, t_2, ..., t_n \mid w_1, w_2, ..., w_n)$
-  \item For simplicity, we'll write this as $p(t_1^n \mid w_1^n)$
-  \item So we want  $\hat{t}_1^n = \text{argmax}_{t_1^n}~p(t_1^n \mid w_1^n)$, but it's hard to estimate
-  \item Bayes rule: $\hat{t}_1^n = \text{argmax}_{t_1^n}~\frac{p(w_1^n \mid t_1^n) \cdot p(t_1^n)}{p(w_1^n)}
-                                 = \text{argmax}_{t_1^n}~p(w_1^n \mid t_1^n) \cdot p(t_1^n)$
+  \item We want the most likely tag sequence for a sequence of words: \vspace{2mm} \\
+        $~~~~~~~~~~p(\ngramstart~t_1~t_2~...~t_n~\ngramend \mid \ngramstart~w_1~w_2~...~w_n~\ngramend)$
+        \vspace{2mm} \\ Remember that order matters!
+  \item For simplicity, we'll write this as $t_1^n = \langle t_1, t_2, ..., t_n \rangle$
+  \item So we want  \vspace{2mm} \\
+  $~~~~~~~~~~~~~\hat{t}_1^n = \text{argmax}_{t_1^n}~p(\ngramstart~t_1~t_2~...~t_n~\ngramend \mid \ngramstart~w_1~w_2~...~w_n~\ngramend)$ \vspace{2mm} \\ but it's hard to estimate
+  \item Like for ngrams, use Bayes rule: 
+  \begin{align*}
+  \hat{t}_1^n 
+  &= \text{argmax}_{t_1^n}~\frac{p(\ngramstart~w_1~w_2~...~w_n~\ngramend \mid \ngramstart~t_1~t_2~...~t_n~\ngramend) \cdot p(\ngramstart~t_1~t_2~...~t_n~\ngramend}{p(\ngramstart~w_1~w_2~...~w_n~\ngramend)} \\
+  & = \text{argmax}_{t_1^n}~p(\ngramstart~w_1~w_2~...~w_n~\ngramend \mid \ngramstart~t_1~t_2~...~t_n~\ngramend) \cdot p(\ngramstart~t_1~t_2~...~t_n~\ngramend)
+\end{align*}
+
   \item Two major independence assumptions:
     \begin{itemize}
-      \item Like ngrams, assume probability of a sequence is recent past: \vspace{2mm} \\
-            $p(t_1^n) \approx p(t_2 \mid t_1) \cdot 
+      \item Like ngrams, assume probability of a sequence is dependent only on recent past:
+        \begin{align*}
+          p(\ngramstart~t_1~t_2~...~t_n~\ngramend) 
+                    &\approx p(t_1 \mid \ngramstart) \cdot 
+                              p(t_2 \mid t_1) \cdot 
                               p(t_2 \mid t_2) \cdot 
                               ...  \cdot 
-                              p(t_n \mid t_{n-1})
-                       = \prod_{i=1}^n p(t_i \mid t_{i-1})$
-      \item Also assume word is only dependent on its tag: \vspace{2mm} \\
-            $p(w_1^n \mid t_1^n) \approx p(w_1 \mid t_n) \cdot 
-                                         p(w_2 \mid t_n) \cdot 
-                                         ...  \cdot 
-                                         p(w_n \mid t_n)
-                                 = \prod_{i=1}^n p(w_i \mid t_i)$
+                              p(t_n \mid t_{n-1}) \cdot 
+                              p(\ngramend \mid t_n) \\
+                    &= \prod_{i=1}^n p(t_i \mid t_{i-1})
+        \end{align*}
+      \item Also assume word is only dependent on its tag: \vspace{2mm}
+        \begin{align*}
+          p(\ngramstart~w_1~w_2~...~w_n~\ngramend \mid \ngramstart~t_1~t_2~...~t_n~\ngramend) 
+                    &\approx p(w_1 \mid t_1) \cdot 
+                             p(w_2 \mid t_2) \cdot 
+                             ...  \cdot 
+                             p(w_n \mid t_n) \\
+                    &= \prod_{i=1}^n p(w_i \mid t_i)
+        \end{align*}
       \item Together: 
         \begin{align*}
-        \hat{t}_1^n &= \text{argmax}_{t_1^n}~p(t_1^n \mid w_1^n) \\
-                    &= \text{argmax}_{t_1^n}~p(w_1^n \mid t_1^n) \cdot p(t_1^n) \\
+        \hat{t}_1^n &= \text{argmax}_{t_1^n}~p(\ngramstart~t_1~t_2~...~t_n~\ngramend \mid \ngramstart~w_1~w_2~...~w_n~\ngramend) \\
+                    &= \text{argmax}_{t_1^n}~p(\ngramstart~w_1~w_2~...~w_n~\ngramend \mid \ngramstart~t_1~t_2~...~t_n~\ngramend) \cdot p(\ngramstart~t_1~t_2~...~t_n~\ngramend) \\
                     &\approx \text{argmax}_{t_1^n}~\prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1})
         \end{align*}
     \end{itemize}
 \end{itemize}
 
 
+\section{Estimating Parameters: MLE}
 
+Two probability distributions to estimate:
 
+\begin{itemize}
+  \item Transitions: probability of a tag, given previous tag, $p(t_i \mid t_{i-1})$
+  \item Emissions: probability of a word, given its tag, $p(w_i \mid t_i)$
+\end{itemize}
 
+MLE
 
+\begin{itemize}
+  \item MLE estimation is just like before (na\"{i}ve Bayes, ngrams, ...), normalized counts
+  \item Transitions: $p(t_i \mid t_{i-1}) = \frac{C(t_{i-1}~t_i)}{\sum_x C(t_{i-1}~x)} = \frac{C(t_{i-1}~t_i)}{C(t_{i-1})}$
+  \item Emissions: $p(w_i \mid t_i) = \frac{C(t_i,w_i)}{\sum_x C(t_i,x)} = \frac{C(t_i,w_i)}{C(t_i)}$
+\end{itemize}
 
 Example dataset:
 \vspace{-2mm}
 \begin{verbatim}
-    <S>|<S> the|D dog|N runs|V   .|.   <E>|<E> 
-    <S>|<S> the|D dog|N walks|V  .|.   <E>|<E> 
-    <S>|<S> the|D man|N walks|V  .|.   <E>|<E> 
-    <S>|<S> a|D   man|N walks|V  the|D dog|N   .|. <E>|<E> 
-    <S>|<S> the|D cat|N walks|V  .|.   <E>|<E> 
-    <S>|<S> the|D dog|N chases|V the|D cat|N   .|. <E>|<E> 
+    <S>|<S> the|D man|N walks|V the|D dog|N .|. <E>|<E> 
+    <S>|<S> the|D dog|N runs|V .|. <E>|<E> 
+    <S>|<S> the|D dog|N walks|V .|. <E>|<E> 
+    <S>|<S> the|D man|N walks|V .|. <E>|<E> 
+    <S>|<S> a|D man|N saw|V the|D dog|N .|. <E>|<E> 
+    <S>|<S> the|D cat|N walks|V .|. <E>|<E> 
 \end{verbatim}
+
+Some probabilities:
+
+\begin{itemize}
+  \item $p(t_i=\text{V} \mid t_{i-1}=\text{N}) = \frac{C(\text{N V})}{\sum_x C(\text{N } x)} = \frac{6}{8} = 0.75$
+  \item $p(t_i=\text{D} \mid t_{i-1}=\text{N}) = \frac{C(\text{N D})}{\sum_x C(\text{N } x)} = \frac{0}{8} = 0.0$
+  \\
+  \item $p(w_i=\text{dog} \mid t_i=\text{N}) = \frac{C(\text{N,dog})}{\sum_x C(\text{N},x)} = \frac{4}{8} = 0.50$
+  \item $p(w_i=\text{the} \mid t_i=\text{N}) = \frac{C(\text{N,the})}{\sum_x C(\text{N},x)} = \frac{0}{8} = 0.0$
+\end{itemize}
+
+
+\section{Add-$\lambda$ Smoothing}
+
+\begin{itemize}
+  \item Again, just like before.
+  \item Transitions: $p(t_i \mid t_{i-1}) 
+             = \frac{C(t_{i-1}~t_i)+\lambda}{\sum_x (C(t_{i-1}~x)+\lambda)} 
+             = \frac{C(t_{i-1}~t_i)+\lambda}{(\sum_x C(t_{i-1}~x))+\lambda\cdot|T|} 
+             = \frac{C(t_{i-1}~t_i)}{C(t_{i-1})}$
+  \item Emissions: $p(w_i \mid t_i) 
+             = \frac{C(t_i,w_i)+\lambda}{\sum_x (C(t_i,x)+\lambda)} 
+             = \frac{C(t_i,w_i)+\lambda}{(\sum_x C(t_i,x))+\lambda\cdot|V|} 
+             = \frac{C(t_i,w_i)}{C(t_i)}$
+\end{itemize}
+
+Some probabilities (with $\lambda=2$):
+
+\begin{itemize}
+  \item $V = \{ a, cat, dog, man, runs, saw, the, walks, ., \ngramend \}$, ~~$|V|=10$   \vspace{2mm} \\
+        $T = \{ D, N, V, \ngramend \}$, ~~$|N|=4$
+  \\
+  \item $p(t_i=\text{V} \mid t_{i-1}=\text{N}) 
+     = \frac{C(\text{N V})+2}{\sum_x (C(\text{N } x)+2)} 
+     = \frac{C(\text{N V})+2}{(\sum_x C(\text{N } x))+(2 \cdot 4)} 
+     = \frac{6+2}{8+8} = 0.75
+     = \frac{8}{16} = 0.50$
+  \item $p(t_i=\text{D} \mid t_{i-1}=\text{N}) 
+     = \frac{C(\text{N D})+2}{\sum_x (C(\text{N } x)+2)} 
+     = \frac{C(\text{N D})+2}{(\sum_x C(\text{N } x))+(2 \cdot 4)} 
+     = \frac{0+2}{8+8}
+     = \frac{2}{16} = 0.125$
+  \\
+  \item $p(w_i=\text{dog} \mid t_i=\text{N}) 
+     = \frac{C(\text{N,dog})}{\sum_x (C(\text{N},x)+2)} 
+     = \frac{C(\text{N,dog})}{(\sum_x C(\text{N},x))+(2 \cdot 10)} 
+     = \frac{4+2}{8+10}
+     = 0.33$
+  \item $p(w_i=\text{the} \mid t_i=\text{N}) 
+     = \frac{C(\text{N,the})}{\sum_x (C(\text{N},x)+2)} 
+     = \frac{C(\text{N,the})}{(\sum_x C(\text{N},x))+(2 \cdot 10)} 
+     = \frac{0+2}{8+10} 
+     = 0.11$
+\end{itemize}
+
+Differences:
+
+\begin{itemize}
+  \item Two distributions, two kinds of smoothing
+  \item Can do add-$\lambda$ for both, but don't need to use same $\lambda$
+  \item Can use totally different smoothing for each.
+\end{itemize}
+
+
+
+
+
+\section{Decoding}
+
+Tagging a sentence
+
+\begin{itemize}
+  \item $\text{argmax}_{t_1^n}~\prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1})$
+  \item For ``the dog walks .'', we have to check all combinations: \vspace{2mm} \\
+        \ngramstart\ D D D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ N D D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ V D D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ . D D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ N N D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ N V D D \ngramend  \vspace{2mm} \\
+        ...
+  \item But this is insane.
+\end{itemize}
+
+Choosing a tag
+
+\begin{itemize}
+  \item Because of our independence assumptions, the probability of each tag is dependent only on its ``Markov blanket''
+  \item Look only at the previous tag, emitted word, and next tag.  
+    \begin{align*} p(t_i \mid \ngramstart~w_1~w_2~...~w_n~\ngramend, \ngramstart~t_1~t_2~...~\mathbf{t_{i-1}~t_{i+1}}~...~t_n~\ngramend)
+       &= p(t_i \mid t_{i-1}, w_i, t_{i+1}) \\
+       &= p(t_i \mid t_{i-1}) \cdot p(w_i \mid t_i) \cdot p(t_{i+1} \mid t_i)
+    \end{align*}
+\end{itemize}
+
+Tagging a sentence
+
+\begin{itemize}
+  \item We want to make global decisions about tags.
+  \item Due to independence, global decisions are made in terms of local decisions
+  \item Going ``forward'' allows us to predict tags based on previous decisions.
+  \item But we can't calculate picking a tag changes the probabilities of previous tags.
+\end{itemize}
+
+Dynamic Programming:
+
+\begin{itemize}
+  \item We need to check all possible tag combinations \textit{efficiently}
+  \item 
+\end{itemize}
+
+
+\begin{align}
+P(s_t=k | y_{1:t}) &=  
+P(y_t | k) \cdot \sum_{k' \in K} P(k|k') \cdot P(s_{t-1}=k' | y_{1:t-1})
+\end{align}
+
+\begin{align}
+P(s_t=k | s_{t+1}, y_{1:T}) &\propto
+P(s_t=k | y_{1:t}) \cdot P(s_{t+1} | s_t=k)
+\end{align}
+
+
+
+
+Tag the sentence: ``the dog runs .''
+
+% \begin{align*}
+
+% \end{align*}
+
+
+
+\section{Tag Dictionary}
+
+\begin{itemize}
+  \item Mapping from words to potential tags
+  \item Get from train, assume works on test
+  \item Unseen words usually assumed to be any possible tag.  Could, instead, assume only open-class tags.
+  \item Prune low-probability tags
+\end{itemize}
+
+
+
+
 
 
 
