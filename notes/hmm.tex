@@ -30,6 +30,10 @@
 \newcommand{\ngramend}{\ensuremath{\langle \textsc{e} \rangle}}
 \newcommand{\ngramunk}{\ensuremath{\langle unk \rangle}}
 
+\newcommand{\wcurr}{\ensuremath{w_i}}
+\newcommand{\tcurr}{\ensuremath{t_i}}
+\newcommand{\tprev}{\ensuremath{t_{i-1}}}
+
 \usepackage{hyperref}
 \hypersetup{
     colorlinks,
@@ -275,8 +279,9 @@ Derivation
       \item Together: 
         \begin{align*}
         \hat{t}_1^n &= \text{argmax}_{t_1^n}~p(\ngramstart~t_1~t_2~...~t_n~\ngramend \mid \ngramstart~w_1~w_2~...~w_n~\ngramend) \\
-                    &= \text{argmax}_{t_1^n}~p(\ngramstart~w_1~w_2~...~w_n~\ngramend \mid \ngramstart~t_1~t_2~...~t_n~\ngramend) \cdot p(\ngramstart~t_1~t_2~...~t_n~\ngramend) \\
-                    &\approx \text{argmax}_{t_1^n}~\prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1})
+                    &= \text{argmax}_{t_1^n}~p(\ngramstart~w_1~w_2~...~w_n~\ngramend \mid \ngramstart~t_1~t_2~...~t_n~\ngramend) &&\hspace{-7mm}\cdot p(\ngramstart~t_1~t_2~...~t_n~\ngramend) \\
+                    &\approx \text{argmax}_{t_1^n}~\prod_{i=1}^n p(w_i \mid t_i) &&\hspace{-7mm}\cdot \prod_{i=1}^n p(t_i \mid t_{i-1}) \\
+                    &= \text{argmax}_{t_1^n}~\prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1})
         \end{align*}
     \end{itemize}
 \end{itemize}
@@ -294,7 +299,7 @@ Two probability distributions to estimate:
 MLE
 
 \begin{itemize}
-  \item MLE estimation is just like before (na\"{i}ve Bayes, ngrams, ...), normalized counts
+  \item MLE estimation is just like before (na\"{i}ve Bayes, ngrams, ...): normalized counts
   \item Transitions: $p(t_i \mid t_{i-1}) = \frac{C(t_{i-1}~t_i)}{\sum_x C(t_{i-1}~x)} = \frac{C(t_{i-1}~t_i)}{C(t_{i-1})}$
   \item Emissions: $p(w_i \mid t_i) = \frac{C(t_i,w_i)}{\sum_x C(t_i,x)} = \frac{C(t_i,w_i)}{C(t_i)}$
 \end{itemize}
@@ -323,8 +328,9 @@ Some probabilities:
 
 \section{Add-$\lambda$ Smoothing}
 
+Again, just like before.
+
 \begin{itemize}
-  \item Again, just like before.
   \item Transitions: $p(t_i \mid t_{i-1}) 
              = \frac{C(t_{i-1}~t_i)+\lambda}{\sum_x (C(t_{i-1}~x)+\lambda)} 
              = \frac{C(t_{i-1}~t_i)+\lambda}{(\sum_x C(t_{i-1}~x))+\lambda\cdot|T|} 
@@ -338,8 +344,10 @@ Some probabilities:
 Some probabilities (with $\lambda=2$):
 
 \begin{itemize}
-  \item $V = \{ a, cat, dog, man, runs, saw, the, walks, ., \ngramend \}$, ~~$|V|=10$   \vspace{2mm} \\
-        $T = \{ D, N, V, \ngramend \}$, ~~$|N|=4$
+  \item The Vocabulary $V$ is the set of all word types that might be associated with a tag \tcurr:   \vspace{2mm} \\
+  $V = \{ a, cat, dog, man, runs, saw, the, walks, . \}$, ~~$|V|=9$
+  \item The Tagset $T$ is the set of all possible tags that could follow a tag \tprev:   \vspace{2mm} \\
+        $T = \{ D, N, V, \ngramend \}$, ~~$|T|=4$
   \\
   \item $p(t_i=\text{V} \mid t_{i-1}=\text{N}) 
      = \frac{C(\text{N V})+2}{\sum_x (C(\text{N } x)+2)} 
@@ -354,14 +362,14 @@ Some probabilities (with $\lambda=2$):
   \\
   \item $p(w_i=\text{dog} \mid t_i=\text{N}) 
      = \frac{C(\text{N,dog})}{\sum_x (C(\text{N},x)+2)} 
-     = \frac{C(\text{N,dog})}{(\sum_x C(\text{N},x))+(2 \cdot 10)} 
-     = \frac{4+2}{8+10}
-     = 0.33$
+     = \frac{C(\text{N,dog})}{(\sum_x C(\text{N},x))+(2 \cdot 9)} 
+     = \frac{4+2}{8+9}
+     = 0.35$
   \item $p(w_i=\text{the} \mid t_i=\text{N}) 
      = \frac{C(\text{N,the})}{\sum_x (C(\text{N},x)+2)} 
-     = \frac{C(\text{N,the})}{(\sum_x C(\text{N},x))+(2 \cdot 10)} 
-     = \frac{0+2}{8+10} 
-     = 0.11$
+     = \frac{C(\text{N,the})}{(\sum_x C(\text{N},x))+(2 \cdot 9)} 
+     = \frac{0+2}{8+9} 
+     = 0.12$
 \end{itemize}
 
 Differences:
@@ -373,7 +381,22 @@ Differences:
 \end{itemize}
 
 
+\section{One-Count Smoothing}
 
+From Chen and Goodman (1996)
+
+Idea: Smooth conditional distribution by interpolating the MLE with a unigram distribution where the degree of smoothing is proportional to the ``openness'' of a tag.
+\begin{align*}
+  p(\wcurr \mid \tcurr) &= \frac{C(\tcurr,\wcurr) + \alpha(\tcurr) \cdot p(\wcurr)}{C(\tcurr) + \alpha(\tcurr)}
+  &&\text{where} ~~ \alpha(\tcurr) = | \wcurr: C(\tcurr,\wcurr) = 1 | \\
+  p(\tcurr \mid \tprev) &= \frac{C(\tprev,\tcurr) + \lambda(\tprev) \cdot p(\tcurr)}{C(\tprev) + \lambda(\tprev)}
+  &&\text{where} ~~ \lambda(\tprev) = | \tcurr: C(\tprev,\tcurr) = 1 |
+\end{align*}
+
+\begin{itemize}
+  \item For emissions, if a tag \tcurr\ appears one time with a large number of word types, then we assume that it is very ``open'': there is a large number of words that it has only been seen with once, so the likelihood that it \textit{could have} been seen with some other word, even though it didn't \textit{happen} to be seen with it, is high.
+  \item For transition, the reasoning is the same.  Instead of a tag being associated with a wide variety of words once, it's a wide variety of subsequent tags once.
+\end{itemize}
 
 
 \section{Decoding}
@@ -393,11 +416,14 @@ Tagging a sentence
   \item But this is insane.
 \end{itemize}
 
+
+
+~\\ \bs\bs~ Day 3 \\
+
 Choosing a tag
 
 \begin{itemize}
-  \item Because of our independence assumptions, the probability of each tag is dependent only on its ``Markov blanket''
-  \item Look only at the previous tag, emitted word, and next tag.  
+  \item Because of our independence assumptions, the probability of each tag is dependent only on its ``Markov blanket'': the previous tag, emitted word, and next tag.  
     \begin{align*} p(t_i \mid \ngramstart~w_1~w_2~...~w_n~\ngramend, \ngramstart~t_1~t_2~...~\mathbf{t_{i-1}~t_{i+1}}~...~t_n~\ngramend)
        &= p(t_i \mid t_{i-1}, w_i, t_{i+1}) \\
        &= p(t_i \mid t_{i-1}) \cdot p(w_i \mid t_i) \cdot p(t_{i+1} \mid t_i)
