@@ -579,7 +579,7 @@ The program takes the following options:
 
 The main method of `DecipherToImplement` starts by generating a random secret cipher key, reading `--ciphersize` number of tokens from the `--cipher` file and enciphering the text using the key.  Next, it reads `-trainsize` number of tokens from the `--train` file and calls the `train` method to construct a language model.  It then proceeds to iteratively try to find the best cipher key by making letter swaps and checking the deciphered output.
 
-You will define a class `nlp.a3.Decipher` that extends `nlpclass.DecipherToImplement`.  You will have to implement the following methods:
+You will define an *object* `nlp.a3.Decipher` that extends `nlpclass.DecipherToImplement`.  You will have to implement the following methods:
 
 {% highlight scala %}
 /**
