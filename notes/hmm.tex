@@ -401,6 +401,111 @@ Idea: Smooth conditional distribution by interpolating the MLE with a unigram di
 \end{itemize}
 
 
+
+
+
+\newsavebox{\startaltable}
+\sbox{\startaltable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}\ngramstart}} \tabularnewline
+      \hline
+      \ngramstart & 1.0
+    \end{tabular}
+}
+
+\newsavebox{\Daltable}
+\sbox{\Daltable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}D}} \tabularnewline
+      \hline
+      the & 0.47 \tabularnewline
+      a   & 0.12 \tabularnewline
+      $*$   & 0.06
+    \end{tabular}
+}
+
+\newsavebox{\Naltable}
+\sbox{\Naltable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}N}} \tabularnewline
+      \hline
+      man & 0.24 \tabularnewline
+      dog & 0.29 \tabularnewline
+      cat & 0.12 \tabularnewline
+      $*$   & 0.06
+    \end{tabular}
+}
+
+\newsavebox{\Valtable}
+\sbox{\Valtable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}V}} \tabularnewline
+      \hline
+      walks  & 0.33 \tabularnewline
+      runs   & 0.13 \tabularnewline
+      saw    & 0.13 \tabularnewline
+      $*$      & 0.07
+    \end{tabular}
+}
+
+\newsavebox{\ngramendaltable}
+\sbox{\ngramendaltable}{
+    \begin{tabular}{l l}
+      \hline
+      \multicolumn{2}{|c|}{{\cellcolor{gray!40}\ngramend}} \tabularnewline
+      \hline
+      \ngramend & 1.0
+    \end{tabular}
+}
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[rectangle, thick, draw =black!80, node distance = 40mm]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[node distance = 16mm]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  \node[main] (start) []                         {\usebox{\startaltable}};
+  \node[main] (D)     [right of =start]          {\usebox{\Daltable}};
+  \node[main] (N)     [right of =D, yshift= 90]  {\usebox{\Naltable}};
+  \node[main] (V)     [right of =D, xshift=60, yshift=-90]  {\usebox{\Valtable}};
+  \node[main] (end)   [right of =D, xshift=170]   {\usebox{\ngramendaltable}};
+
+
+  \path (start) edge [connect] node [pos=0.5, above, blue, sloped] {0.78} (D);
+  \path (start) edge [connect, bend left=25] node [pos=0.5, above, blue, sloped] {0.11} (N);
+  \path (start) edge [connect, bend right=25] node [pos=0.5, below, blue, sloped] {0.11} (V);
+  
+  \path (D) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (D);
+  \path (D) edge [connect, bend left=15] node [pos=0.5, above, blue, sloped] {0.75} (N);
+  \path (D) edge [connect, bend right=15] node [pos=0.5, below, blue, sloped] {0.08} (V);
+  \path (D) edge [connect, bend left=10] node [pos=0.75, above, blue, sloped] {0.08} (end);
+
+  \path (N) edge [connect, bend left=15, red] node [pos=0.5, above, blue, sloped] {0.08} (D);
+  \path (N) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (N);
+  \path (N) edge [connect, bend left=15] node [pos=0.5, below, blue, sloped] {0.58} (V);
+  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.25} (end);
+
+  \path (V) edge [connect, bend right=15, red] node [pos=0.5, below, blue, sloped] {0.30} (D);
+  \path (V) edge [connect, bend left=15, red] node [pos=0.5, below, blue, sloped] {0.10} (N);
+  \path (V) edge [in=-98,out=-83,loop] node [pos=0.5, below, blue, sloped] {0.10} (V);
+  \path (V) edge [connect] node [pos=0.5, below, blue, sloped] {0.50} (end);
+  
+
+\end{tikzpicture}
+\caption{Finite state machine of the data with add-1 smoothing.  Missing arrows are assumed to be zero probabilities.  With smoothing, there is an arrow in \textit{both directions} between every pair of tags.}
+\end{figure} 
+
+
+
+
 \section{Decoding}
 
 Tagging a sentence
@@ -1151,119 +1256,33 @@ Dynamic Programming:
 % \end{align*}
 
 
-
 \section{Tag Dictionary}
 
 \begin{itemize}
   \item Mapping from words to potential tags
-  \item Get from train, assume works on test
+  \item Get from train, assume it works on test
   \item Unseen words usually assumed to be any possible tag.  Could, instead, assume only open-class tags.
-  \item Prune low-probability tags
+  \item Prune low-probability tags.
 \end{itemize}
 
 
 
+\section{Three Tasks for HMM}
+
+\begin{enumerate}
+  \item Likelihood: Given a tagged sequnce, determine its likelihood
+  \item Decoding: Given an untagged sequence, determine the best tag sequence for it
+  \item Learning: Given an untagged sequence, and a set of tags, learn the HMM parameters.
+\end{enumerate}
 
 
-\newsavebox{\startaltable}
-\sbox{\startaltable}{
-    \begin{tabular}{l l}
-      \hline
-      \multicolumn{2}{|c|}{{\cellcolor{gray!40}\ngramstart}} \tabularnewline
-      \hline
-      \ngramstart & 1.0
-    \end{tabular}
-}
+\section{Learning: Forward-Backward}
 
-\newsavebox{\Daltable}
-\sbox{\Daltable}{
-    \begin{tabular}{l l}
-      \hline
-      \multicolumn{2}{|c|}{{\cellcolor{gray!40}D}} \tabularnewline
-      \hline
-      the & 0.47 \tabularnewline
-      a   & 0.12 \tabularnewline
-      $*$   & 0.06
-    \end{tabular}
-}
-
-\newsavebox{\Naltable}
-\sbox{\Naltable}{
-    \begin{tabular}{l l}
-      \hline
-      \multicolumn{2}{|c|}{{\cellcolor{gray!40}N}} \tabularnewline
-      \hline
-      man & 0.24 \tabularnewline
-      dog & 0.29 \tabularnewline
-      cat & 0.12 \tabularnewline
-      $*$   & 0.06
-    \end{tabular}
-}
-
-\newsavebox{\Valtable}
-\sbox{\Valtable}{
-    \begin{tabular}{l l}
-      \hline
-      \multicolumn{2}{|c|}{{\cellcolor{gray!40}V}} \tabularnewline
-      \hline
-      walks  & 0.33 \tabularnewline
-      runs   & 0.13 \tabularnewline
-      saw    & 0.13 \tabularnewline
-      $*$      & 0.07
-    \end{tabular}
-}
-
-\newsavebox{\ngramendaltable}
-\sbox{\ngramendaltable}{
-    \begin{tabular}{l l}
-      \hline
-      \multicolumn{2}{|c|}{{\cellcolor{gray!40}\ngramend}} \tabularnewline
-      \hline
-      \ngramend & 1.0
-    \end{tabular}
-}
-
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\tikzstyle{main}=[rectangle, thick, draw =black!80, node distance = 40mm]
-\tikzstyle{obsv}=[main, fill = black!10]
-\tikzstyle{hidden}=[node distance = 16mm]
-\tikzstyle{connect}=[-latex, thick]
-\tikzstyle{box}=[rectangle, draw=black!100]
-
-  \node[main] (start) []                         {\usebox{\startaltable}};
-  \node[main] (D)     [right of =start]          {\usebox{\Daltable}};
-  \node[main] (N)     [right of =D, yshift= 90]  {\usebox{\Naltable}};
-  \node[main] (V)     [right of =D, xshift=60, yshift=-90]  {\usebox{\Valtable}};
-  \node[main] (end)   [right of =D, xshift=170]   {\usebox{\ngramendaltable}};
-
-
-  \path (start) edge [connect] node [pos=0.5, above, blue, sloped] {0.78} (D);
-  \path (start) edge [connect, bend left=25] node [pos=0.5, above, blue, sloped] {0.11} (N);
-  \path (start) edge [connect, bend right=25] node [pos=0.5, below, blue, sloped] {0.11} (V);
+\begin{enumerate}
+  \item Given some unlabeled text, and a set of labels, learn the best set of parameters for an HMM tagger.
+  \item Usually needs a tag dictionary to constrain the search space.
   
-  \path (D) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (D);
-  \path (D) edge [connect, bend left=15] node [pos=0.5, above, blue, sloped] {0.75} (N);
-  \path (D) edge [connect, bend right=15] node [pos=0.5, below, blue, sloped] {0.08} (V);
-  \path (D) edge [connect, bend left=10] node [pos=0.75, above, blue, sloped] {0.08} (end);
-
-  \path (N) edge [connect, bend left=15, red] node [pos=0.5, above, blue, sloped] {0.08} (D);
-  \path (N) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (N);
-  \path (N) edge [connect, bend left=15] node [pos=0.5, below, blue, sloped] {0.58} (V);
-  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.25} (end);
-
-  \path (V) edge [connect, bend right=15, red] node [pos=0.5, below, blue, sloped] {0.30} (D);
-  \path (V) edge [connect, bend left=15, red] node [pos=0.5, below, blue, sloped] {0.10} (N);
-  \path (V) edge [in=-98,out=-83,loop] node [pos=0.5, below, blue, sloped] {0.10} (V);
-  \path (V) edge [connect] node [pos=0.5, below, blue, sloped] {0.50} (end);
-  
-
-\end{tikzpicture}
-\caption{Finite state machine.  Missing arrows are assumed to be zero probabilities.  With smoothing, there is an arrow in \textit{both directions} between every pair of tags.}
-\end{figure} 
-
+\end{enumerate}
 
 
 
