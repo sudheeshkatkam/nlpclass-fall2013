@@ -476,10 +476,13 @@ Dynamic Programming:
 
 \textbf{Example:} Tag the sentence: ``the dog walks''
 
+
+
+
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -493,97 +496,21 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
   \node[hidden] (startthe)  [below of =the]       {};
-  \node[main] (Dthe)        [below of =startthe]  {};
-  \node[main] (Nthe)        [below of =Dthe]      {};
-  \node[main] (Vthe)        [below of =Nthe]      {};
-  \node[hidden] (endthe)    [below of =Vthe]      {};
-
-  \node[hidden] (startdog)  [below of =dog]       {};
-  \node[main] (Ddog)        [below of =startdog]  {};
-  \node[main] (Ndog)        [below of =Ddog]      {};
-  \node[main] (Vdog)        [below of =Ndog]      {};
-  \node[hidden] (enddog)    [below of =Vdog]      {};
-
-  \node[hidden] (startruns) [below of =runs]      {};
-  \node[main] (Druns)       [below of =startruns] {};
-  \node[main] (Nruns)       [below of =Druns]     {};
-  \node[main] (Vruns)       [below of =Nruns]     {};
-  \node[hidden] (endruns)   [below of =Vruns]     {};
-
-  \node[hidden] (startend)  [below of =endtok]    {};
-  \node[hidden] (Dend)      [below of =startend]  {};
-  \node[hidden] (Nend)      [below of =Dend]      {};
-  \node[hidden] (Vend)      [below of =Nend]      {};
-  \node[main]   (endend)    [below of =Vend]      {};
-
-
-  \path (start) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (D);
-  \path (start) edge [connect, bend left=25] node [pos=0.5, above, blue, sloped] {1.0} (N);
-  \path (start) edge [connect, bend right=25] node [pos=0.5, below, blue, sloped] {1.0} (V);
-  
-  \path (D) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (D);
-  \path (D) edge [connect, bend left=15] node [pos=0.5, above, blue, sloped] {0.75} (N);
-  \path (D) edge [connect, bend right=15] node [pos=0.5, below, blue, sloped] {0.08} (V);
-  \path (D) edge [connect, bend left=10] node [pos=0.5, above, blue, sloped] {0.08} (end);
-
-  \path (N) edge [connect, bend left=15, red] node [pos=0.5, above, blue, sloped] {0.08} (D);
-  \path (N) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (N);
-  \path (N) edge [connect, bend left=15] node [pos=0.5, below, blue, sloped] {0.58} (V);
-  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.25} (end);
-
-  \path (V) edge [connect, bend right=15, red] node [pos=0.5, below, blue, sloped] {0.30} (D);
-  \path (V) edge [connect, bend left=15, red] node [pos=0.5, below, blue, sloped] {0.10} (N);
-  \path (V) edge [in=-98,out=-83,loop] node [pos=0.5, below, blue, sloped] {0.10} (V);
-  \path (V) edge [connect] node [pos=0.5, below, blue, sloped] {0.50} (end);
-  
-
-\end{tikzpicture}
-\caption{}
-\end{figure} 
-
-
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
-\tikzstyle{rect}=[main, rectangle]
-\tikzstyle{obsv}=[main, fill = black!10]
-\tikzstyle{hidden}=[main, draw=white]
-\tikzstyle{connect}=[-latex, thick]
-\tikzstyle{box}=[rectangle, draw=black!100]
-
-  
-  \node[rect] (start) []                {\ngramstart};
-  \node[rect] (D)     [below of =start] {D};
-  \node[rect] (N)     [below of =D]     {N};
-  \node[rect] (V)     [below of =N]     {V};
-  \node[rect] (end)   [below of =V]     {\ngramend};
-
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
-
-  \node[main] (startstart)  [below of =starttok]  {1.0};
-
-  \node[hidden] (startthe)  [below of =the]       {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Dthe) {\color{red}0.47};
   \node[main] (Dthe)        [below of =startthe]  {0.37};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Nthe) {\color{red}0.06};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Dthe) {\color{red}0.47};
   \node[main] (Nthe)        [below of =Dthe]      {0.007};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Vthe) {\color{red}0.07};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Nthe) {\color{red}0.06};
   \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Vthe) {\color{red}0.07};
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
@@ -622,7 +549,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -636,11 +563,11 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
@@ -651,12 +578,12 @@ Dynamic Programming:
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Ddog) {\color{red}0.06};
   \node[main] (Ddog)        [below of =startdog]  {0.002};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Ndog) {\color{red}0.29};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Ddog) {\color{red}0.06};
   \node[main] (Ndog)        [below of =Ddog]      {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Vdog) {\color{red}0.07};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Ndog) {\color{red}0.29};
   \node[main] (Vdog)        [below of =Ndog]      {};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Vdog) {\color{red}0.07};
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
@@ -689,7 +616,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -703,11 +630,11 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
@@ -718,12 +645,12 @@ Dynamic Programming:
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Ddog) {\color{red}0.06};
   \node[main] (Ddog)        [below of =startdog]  {0.002};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Ndog) {\color{red}0.29};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Ddog) {\color{red}0.06};
   \node[main] (Ndog)        [below of =Ddog]      {0.08};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Vdog) {\color{red}0.07};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Ndog) {\color{red}0.29};
   \node[main] (Vdog)        [below of =Ndog]      {};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Vdog) {\color{red}0.07};
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
@@ -756,7 +683,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -770,11 +697,11 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
@@ -785,12 +712,12 @@ Dynamic Programming:
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Ddog) {\color{red}0.06};
   \node[main] (Ddog)        [below of =startdog]  {0.002};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Ndog) {\color{red}0.29};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Ddog) {\color{red}0.06};
   \node[main] (Ndog)        [below of =Ddog]      {0.08};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Vdog) {\color{red}0.07};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Ndog) {\color{red}0.29};
   \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Vdog) {\color{red}0.07};
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
@@ -824,7 +751,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -838,11 +765,11 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
@@ -859,12 +786,12 @@ Dynamic Programming:
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Druns) {\color{red}0.06};
   \node[main] (Druns)       [below of =startruns] {0.0004};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Nruns) {\color{red}0.06};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Druns) {\color{red}0.06};
   \node[main] (Nruns)       [below of =Druns]     {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Vruns) {\color{red}0.13};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Nruns) {\color{red}0.06};
   \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Vruns) {\color{red}0.13};
   \node[hidden] (endruns)   [below of =Vruns]     {};
 
   \node[hidden] (startend)  [below of =endtok]    {};
@@ -891,7 +818,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -905,11 +832,11 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
@@ -926,12 +853,12 @@ Dynamic Programming:
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Druns) {\color{red}0.06};
   \node[main] (Druns)       [below of =startruns] {0.0004};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Nruns) {\color{red}0.06};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Druns) {\color{red}0.06};
   \node[main] (Nruns)       [below of =Druns]     {0.0005};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Vruns) {\color{red}0.13};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Nruns) {\color{red}0.06};
   \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Vruns) {\color{red}0.13};
   \node[hidden] (endruns)   [below of =Vruns]     {};
 
   \node[hidden] (startend)  [below of =endtok]    {};
@@ -957,7 +884,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -971,11 +898,11 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
@@ -992,12 +919,12 @@ Dynamic Programming:
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Druns) {\color{red}0.06};
   \node[main] (Druns)       [below of =startruns] {0.0004};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Nruns) {\color{red}0.06};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Druns) {\color{red}0.06};
   \node[main] (Nruns)       [below of =Druns]     {0.0005};
-  \node[draw, draw=white] at ([shift={(85:0.95)}]Vruns) {\color{red}0.13};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Nruns) {\color{red}0.06};
   \node[main] (Vruns)       [below of =Nruns]     {0.006};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]Vruns) {\color{red}0.13};
   \node[hidden] (endruns)   [below of =Vruns]     {};
 
   \node[hidden] (startend)  [below of =endtok]    {};
@@ -1024,7 +951,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -1038,11 +965,11 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
@@ -1059,12 +986,12 @@ Dynamic Programming:
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
-  \node[draw, draw=white] at ([shift={(75:-0.95)}]Druns) {\color{black!60!green}0.00003};
   \node[main] (Druns)       [below of =startruns] {0.0004};
-  \node[draw, draw=white] at ([shift={(75:-0.95)}]Nruns) {\color{black!60!green}0.0001};
+  \node[draw, draw=white] at ([shift={(55:-0.67)}]Druns) {\color{black!60!green}0.00003};
   \node[main] (Nruns)       [below of =Druns]     {0.0005};
-  \node[draw, fill=white!50!green] at ([shift={(75:-0.95)}]Vruns) {\color{black!60!green}0.003};
+  \node[draw, draw=white] at ([shift={(55:-0.67)}]Nruns) {\color{black!60!green}0.0001};
   \node[main, fill=white!50!green] (Vruns)       [below of =Nruns]     {0.006};
+  \node[draw, fill=white!50!green] at ([shift={(55:-0.67)}]Vruns) {\color{black!60!green}0.003};
   \node[hidden] (endruns)   [below of =Vruns]     {};
 
   \node[hidden] (startend)  [below of =endtok]    {};
@@ -1090,7 +1017,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -1104,11 +1031,11 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
@@ -1119,12 +1046,12 @@ Dynamic Programming:
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
-  \node[draw, draw=white] at ([shift={(75:-0.95)}]Ddog) {\color{black!60!green}0.00016};
   \node[main] (Ddog)        [below of =startdog]  {0.002};
-  \node[draw, fill=white!50!green] at ([shift={(75:-0.95)}]Ndog) {\color{black!60!green}0.04640};
+  \node[draw, draw=white] at ([shift={(55:-0.67)}]Ddog) {\color{black!60!green}0.00016};
   \node[main, fill=white!50!green] (Ndog)        [below of =Ddog]      {0.08};
-  \node[draw, draw=white] at ([shift={(75:-0.95)}]Vdog) {\color{black!60!green}0.0002};
+  \node[draw, fill=white!50!green] at ([shift={(55:-0.67)}]Ndog) {\color{black!60!green}0.04640};
   \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[draw, draw=white] at ([shift={(55:-0.67)}]Vdog) {\color{black!60!green}0.0002};
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
@@ -1156,7 +1083,7 @@ Dynamic Programming:
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
 \tikzstyle{rect}=[main, rectangle]
 \tikzstyle{obsv}=[main, fill = black!10]
 \tikzstyle{hidden}=[main, draw=white]
@@ -1170,21 +1097,21 @@ Dynamic Programming:
   \node[rect] (V)     [below of =N]     {V};
   \node[rect] (end)   [below of =V]     {\ngramend};
 
-  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
-  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
-  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
-  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
-  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+  \node[rect] (starttok) [right of =start,    xshift=40, yshift=44]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=40]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=40]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
   \node[main] (startstart)  [below of =starttok]  {1.0};
 
   \node[hidden] (startthe)  [below of =the]       {};
   \node[main, fill=white!50!green] (Dthe)        [below of =startthe]  {0.37};
-  \node[draw, fill=white!50!green] at ([shift={(75:-0.95)}]Dthe) {\color{black!60!green}0.2775};
+  \node[draw, fill=white!50!green] at ([shift={(55:-0.67)}]Dthe) {\color{black!60!green}0.2775};
   \node[main] (Nthe)        [below of =Dthe]      {0.007};
-  \node[draw, draw=white] at ([shift={(75:-0.95)}]Nthe) {\color{black!60!green}0.0006};
+  \node[draw, draw=white] at ([shift={(55:-0.67)}]Nthe) {\color{black!60!green}0.0006};
   \node[main] (Vthe)        [below of =Nthe]      {0.008};
-  \node[draw, draw=white] at ([shift={(75:-0.95)}]Vthe) {\color{black!60!green}0.0008};
+  \node[draw, draw=white] at ([shift={(55:-0.67)}]Vthe) {\color{black!60!green}0.0008};
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
