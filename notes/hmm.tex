@@ -674,7 +674,7 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
   \node[main] (Dthe)        [below of =startthe]  {0.37};
@@ -705,13 +705,21 @@ Dynamic Programming:
 
 
   
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  
+  \node[draw, fill=white!50!green] at ([shift={(95:-0.57)}]Dthe) {0.002};
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Nthe) {\color{black!60!green}0.00003};
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Vthe) {\color{black!60!green}0.00014};
+
   \path (Dthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Ddog);
   \path (Nthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Ddog);
   \path (Vthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.30} (Ddog);
   
 
 \end{tikzpicture}
-\caption{}
+\caption{Find the maximum probability leading to dog$|$D}
 \end{figure} 
 
 
@@ -741,7 +749,7 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
   \node[main] (Dthe)        [below of =startthe]  {0.37};
@@ -772,6 +780,16 @@ Dynamic Programming:
 
 
   
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (Ddog);
+
+
+  \node[draw, fill=white!50!green] at ([shift={(95:-0.57)}]Dthe) {0.08};
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Nthe) {\color{black!60!green}0.00016};
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Vthe) {\color{black!60!green}0.00023};
+
   \path (Dthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.75} (Ndog);
   \path (Nthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Ndog);
   \path (Vthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.10} (Ndog);
@@ -808,7 +826,7 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
   \node[main] (Dthe)        [below of =startthe]  {0.37};
@@ -839,10 +857,21 @@ Dynamic Programming:
 
 
   
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (Ddog);
+  \path (Dthe) edge [connect, dotted] (Ndog);
+
+
   \path (Dthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Vdog);
   \path (Nthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.58} (Vdog);
   \path (Vthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.10} (Vdog);
   
+  \node[draw, fill=white!50!green] at ([shift={(95:-0.57)}]Dthe) {0.002};
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Nthe) {\color{black!60!green}0.0003};
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Vthe) {\color{black!60!green}0.00006};
+
 
 \end{tikzpicture}
 \caption{}
@@ -876,12 +905,12 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
-  \node[main] (Dthe)        [below of =startthe]  {0.37};
-  \node[main] (Nthe)        [below of =Dthe]      {0.007};
-  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[main] (Dthe)        [below of =startthe]  {};
+  \node[main] (Nthe)        [below of =Dthe]      {};
+  \node[main] (Vthe)        [below of =Nthe]      {};
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
@@ -891,7 +920,7 @@ Dynamic Programming:
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
-  \node[main] (Druns)       [below of =startruns] {0.0004};
+  \node[main] (Druns)       [below of =startruns] {0.00038};
   \node[draw, draw=white] at ([shift={(85:0.65)}]Druns) {\color{red}0.06};
   \node[main] (Nruns)       [below of =Druns]     {};
   \node[draw, draw=white] at ([shift={(85:0.65)}]Nruns) {\color{red}0.06};
@@ -907,9 +936,21 @@ Dynamic Programming:
 
 
   
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (Ddog);
+  \path (Dthe) edge [connect, dotted] (Ndog);
+  \path (Dthe) edge [connect, dotted] (Vdog);
+
   \path (Ddog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Druns);
   \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Druns);
   \path (Vdog) edge [connect] node [pos=0.5, above, blue, sloped] {0.30} (Druns);
+  
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Ddog) {\color{black!60!green}0.00001};
+  \node[draw, fill=white!50!green] at ([shift={(95:-0.57)}]Ndog) {0.00038};
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Vdog) {\color{black!60!green}0.00004};
+
   
 
 \end{tikzpicture}
@@ -943,12 +984,12 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
-  \node[main] (Dthe)        [below of =startthe]  {0.37};
-  \node[main] (Nthe)        [below of =Dthe]      {0.007};
-  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[main] (Dthe)        [below of =startthe]  {};
+  \node[main] (Nthe)        [below of =Dthe]      {};
+  \node[main] (Vthe)        [below of =Nthe]      {};
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
@@ -958,9 +999,9 @@ Dynamic Programming:
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
-  \node[main] (Druns)       [below of =startruns] {0.0004};
+  \node[main] (Druns)       [below of =startruns] {0.00038};
   \node[draw, draw=white] at ([shift={(85:0.65)}]Druns) {\color{red}0.06};
-  \node[main] (Nruns)       [below of =Druns]     {0.0005};
+  \node[main] (Nruns)       [below of =Druns]     {0.00038};
   \node[draw, draw=white] at ([shift={(85:0.65)}]Nruns) {\color{red}0.06};
   \node[main] (Vruns)       [below of =Nruns]     {};
   \node[draw, draw=white] at ([shift={(85:0.65)}]Vruns) {\color{red}0.13};
@@ -974,10 +1015,23 @@ Dynamic Programming:
 
 
   
+  
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (Ddog);
+  \path (Dthe) edge [connect, dotted] (Ndog);
+  \path (Dthe) edge [connect, dotted] (Vdog);
+  \path (Ndog) edge [connect, dotted] (Druns);
+
   \path (Ddog) edge [connect] node [pos=0.5, above, blue, sloped] {0.75} (Nruns);
   \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Nruns);
   \path (Vdog) edge [connect] node [pos=0.5, above, blue, sloped] {0.07} (Nruns);
   
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Ddog) {\color{black!60!green}0.00009};
+  \node[draw, fill=white!50!green] at ([shift={(95:-0.57)}]Ndog) {0.00038};
+  \node[draw, draw=white] at ([shift={(95:-0.57)}]Vdog) {\color{black!60!green}0.00001};
+
 
 \end{tikzpicture}
 \caption{}
@@ -1009,12 +1063,12 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
-  \node[main] (Dthe)        [below of =startthe]  {0.37};
-  \node[main] (Nthe)        [below of =Dthe]      {0.007};
-  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[main] (Dthe)        [below of =startthe]  {};
+  \node[main] (Nthe)        [below of =Dthe]      {};
+  \node[main] (Vthe)        [below of =Nthe]      {};
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
@@ -1024,9 +1078,9 @@ Dynamic Programming:
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
-  \node[main] (Druns)       [below of =startruns] {0.0004};
+  \node[main] (Druns)       [below of =startruns] {0.00038};
   \node[draw, draw=white] at ([shift={(85:0.65)}]Druns) {\color{red}0.06};
-  \node[main] (Nruns)       [below of =Druns]     {0.0005};
+  \node[main] (Nruns)       [below of =Druns]     {0.00038};
   \node[draw, draw=white] at ([shift={(85:0.65)}]Nruns) {\color{red}0.06};
   \node[main] (Vruns)       [below of =Nruns]     {0.006};
   \node[draw, draw=white] at ([shift={(85:0.65)}]Vruns) {\color{red}0.13};
@@ -1040,9 +1094,22 @@ Dynamic Programming:
 
 
   
-  \path (Ddog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Vruns);
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (Ddog);
+  \path (Dthe) edge [connect, dotted] (Ndog);
+  \path (Dthe) edge [connect, dotted] (Vdog);
+  \path (Ndog) edge [connect, dotted] (Druns);
+  \path (Ndog) edge [connect, dotted] (Nruns);
+
+  \path (Ddog) edge [connect] node [pos=0.43, above, blue, sloped] {0.08} (Vruns);
   \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.58} (Vruns);
   \path (Vdog) edge [connect] node [pos=0.5, above, blue, sloped] {0.10} (Vruns);
+  
+  \node[draw, draw=white] at ([shift={(70:-0.57)}]Ddog) {\color{black!60!green}0.00002};
+  \node[draw, fill=white!50!green] at ([shift={(70:-0.57)}]Ndog) {0.006};
+  \node[draw, draw=white] at ([shift={(70:-0.57)}]Vdog) {\color{black!60!green}0.00003};
   
 
 \end{tikzpicture}
@@ -1076,24 +1143,24 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
-  \node[main] (Dthe)        [below of =startthe]  {0.37};
-  \node[main] (Nthe)        [below of =Dthe]      {0.007};
-  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[main] (Dthe)        [below of =startthe]  {};
+  \node[main] (Nthe)        [below of =Dthe]      {};
+  \node[main] (Vthe)        [below of =Nthe]      {};
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
-  \node[main] (Ddog)        [below of =startdog]  {0.002};
-  \node[main] (Ndog)        [below of =Ddog]      {0.08};
-  \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[main] (Ddog)        [below of =startdog]  {};
+  \node[main] (Ndog)        [below of =Ddog]      {};
+  \node[main] (Vdog)        [below of =Ndog]      {};
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
-  \node[main] (Druns)       [below of =startruns] {0.0004};
+  \node[main] (Druns)       [below of =startruns] {0.00038};
   \node[draw, draw=white] at ([shift={(55:-0.67)}]Druns) {\color{black!60!green}0.00003};
-  \node[main] (Nruns)       [below of =Druns]     {0.0005};
+  \node[main] (Nruns)       [below of =Druns]     {0.00038};
   \node[draw, draw=white] at ([shift={(55:-0.67)}]Nruns) {\color{black!60!green}0.0001};
   \node[main, fill=white!50!green] (Vruns)       [below of =Nruns]     {0.006};
   \node[draw, fill=white!50!green] at ([shift={(55:-0.67)}]Vruns) {\color{black!60!green}0.003};
@@ -1103,9 +1170,19 @@ Dynamic Programming:
   \node[hidden] (Dend)      [below of =startend]  {};
   \node[hidden] (Nend)      [below of =Dend]      {};
   \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[draw, draw=white] at ([shift={(85:0.65)}]endend) {\color{red}1.0};
   \node[main]   (endend)    [below of =Vend]      {};
 
 
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (Ddog);
+  \path (Dthe) edge [connect, dotted] (Ndog);
+  \path (Dthe) edge [connect, dotted] (Vdog);
+  \path (Ndog) edge [connect, dotted] (Druns);
+  \path (Ndog) edge [connect, dotted] (Nruns);
+  \path (Ndog) edge [connect, dotted] (Vruns);
   
   \path (Druns) edge [connect] node [pos=0.35, above, blue, sloped] {0.08} (endend);
   \path (Nruns) edge [connect] node [pos=0.25, above, blue, sloped] {0.25} (endend);
@@ -1119,6 +1196,7 @@ Dynamic Programming:
 
 
 
+
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
@@ -1142,40 +1220,43 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
-  \node[main] (Dthe)        [below of =startthe]  {0.37};
-  \node[main] (Nthe)        [below of =Dthe]      {0.007};
-  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[main] (Dthe)        [below of =startthe]  {};
+  \node[main] (Nthe)        [below of =Dthe]      {};
+  \node[main] (Vthe)        [below of =Nthe]      {};
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
-  \node[main] (Ddog)        [below of =startdog]  {0.002};
-  \node[draw, draw=white] at ([shift={(55:-0.67)}]Ddog) {\color{black!60!green}0.00016};
-  \node[main, fill=white!50!green] (Ndog)        [below of =Ddog]      {0.08};
-  \node[draw, fill=white!50!green] at ([shift={(55:-0.67)}]Ndog) {\color{black!60!green}0.04640};
-  \node[main] (Vdog)        [below of =Ndog]      {0.002};
-  \node[draw, draw=white] at ([shift={(55:-0.67)}]Vdog) {\color{black!60!green}0.0002};
+  \node[main] (Ddog)        [below of =startdog]  {};
+  \node[main] (Ndog)        [below of =Ddog]      {};
+  \node[main] (Vdog)        [below of =Ndog]      {};
   \node[hidden] (enddog)    [below of =Vdog]      {};
 
   \node[hidden] (startruns) [below of =runs]      {};
   \node[main] (Druns)       [below of =startruns] {};
   \node[main] (Nruns)       [below of =Druns]     {};
-  \node[main, fill=white!50!green] (Vruns)       [below of =Nruns]     {};
+  \node[main] (Vruns)       [below of =Nruns]     {};
   \node[hidden] (endruns)   [below of =Vruns]     {};
 
   \node[hidden] (startend)  [below of =endtok]    {};
   \node[hidden] (Dend)      [below of =startend]  {};
   \node[hidden] (Nend)      [below of =Dend]      {};
   \node[hidden] (Vend)      [below of =Nend]      {};
-  \node[main]   (endend)    [below of =Vend]      {};
+  \node[main, fill=white!50!green]   (endend)    [below of =Vend]      {};
 
 
-  
-  \path (Ddog) edge [connect] node [pos=0.35, above, blue, sloped] {0.08} (Vruns);
-  \path (Ndog) edge [connect] node [pos=0.35, above, blue, sloped] {0.58} (Vruns);
-  \path (Vdog) edge [connect] node [pos=0.40, above, blue, sloped] {0.10} (Vruns);
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (Ddog);
+  \path (Dthe) edge [connect, dotted] (Ndog);
+  \path (Dthe) edge [connect, dotted] (Vdog);
+  \path (Ndog) edge [connect, dotted] (Druns);
+  \path (Ndog) edge [connect, dotted] (Nruns);
+  \path (Ndog) edge [connect, dotted] (Vruns);
+  \path (Vruns) edge [connect, dotted] (endend);
   
 
 \end{tikzpicture}
@@ -1208,15 +1289,12 @@ Dynamic Programming:
   \node[rect] (runs)     [right of =dog,      xshift=40]              {runs};
   \node[rect] (endtok)   [right of =runs,     xshift=40]              {\ngramend};
 
-  \node[main] (startstart)  [below of =starttok]  {1.0};
+  \node[main, fill=white!50!green] (startstart)  [below of =starttok]  {};
 
   \node[hidden] (startthe)  [below of =the]       {};
-  \node[main, fill=white!50!green] (Dthe)        [below of =startthe]  {0.37};
-  \node[draw, fill=white!50!green] at ([shift={(55:-0.67)}]Dthe) {\color{black!60!green}0.2775};
-  \node[main] (Nthe)        [below of =Dthe]      {0.007};
-  \node[draw, draw=white] at ([shift={(55:-0.67)}]Nthe) {\color{black!60!green}0.0006};
-  \node[main] (Vthe)        [below of =Nthe]      {0.008};
-  \node[draw, draw=white] at ([shift={(55:-0.67)}]Vthe) {\color{black!60!green}0.0008};
+  \node[main, fill=white!50!green] (Dthe)        [below of =startthe]  {};
+  \node[main] (Nthe)        [below of =Dthe]      {};
+  \node[main] (Vthe)        [below of =Nthe]      {};
   \node[hidden] (endthe)    [below of =Vthe]      {};
 
   \node[hidden] (startdog)  [below of =dog]       {};
@@ -1235,18 +1313,31 @@ Dynamic Programming:
   \node[hidden] (Dend)      [below of =startend]  {};
   \node[hidden] (Nend)      [below of =Dend]      {};
   \node[hidden] (Vend)      [below of =Nend]      {};
-  \node[main]   (endend)    [below of =Vend]      {};
+  \node[main, fill=white!50!green]   (endend)    [below of =Vend]      {};
 
 
+
+  \path (startstart) edge [connect, dotted] (Dthe);
+  \path (startstart) edge [connect, dotted] (Nthe);
+  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (Ddog);
+  \path (Dthe) edge [connect, dotted] (Ndog);
+  \path (Dthe) edge [connect, dotted] (Vdog);
+  \path (Ndog) edge [connect, dotted] (Druns);
+  \path (Ndog) edge [connect, dotted] (Nruns);
+  \path (Ndog) edge [connect, dotted] (Vruns);
+  \path (Vruns) edge [connect, dotted] (endend);
   
-  \path (Dthe) edge [connect] node [pos=0.4, above, blue, sloped] {0.75} (Ndog);
-  \path (Nthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Ndog);
-  \path (Vthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.10} (Ndog);
+    \path (Dthe) edge [connect, line width=0.8mm, red] (startstart);
+  \path (Ndog) edge [connect, line width=0.8mm, red] (Dthe);
+  \path (Vruns) edge [connect, line width=0.8mm, red] (Ndog);  
+  \path (endend) edge [connect, line width=0.8mm, red] (Vruns);
   
 
 \end{tikzpicture}
 \caption{}
 \end{figure} 
+
 
 
 
@@ -1281,7 +1372,7 @@ Dynamic Programming:
 \begin{enumerate}
   \item Given some unlabeled text, and a set of labels, learn the best set of parameters for an HMM tagger.
   \item Usually needs a tag dictionary to constrain the search space.
-  
+
 \end{enumerate}
 
 
