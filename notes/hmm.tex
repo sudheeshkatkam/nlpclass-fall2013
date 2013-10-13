@@ -546,34 +546,37 @@ Tagging a sentence
   \item But we can't calculate picking a tag changes the probabilities of previous tags.
 \end{itemize}
 
-Dynamic Programming:
+The Viterbi Algorithm
 
 \begin{itemize}
-  \item We need to check all possible tag combinations \textit{efficiently}
-  \item We do this by making two passes through the sentence: one ``forward'' and one ``backward''
-  \item The \textit{forward} pass: The Forward Algorithm
+  \item We need to check all possible tag combinations \textit{efficiently}: dynamic programming
+  \item We do this by making two passes through the sentence: one forward through the sentence and one backward
+  \item The forward pass
     \begin{itemize}
-      \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the likelihood of tagging $t_i=k$ given \textit{all possible ways of tagging the $i$-1 previous words}.
+      % \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the likelihood of tagging $t_i=k$ given \textit{all possible ways of tagging the $i$-1 previous words}.
+      \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the highest probability sequence of tags for the previous $i$-1 words and ending with $t_i=k$, given \textit{all possible ways of tagging the $i$-1 previous words}.
         \[
-          p(t_i=k \mid w_{1:i}) = P(w_i \mid k) \cdot \sum_{k' \in T} P(k \mid k') \cdot p(t_{i-1}=k' \mid w_{1:i-1})
+          v_i(k) = \text{max}_{t_1, ..., t_{i-1}}~p(t_1, ..., t_{i-1}, w_1, ..., w_{i-1}, t_i=k \mid \text{HMM})
         \]
-      \item Note that this is a \textit{recursive} definitio since the last probability is just the result of this same equation, but for the previous iteration.
+      \item With our independence assumptions:
+        \[
+          v_i(k) = p(w_i \mid k) \cdot \text{max}_{k' \in T}~v_{i-1}(k') \cdot p(k \mid k')
+        \]
+      \item $v_i(k)$ is the probability of the most likely subsequence of tags that accounts for the first $i$ words and ends with tag $t_i = k$.
+      % \item Note that this is a \textit{recursive} definitio since the last probability is just the result of this same equation, but for the previous iteration.
       \item So $k$ is the potential tag for the current token $i$
       \item $k'$ is a potential tag for the previous token $i$-1.
-      \item So this equation says that the likelihood of tagging \tcurr\ with some tag $k$ is the probability of emitting the word $w_i$ from $k$, times the sum of the probabilities of any possible tagging of the previous token $i$-1 with some tag $k'$ (given all of \textit{its} possible previous taggings) times the probability of transitioning from $k'$ to $k$.
+      % \item So this equation says that the likelihood of tagging \tcurr\ with some tag $k$ is the probability of emitting the word $w_i$ from $k$, times the sum of the probabilities of any possible tagging of the previous token $i$-1 with some tag $k'$ (given all of \textit{its} possible previous taggings) times the probability of transitioning from $k'$ to $k$.
       \item In terms of the \textbf{Markov blanket}, this covers the connections to the previous tag and the emitted word
     \end{itemize}
-  \item The \textit{backward} pass: The Viterbi Algorithm
+  \item The backward pass
     \begin{itemize}
-      \item Starting at the end of the sentence, use the \textit{forward} values (probability of assigning a tag $k$ to $t_i$ given all possible previous taggings), to figure out the most likely tag $k$ for $t_i$.
-      \item Each tag selection is based on 
-        \[
-          P(t_i=k \mid t_{i+1}, w_{1:n}) = P(t_i=k \mid w_{1:i}) \cdot P(t_{i+1} \mid t_i=k)
-        \]
+      \item Starting at the end of the sentence with $\hat{t}_N=\ngramend$, use each chosen ``next tag'' along with the viterbi scores (probability of assigning a tag $k$ to $t_i$ given the best possible sequence of tags), to figure out the most likely tag $k$ for $t_i$.
       \item So:
         \[
-          \hat{t}_i = \text{argmax}_k~P(t_i=k \mid w_{1:i}) \cdot P(t_{i+1} \mid t_i=k)
+          \hat{t}_i = \text{argmax}_{k \in T}~v_{i}(k) \cdot P(\hat{t}_{i+1} \mid t_i=k)
         \]
+      \item So the chosen tag is one that has a maximally plausible preceding sequence of tags and best connects to the just-selected ``next'' tag.
       \item In terms of the \textbf{Markov blanket}, this adds in the connection to the next tag (since it has now been decided) to the forward probability which is made up of connections to the previous tag and the emitted word
     \end{itemize}
 \end{itemize}
@@ -719,7 +722,7 @@ Dynamic Programming:
   
 
 \end{tikzpicture}
-\caption{Find the maximum probability leading to dog$|$D}
+\caption{Find the maximum probability leading to dog$|$D.  Dotted arrows give the best known path to get to the node.}
 \end{figure} 
 
 
