@@ -23,6 +23,8 @@
 \usepackage[all]{xy}
 \usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
 
+
+
 \newcommand{\bs}{\textbackslash}
 \renewcommand{\vec}[1]{\mathbf{#1}}
 
@@ -304,15 +306,15 @@ MLE
   \item Emissions: $p(w_i \mid t_i) = \frac{C(t_i,w_i)}{\sum_x C(t_i,x)} = \frac{C(t_i,w_i)}{C(t_i)}$
 \end{itemize}
 
-Example dataset:
+Example dataset (punctuation excluded for simplicity!):
 \vspace{-2mm}
 \begin{verbatim}
-    <S>|<S> the|D man|N walks|V the|D dog|N .|. <E>|<E> 
-    <S>|<S> the|D dog|N runs|V .|. <E>|<E> 
-    <S>|<S> the|D dog|N walks|V .|. <E>|<E> 
-    <S>|<S> the|D man|N walks|V .|. <E>|<E> 
-    <S>|<S> a|D man|N saw|V the|D dog|N .|. <E>|<E> 
-    <S>|<S> the|D cat|N walks|V .|. <E>|<E> 
+    <S>|<S> the|D man|N walks|V the|D dog|N <E>|<E> 
+    <S>|<S> the|D dog|N runs|V <E>|<E> 
+    <S>|<S> the|D dog|N walks|V <E>|<E> 
+    <S>|<S> the|D man|N walks|V <E>|<E> 
+    <S>|<S> a|D man|N saw|V the|D dog|N <E>|<E> 
+    <S>|<S> the|D cat|N walks|V <E>|<E> 
 \end{verbatim}
 
 Some probabilities:
@@ -345,31 +347,31 @@ Some probabilities (with $\lambda=2$):
 
 \begin{itemize}
   \item The Vocabulary $V$ is the set of all word types that might be associated with a tag \tcurr:   \vspace{2mm} \\
-  $V = \{ a, cat, dog, man, runs, saw, the, walks, . \}$, ~~$|V|=9$
+  $V = \{ a, cat, dog, man, runs, saw, the, walks \}$, ~~$|V|=8$
   \item The Tagset $T$ is the set of all possible tags that could follow a tag \tprev:   \vspace{2mm} \\
         $T = \{ D, N, V, \ngramend \}$, ~~$|T|=4$
   \\
   \item $p(t_i=\text{V} \mid t_{i-1}=\text{N}) 
-     = \frac{C(\text{N V})+2}{\sum_x (C(\text{N } x)+2)} 
-     = \frac{C(\text{N V})+2}{(\sum_x C(\text{N } x))+(2 \cdot 4)} 
-     = \frac{6+2}{8+8} = 0.75
+     = \frac{C(\text{N V})+2}{\sum_{x \in T} (C(\text{N } x)+2)} 
+     = \frac{C(\text{N V})+2}{(\sum_{x \in T} C(\text{N } x))+(2 \cdot 4)} 
+     = \frac{6+2}{8+8} 
      = \frac{8}{16} = 0.50$
   \item $p(t_i=\text{D} \mid t_{i-1}=\text{N}) 
-     = \frac{C(\text{N D})+2}{\sum_x (C(\text{N } x)+2)} 
-     = \frac{C(\text{N D})+2}{(\sum_x C(\text{N } x))+(2 \cdot 4)} 
+     = \frac{C(\text{N D})+2}{\sum_{x \in T} (C(\text{N } x)+2)} 
+     = \frac{C(\text{N D})+2}{(\sum_{x \in T} C(\text{N } x))+(2 \cdot 4)} 
      = \frac{0+2}{8+8}
      = \frac{2}{16} = 0.125$
   \\
   \item $p(w_i=\text{dog} \mid t_i=\text{N}) 
-     = \frac{C(\text{N,dog})}{\sum_x (C(\text{N},x)+2)} 
-     = \frac{C(\text{N,dog})}{(\sum_x C(\text{N},x))+(2 \cdot 9)} 
-     = \frac{4+2}{8+9}
-     = 0.35$
+     = \frac{C(\text{N,dog})}{\sum_{x \in V} (C(\text{N},x)+2)} 
+     = \frac{C(\text{N,dog})}{(\sum_{x \in V} C(\text{N},x))+(2 \cdot 8)} 
+     = \frac{4+2}{8+16}
+     = 0.25$
   \item $p(w_i=\text{the} \mid t_i=\text{N}) 
-     = \frac{C(\text{N,the})}{\sum_x (C(\text{N},x)+2)} 
-     = \frac{C(\text{N,the})}{(\sum_x C(\text{N},x))+(2 \cdot 9)} 
-     = \frac{0+2}{8+9} 
-     = 0.12$
+     = \frac{C(\text{N,the})}{\sum_{x \in V} (C(\text{N},x)+2)} 
+     = \frac{C(\text{N,the})}{(\sum_{x \in V} C(\text{N},x))+(2 \cdot 8)} 
+     = \frac{0+2}{8+16} 
+     = 0.08$
 \end{itemize}
 
 Differences:
@@ -435,7 +437,7 @@ Tagging a sentence
 \begin{itemize}
   \item We want to make global decisions about tags.
   \item Due to independence, global decisions are made in terms of local decisions
-  \item Going ``forward'' allows us to predict tags based on previous decisions.
+  \item Tagging ``forward'' through the sentence allows us to predict tags based on previous decisions.
   \item But we can't calculate picking a tag changes the probabilities of previous tags.
 \end{itemize}
 
@@ -443,24 +445,779 @@ Dynamic Programming:
 
 \begin{itemize}
   \item We need to check all possible tag combinations \textit{efficiently}
-  \item 
+  \item We do this by making two passes through the sentence: one ``forward'' and one ``backward''
+  \item The \textit{forward} pass: The Forward Algorithm
+    \begin{itemize}
+      \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the likelihood of tagging $t_i=k$ given \textit{all possible ways of tagging the $i$-1 previous words}.
+        \[
+          p(t_i=k \mid w_{1:i}) = P(w_i \mid k) \cdot \sum_{k' \in T} P(k \mid k') \cdot p(t_{i-1}=k' \mid w_{1:i-1})
+        \]
+      \item Note that this is a \textit{recursive} definitio since the last probability is just the result of this same equation, but for the previous iteration.
+      \item So $k$ is the potential tag for the current token $i$
+      \item $k'$ is a potential tag for the previous token $i$-1.
+      \item So this equation says that the likelihood of tagging \tcurr\ with some tag $k$ is the probability of emitting the word $w_i$ from $k$, times the sum of the probabilities of any possible tagging of the previous token $i$-1 with some tag $k'$ (given all of \textit{its} possible previous taggings) times the probability of transitioning from $k'$ to $k$.
+      \item In terms of the \textbf{Markov blanket}, this covers the connections to the previous tag and the emitted word
+    \end{itemize}
+  \item The \textit{backward} pass: The Viterbi Algorithm
+    \begin{itemize}
+      \item Starting at the end of the sentence, use the \textit{forward} values (probability of assigning a tag $k$ to $t_i$ given all possible previous taggings), to figure out the most likely tag $k$ for $t_i$.
+      \item Each tag selection is based on 
+        \[
+          P(t_i=k \mid t_{i+1}, w_{1:n}) = P(t_i=k \mid w_{1:i}) \cdot P(t_{i+1} \mid t_i=k)
+        \]
+      \item So:
+        \[
+          \hat{t}_i = \text{argmax}_k~P(t_i=k \mid w_{1:i}) \cdot P(t_{i+1} \mid t_i=k)
+        \]
+      \item In terms of the \textbf{Markov blanket}, this adds in the connection to the next tag (since it has now been decided) to the forward probability which is made up of connections to the previous tag and the emitted word
+    \end{itemize}
 \end{itemize}
 
 
-\begin{align}
-P(s_t=k | y_{1:t}) &=  
-P(y_t | k) \cdot \sum_{k' \in K} P(k|k') \cdot P(s_{t-1}=k' | y_{1:t-1})
-\end{align}
+\textbf{Example:} Tag the sentence: ``the dog walks''
 
-\begin{align}
-P(s_t=k | s_{t+1}, y_{1:T}) &\propto
-P(s_t=k | y_{1:t}) \cdot P(s_{t+1} | s_t=k)
-\end{align}
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {};
+  \node[main] (Nthe)        [below of =Dthe]      {};
+  \node[main] (Vthe)        [below of =Nthe]      {};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[main] (Ddog)        [below of =startdog]  {};
+  \node[main] (Ndog)        [below of =Ddog]      {};
+  \node[main] (Vdog)        [below of =Ndog]      {};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[main] (Druns)       [below of =startruns] {};
+  \node[main] (Nruns)       [below of =Druns]     {};
+  \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  \path (start) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (D);
+  \path (start) edge [connect, bend left=25] node [pos=0.5, above, blue, sloped] {1.0} (N);
+  \path (start) edge [connect, bend right=25] node [pos=0.5, below, blue, sloped] {1.0} (V);
+  
+  \path (D) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (D);
+  \path (D) edge [connect, bend left=15] node [pos=0.5, above, blue, sloped] {0.75} (N);
+  \path (D) edge [connect, bend right=15] node [pos=0.5, below, blue, sloped] {0.08} (V);
+  \path (D) edge [connect, bend left=10] node [pos=0.5, above, blue, sloped] {0.08} (end);
+
+  \path (N) edge [connect, bend left=15, red] node [pos=0.5, above, blue, sloped] {0.08} (D);
+  \path (N) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (N);
+  \path (N) edge [connect, bend left=15] node [pos=0.5, below, blue, sloped] {0.58} (V);
+  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.25} (end);
+
+  \path (V) edge [connect, bend right=15, red] node [pos=0.5, below, blue, sloped] {0.30} (D);
+  \path (V) edge [connect, bend left=15, red] node [pos=0.5, below, blue, sloped] {0.10} (N);
+  \path (V) edge [in=-98,out=-83,loop] node [pos=0.5, below, blue, sloped] {0.10} (V);
+  \path (V) edge [connect] node [pos=0.5, below, blue, sloped] {0.50} (end);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Dthe) {\color{red}0.47};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Nthe) {\color{red}0.06};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Vthe) {\color{red}0.07};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[main] (Ddog)        [below of =startdog]  {};
+  \node[main] (Ndog)        [below of =Ddog]      {};
+  \node[main] (Vdog)        [below of =Ndog]      {};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[main] (Druns)       [below of =startruns] {};
+  \node[main] (Nruns)       [below of =Druns]     {};
+  \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (startstart) edge [connect] node [pos=0.5, above, blue, sloped] {0.78} (Dthe);
+  \path (startstart) edge [connect] node [pos=0.5, above, blue, sloped] {0.11} (Nthe);
+  \path (startstart) edge [connect] node [pos=0.5, above, blue, sloped] {0.11} (Vthe);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
 
 
 
 
-Tag the sentence: ``the dog runs .''
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Ddog) {\color{red}0.06};
+  \node[main] (Ddog)        [below of =startdog]  {0.002};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Ndog) {\color{red}0.29};
+  \node[main] (Ndog)        [below of =Ddog]      {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Vdog) {\color{red}0.07};
+  \node[main] (Vdog)        [below of =Ndog]      {};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[main] (Druns)       [below of =startruns] {};
+  \node[main] (Nruns)       [below of =Druns]     {};
+  \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Dthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Ddog);
+  \path (Nthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Ddog);
+  \path (Vthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.30} (Ddog);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Ddog) {\color{red}0.06};
+  \node[main] (Ddog)        [below of =startdog]  {0.002};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Ndog) {\color{red}0.29};
+  \node[main] (Ndog)        [below of =Ddog]      {0.08};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Vdog) {\color{red}0.07};
+  \node[main] (Vdog)        [below of =Ndog]      {};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[main] (Druns)       [below of =startruns] {};
+  \node[main] (Nruns)       [below of =Druns]     {};
+  \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Dthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.75} (Ndog);
+  \path (Nthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Ndog);
+  \path (Vthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.10} (Ndog);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Ddog) {\color{red}0.06};
+  \node[main] (Ddog)        [below of =startdog]  {0.002};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Ndog) {\color{red}0.29};
+  \node[main] (Ndog)        [below of =Ddog]      {0.08};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Vdog) {\color{red}0.07};
+  \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[main] (Druns)       [below of =startruns] {};
+  \node[main] (Nruns)       [below of =Druns]     {};
+  \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Dthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Vdog);
+  \path (Nthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.58} (Vdog);
+  \path (Vthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.10} (Vdog);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[main] (Ddog)        [below of =startdog]  {0.002};
+  \node[main] (Ndog)        [below of =Ddog]      {0.08};
+  \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Druns) {\color{red}0.06};
+  \node[main] (Druns)       [below of =startruns] {0.0004};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Nruns) {\color{red}0.06};
+  \node[main] (Nruns)       [below of =Druns]     {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Vruns) {\color{red}0.13};
+  \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Ddog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Druns);
+  \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Druns);
+  \path (Vdog) edge [connect] node [pos=0.5, above, blue, sloped] {0.30} (Druns);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[main] (Ddog)        [below of =startdog]  {0.002};
+  \node[main] (Ndog)        [below of =Ddog]      {0.08};
+  \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Druns) {\color{red}0.06};
+  \node[main] (Druns)       [below of =startruns] {0.0004};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Nruns) {\color{red}0.06};
+  \node[main] (Nruns)       [below of =Druns]     {0.0005};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Vruns) {\color{red}0.13};
+  \node[main] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Ddog) edge [connect] node [pos=0.5, above, blue, sloped] {0.75} (Nruns);
+  \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Nruns);
+  \path (Vdog) edge [connect] node [pos=0.5, above, blue, sloped] {0.07} (Nruns);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[main] (Ddog)        [below of =startdog]  {0.002};
+  \node[main] (Ndog)        [below of =Ddog]      {0.08};
+  \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Druns) {\color{red}0.06};
+  \node[main] (Druns)       [below of =startruns] {0.0004};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Nruns) {\color{red}0.06};
+  \node[main] (Nruns)       [below of =Druns]     {0.0005};
+  \node[draw, draw=white] at ([shift={(85:0.95)}]Vruns) {\color{red}0.13};
+  \node[main] (Vruns)       [below of =Nruns]     {0.006};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Ddog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Vruns);
+  \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.58} (Vruns);
+  \path (Vdog) edge [connect] node [pos=0.5, above, blue, sloped] {0.10} (Vruns);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[main] (Ddog)        [below of =startdog]  {0.002};
+  \node[main] (Ndog)        [below of =Ddog]      {0.08};
+  \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[draw, draw=white] at ([shift={(75:-0.95)}]Druns) {\color{black!60!green}0.00003};
+  \node[main] (Druns)       [below of =startruns] {0.0004};
+  \node[draw, draw=white] at ([shift={(75:-0.95)}]Nruns) {\color{black!60!green}0.0001};
+  \node[main] (Nruns)       [below of =Druns]     {0.0005};
+  \node[draw, fill=white!50!green] at ([shift={(75:-0.95)}]Vruns) {\color{black!60!green}0.003};
+  \node[main, fill=white!50!green] (Vruns)       [below of =Nruns]     {0.006};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Druns) edge [connect] node [pos=0.35, above, blue, sloped] {0.08} (endend);
+  \path (Nruns) edge [connect] node [pos=0.25, above, blue, sloped] {0.25} (endend);
+  \path (Vruns) edge [connect] node [pos=0.25, above, blue, sloped] {0.50} (endend);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main] (Dthe)        [below of =startthe]  {0.37};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[draw, draw=white] at ([shift={(75:-0.95)}]Ddog) {\color{black!60!green}0.00016};
+  \node[main] (Ddog)        [below of =startdog]  {0.002};
+  \node[draw, fill=white!50!green] at ([shift={(75:-0.95)}]Ndog) {\color{black!60!green}0.04640};
+  \node[main, fill=white!50!green] (Ndog)        [below of =Ddog]      {0.08};
+  \node[draw, draw=white] at ([shift={(75:-0.95)}]Vdog) {\color{black!60!green}0.0002};
+  \node[main] (Vdog)        [below of =Ndog]      {0.002};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[main] (Druns)       [below of =startruns] {};
+  \node[main] (Nruns)       [below of =Druns]     {};
+  \node[main, fill=white!50!green] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Ddog) edge [connect] node [pos=0.35, above, blue, sloped] {0.08} (Vruns);
+  \path (Ndog) edge [connect] node [pos=0.35, above, blue, sloped] {0.58} (Vruns);
+  \path (Vdog) edge [connect] node [pos=0.40, above, blue, sloped] {0.10} (Vruns);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzstyle{main}=[circle, thick, draw =black!80, node distance = 20mm, minimum size = 13mm]
+\tikzstyle{rect}=[main, rectangle]
+\tikzstyle{obsv}=[main, fill = black!10]
+\tikzstyle{hidden}=[main, draw=white]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+
+  
+  \node[rect] (start) []                {\ngramstart};
+  \node[rect] (D)     [below of =start] {D};
+  \node[rect] (N)     [below of =D]     {N};
+  \node[rect] (V)     [below of =N]     {V};
+  \node[rect] (end)   [below of =V]     {\ngramend};
+
+  \node[rect] (starttok) [right of =start,    xshift=20, yshift=55]   {\ngramstart};
+  \node[rect] (the)      [right of =starttok, xshift=20]              {the};
+  \node[rect] (dog)      [right of =the,      xshift=20]              {dog};
+  \node[rect] (runs)     [right of =dog,      xshift=20]              {runs};
+  \node[rect] (endtok)   [right of =runs,     xshift=20]              {\ngramend};
+
+  \node[main] (startstart)  [below of =starttok]  {1.0};
+
+  \node[hidden] (startthe)  [below of =the]       {};
+  \node[main, fill=white!50!green] (Dthe)        [below of =startthe]  {0.37};
+  \node[draw, fill=white!50!green] at ([shift={(75:-0.95)}]Dthe) {\color{black!60!green}0.2775};
+  \node[main] (Nthe)        [below of =Dthe]      {0.007};
+  \node[draw, draw=white] at ([shift={(75:-0.95)}]Nthe) {\color{black!60!green}0.0006};
+  \node[main] (Vthe)        [below of =Nthe]      {0.008};
+  \node[draw, draw=white] at ([shift={(75:-0.95)}]Vthe) {\color{black!60!green}0.0008};
+  \node[hidden] (endthe)    [below of =Vthe]      {};
+
+  \node[hidden] (startdog)  [below of =dog]       {};
+  \node[main] (Ddog)        [below of =startdog]  {};
+  \node[main, fill=white!50!green] (Ndog)        [below of =Ddog]      {};
+  \node[main] (Vdog)        [below of =Ndog]      {};
+  \node[hidden] (enddog)    [below of =Vdog]      {};
+
+  \node[hidden] (startruns) [below of =runs]      {};
+  \node[main] (Druns)       [below of =startruns] {};
+  \node[main] (Nruns)       [below of =Druns]     {};
+  \node[main, fill=white!50!green] (Vruns)       [below of =Nruns]     {};
+  \node[hidden] (endruns)   [below of =Vruns]     {};
+
+  \node[hidden] (startend)  [below of =endtok]    {};
+  \node[hidden] (Dend)      [below of =startend]  {};
+  \node[hidden] (Nend)      [below of =Dend]      {};
+  \node[hidden] (Vend)      [below of =Nend]      {};
+  \node[main]   (endend)    [below of =Vend]      {};
+
+
+  
+  \path (Dthe) edge [connect] node [pos=0.4, above, blue, sloped] {0.75} (Ndog);
+  \path (Nthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Ndog);
+  \path (Vthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.10} (Ndog);
+  
+
+\end{tikzpicture}
+\caption{}
+\end{figure} 
+
+
+
 
 % \begin{align*}
 
@@ -481,10 +1238,8 @@ Tag the sentence: ``the dog runs .''
 
 
 
-
-
-\newsavebox{\starttable}
-\sbox{\starttable}{
+\newsavebox{\startaltable}
+\sbox{\startaltable}{
     \begin{tabular}{l l}
       \hline
       \multicolumn{2}{|c|}{{\cellcolor{gray!40}\ngramstart}} \tabularnewline
@@ -493,53 +1248,46 @@ Tag the sentence: ``the dog runs .''
     \end{tabular}
 }
 
-\newsavebox{\Dtable}
-\sbox{\Dtable}{
+\newsavebox{\Daltable}
+\sbox{\Daltable}{
     \begin{tabular}{l l}
       \hline
       \multicolumn{2}{|c|}{{\cellcolor{gray!40}D}} \tabularnewline
       \hline
-      the & 0.87 \tabularnewline
-      a   & 0.13
+      the & 0.47 \tabularnewline
+      a   & 0.12 \tabularnewline
+      $*$   & 0.06
     \end{tabular}
 }
 
-\newsavebox{\Ntable}
-\sbox{\Ntable}{
+\newsavebox{\Naltable}
+\sbox{\Naltable}{
     \begin{tabular}{l l}
       \hline
       \multicolumn{2}{|c|}{{\cellcolor{gray!40}N}} \tabularnewline
       \hline
-      man & 0.25 \tabularnewline
-      dog & 0.50 \tabularnewline
-      cat & 0.25
+      man & 0.24 \tabularnewline
+      dog & 0.29 \tabularnewline
+      cat & 0.12 \tabularnewline
+      $*$   & 0.06
     \end{tabular}
 }
 
-\newsavebox{\Vtable}
-\sbox{\Vtable}{
+\newsavebox{\Valtable}
+\sbox{\Valtable}{
     \begin{tabular}{l l}
       \hline
       \multicolumn{2}{|c|}{{\cellcolor{gray!40}V}} \tabularnewline
       \hline
-      walks  & 0.66 \tabularnewline
-      runs   & 0.17 \tabularnewline
-      chases & 0.17
+      walks  & 0.33 \tabularnewline
+      runs   & 0.13 \tabularnewline
+      saw    & 0.13 \tabularnewline
+      $*$      & 0.07
     \end{tabular}
 }
 
-\newsavebox{\stoptable}
-\sbox{\stoptable}{
-    \begin{tabular}{l l}
-      \hline
-      \multicolumn{2}{|c|}{{\cellcolor{gray!40}.}} \tabularnewline
-      \hline
-      . & 1.0
-    \end{tabular}
-}
-
-\newsavebox{\ngramendtable}
-\sbox{\ngramendtable}{
+\newsavebox{\ngramendaltable}
+\sbox{\ngramendaltable}{
     \begin{tabular}{l l}
       \hline
       \multicolumn{2}{|c|}{{\cellcolor{gray!40}\ngramend}} \tabularnewline
@@ -558,26 +1306,37 @@ Tag the sentence: ``the dog runs .''
 \tikzstyle{connect}=[-latex, thick]
 \tikzstyle{box}=[rectangle, draw=black!100]
 
-  \node[main] (start) []           {\usebox{\starttable}};
-  \node[main] (D)     [right of =start]          {\usebox{\Dtable}};
-  \node[main] (N)     [right of =D, yshift= 70]  {\usebox{\Ntable}};
-  \node[main] (V)     [right of =D, yshift=-70]  {\usebox{\Vtable}};
-  \node[main] (stop)  [right of =D, xshift=40mm] {\usebox{\stoptable}};
-  \node[main] (end)   [right of =stop]           {\usebox{\ngramendtable}};
+  \node[main] (start) []                         {\usebox{\startaltable}};
+  \node[main] (D)     [right of =start]          {\usebox{\Daltable}};
+  \node[main] (N)     [right of =D, yshift= 90]  {\usebox{\Naltable}};
+  \node[main] (V)     [right of =D, xshift=60, yshift=-90]  {\usebox{\Valtable}};
+  \node[main] (end)   [right of =D, xshift=170]   {\usebox{\ngramendaltable}};
 
 
-  \path (start) edge [connect] node [pos=0.5, above, blue, sloped] {1.0} (D);
-  \path (D) edge [connect] node [pos=0.5, above, blue, sloped] {1.0} (N);
-  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.80} (V);
-  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.20} (stop);
-  \path (V) edge [connect, red] node [pos=0.5, above, blue, sloped] {0.33} (D);
-  \path (V) edge [connect] node [pos=0.5, above, blue, sloped] {0.67} (stop);
-  \path (stop) edge [connect] node [pos=0.5, above, blue, sloped] {1.0} (end);
+  \path (start) edge [connect] node [pos=0.5, above, blue, sloped] {0.78} (D);
+  \path (start) edge [connect, bend left=25] node [pos=0.5, above, blue, sloped] {0.11} (N);
+  \path (start) edge [connect, bend right=25] node [pos=0.5, below, blue, sloped] {0.11} (V);
+  
+  \path (D) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (D);
+  \path (D) edge [connect, bend left=15] node [pos=0.5, above, blue, sloped] {0.75} (N);
+  \path (D) edge [connect, bend right=15] node [pos=0.5, below, blue, sloped] {0.08} (V);
+  \path (D) edge [connect, bend left=10] node [pos=0.75, above, blue, sloped] {0.08} (end);
+
+  \path (N) edge [connect, bend left=15, red] node [pos=0.5, above, blue, sloped] {0.08} (D);
+  \path (N) edge [in=98,out=83,loop] node [pos=0.5, above, blue, sloped] {0.08} (N);
+  \path (N) edge [connect, bend left=15] node [pos=0.5, below, blue, sloped] {0.58} (V);
+  \path (N) edge [connect] node [pos=0.5, above, blue, sloped] {0.25} (end);
+
+  \path (V) edge [connect, bend right=15, red] node [pos=0.5, below, blue, sloped] {0.30} (D);
+  \path (V) edge [connect, bend left=15, red] node [pos=0.5, below, blue, sloped] {0.10} (N);
+  \path (V) edge [in=-98,out=-83,loop] node [pos=0.5, below, blue, sloped] {0.10} (V);
+  \path (V) edge [connect] node [pos=0.5, below, blue, sloped] {0.50} (end);
   
 
 \end{tikzpicture}
-\caption{Finite state machine.  Missing arrows are assumed to be zero probabilities.  With smoothing, there would be an arrow in \textit{both directions} between \textit{every} pair of words.}
+\caption{Finite state machine.  Missing arrows are assumed to be zero probabilities.  With smoothing, there is an arrow in \textit{both directions} between every pair of tags.}
 \end{figure} 
+
 
 
 
