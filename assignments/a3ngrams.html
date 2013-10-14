@@ -347,7 +347,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 <span class='c1'>// -Infinity</span>
 </code></pre></div>
 <blockquote>
-<p><strong>Written Answer (b):</strong> Why is the probability of &#8220;so there was that .&#8221; lower than that of &#8220;the last came a little bird , so there was that .&#8221;?</p>
+<p><strong>Written Answer (b):</strong> Why is the probability of &#8220;so there was that .&#8221; <strong>higher</strong> than that of &#8220;the last came a little bird , so there was that .&#8221;?</p>
 </blockquote>
 
 <blockquote>
@@ -634,7 +634,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 
 <p>The main method of <code>DecipherToImplement</code> starts by generating a random secret cipher key, reading <code>--ciphersize</code> number of tokens from the <code>--cipher</code> file and enciphering the text using the key. Next, it reads <code>-trainsize</code> number of tokens from the <code>--train</code> file and calls the <code>train</code> method to construct a language model. It then proceeds to iteratively try to find the best cipher key by making letter swaps and checking the deciphered output.</p>
 
-<p>You will define a class <code>nlp.a3.Decipher</code> that extends <code>nlpclass.DecipherToImplement</code>. You will have to implement the following methods:</p>
+<p>You will define an <em>object</em> <code>nlp.a3.Decipher</code> that extends <code>nlpclass.DecipherToImplement</code>. You will have to implement the following methods:</p>
 <div class='highlight'><pre><code class='scala'><span class='cm'>/**</span>
 <span class='cm'> * Train an ngram language model on the given tokens</span>
 <span class='cm'> *</span>
