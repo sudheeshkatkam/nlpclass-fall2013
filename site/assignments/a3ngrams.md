@@ -294,7 +294,7 @@ alice.sentenceProb("the last came a little bird .".split(" ").toVector)
 // -Infinity
 {% endhighlight %}
 
-> **Written Answer (b):** Why is the probability of "so there was that ." lower than that of "the last came a little bird , so there was that ."?
+> **Written Answer (b):** Why is the probability of "so there was that ." **higher** than that of "the last came a little bird , so there was that ."?
 
 > **Written Answer (c):** Why does "the last came a little bird ." have a zero probability (negative infinity in log-space)?  Why did this zero not drive the probability of "the last came a little bird , so there was that ." to zero as well?
 
