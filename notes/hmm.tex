@@ -621,7 +621,7 @@ The Viterbi Algorithm
 \end{itemize}
 
 
-\textbf{Example:} Tag the sentence: ``the dog walks''
+\textbf{Example:} Viterbi algorithm for tagging the sentence ``the dog walks'' is given in the figures below
 
 
 
@@ -686,7 +686,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{
+\caption{Viterbi Algorithm: 
   Calculating $v_1(D)$, $v_1(N)$, and $v_1(V)$.  Since \ngramstart\ is only choice for the previous tag, each score $v_1(k)$ is calculated as $p(\text{the} \mid k) \cdot v_0(\ngramstart) \cdot p(k \mid \ngramstart)$.  So, for example, \\\\ ~~~~~~ $v_1(D) = p(\text{the} \mid D) \cdot v_0(\ngramstart) \cdot p(D \mid \ngramstart) = 0.47 \cdot 1.0 \cdot 0.78 = 0.37$
 }
 \end{figure} 
@@ -763,7 +763,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{
+\caption{Viterbi Algorithm: 
   Find the maximum probability of all possible tag sequences leading to dog$|$D at token $i$.  We do so by finding the best previous tag for getting there, given all possible ways of getting to the previous token.  Since each viterbi score $v_1(k)$ stores the highest probability path for getting to $t_1=k$, all we need to do is find the best way of getting to $t_2=D$ given all the best ways of getting to each possible tag for the previous token, and the probabilities of getting from each possible previous tag to $k$. For example:\\\\
   ~~~~ $v_2(D) = p(\text{dog}|D) \cdot \text{max}(v_1(D) \cdot p(D|D), v_1(N) \cdot p(N|D), v_1(V) \cdot p(V|D)) \\
   ~~~~ ~~~~ ~ = 0.06 \cdot \text{max}(0.37 \cdot 0.08, 0.007 \cdot 0.08, 0.008 \cdot 0.30) \\
@@ -847,7 +847,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{Calculate $v_2(N)$ and find the best path to it, which turns out to be the path ending with $t_1=D$.}
+\caption{Viterbi Algorithm: Calculate $v_2(N)$ and find the best path to it, which turns out to be the path ending with $t_1=D$.}
 \end{figure} 
 
 
@@ -925,7 +925,7 @@ The Viterbi Algorithm
 
 
 \end{tikzpicture}
-\caption{Calculate $v_2(V)$ and find the best path to it, which turns out to be the path ending with $t_1=D$}
+\caption{Viterbi Algorithm: Calculate $v_2(V)$ and find the best path to it, which turns out to be the path ending with $t_1=D$}
 \end{figure} 
 
 
@@ -1005,7 +1005,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{Calculate $v_3(D)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
+\caption{Viterbi Algorithm: Calculate $v_3(D)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
 \end{figure} 
 
 
@@ -1085,7 +1085,7 @@ The Viterbi Algorithm
 
 
 \end{tikzpicture}
-\caption{Calculate $v_3(N)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
+\caption{Viterbi Algorithm: Calculate $v_3(N)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
 \end{figure} 
 
 
@@ -1164,7 +1164,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{Calculate $v_3(V)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
+\caption{Viterbi Algorithm: Calculate $v_3(V)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
 \end{figure} 
 
 
@@ -1241,7 +1241,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{Calculate $v_4(\ngramend)$ and find the best path to it, which turns out to be the path ending with $t_3=V$}
+\caption{Viterbi Algorithm: Calculate $v_4(\ngramend)$ and find the best path to it, which turns out to be the path ending with $t_3=V$}
 \end{figure} 
 
 
@@ -1311,7 +1311,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{The tag for \ngramend\ is always \ngramend, so we can always start by selecting that tag.}
+\caption{Viterbi Algorithm: The tag for \ngramend\ is always \ngramend, so we can always start by selecting that tag.}
 \end{figure} 
 
 
@@ -1386,7 +1386,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{For each tag $t_{i+1}$, we examine the backpointer that indicates the way to the best path to $t_{i+1}$, and choose $t_i$ accordingly.}
+\caption{Viterbi Algorithm: For each tag $t_{i+1}$, we examine the backpointer that indicates the way to the best path to $t_{i+1}$, and choose $t_i$ accordingly.}
 \end{figure} 
 
 
