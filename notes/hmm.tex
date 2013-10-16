@@ -389,15 +389,17 @@ From Chen and Goodman (1996)
 
 Idea: Smooth conditional distribution by interpolating the MLE with a unigram distribution where the degree of smoothing is proportional to the ``openness'' of a tag.
 \begin{align*}
-  p(\wcurr \mid \tcurr) &= \frac{C(\tcurr,\wcurr) + \alpha(\tcurr) \cdot p(\wcurr)}{C(\tcurr) + \alpha(\tcurr)}
-  &&\text{where} ~~ \alpha(\tcurr) = | \wcurr: C(\tcurr,\wcurr) = 1 | \\
-  p(\tcurr \mid \tprev) &= \frac{C(\tprev,\tcurr) + \lambda(\tprev) \cdot p(\tcurr)}{C(\tprev) + \lambda(\tprev)}
-  &&\text{where} ~~ \lambda(\tprev) = | \tcurr: C(\tprev,\tcurr) = 1 |
+  p(\tcurr \mid \tprev) &= \frac{C(\tprev,\tcurr) + \alpha(\tprev) \cdot p(\tcurr)}{C(\tprev) + \alpha(\tprev)}
+  &&\text{where} ~~ \alpha(\tprev) = | \tcurr: C(\tprev,\tcurr) = 1 | \\\\
+  p(\wcurr \mid \tcurr) &= \frac{C(\tcurr,\wcurr) + \beta(\tcurr) \cdot p(\wcurr)}{C(\tcurr) + \beta(\tcurr)}
+  &&\text{where} ~~ \beta(\tcurr) = | \wcurr: C(\tcurr,\wcurr) = 1 |
 \end{align*}
 
 \begin{itemize}
   \item For emissions, if a tag \tcurr\ appears one time with a large number of word types, then we assume that it is very ``open'': there is a large number of words that it has only been seen with once, so the likelihood that it \textit{could have} been seen with some other word, even though it didn't \textit{happen} to be seen with it, is high.
-  \item For transition, the reasoning is the same.  Instead of a tag being associated with a wide variety of words once, it's a wide variety of subsequent tags once.
+  \item For transitions, the reasoning is the same.  Instead of a tag being associated with a wide variety of words once, it's a wide variety of subsequent tags once.
+
+  \item Note that it is still necessary to smooth the prior distributions $p(\tprev)$ and $p(w_i)$ since if the transition or emission count is zero, we need to ensure that we back off to some non-zero value; add-1 smoothing should be sufficient.  Additionally, It is necessary to add some small amount to $\alpha(\tprev)$ and $\beta(\tcurr)$ in case there are no singletons
 \end{itemize}
 
 
@@ -504,6 +506,43 @@ Idea: Smooth conditional distribution by interpolating the MLE with a unigram di
 \end{figure} 
 
 
+\section{Three Tasks for HMM}
+
+\begin{enumerate}
+  \item Likelihood: Given a tagged sequence, determine its likelihood
+  \item Decoding: Given an untagged sequence, determine the best tag sequence for it
+  \item Learning: Given an untagged sequence, and a set of tags, learn the HMM parameters.
+\end{enumerate}
+
+
+
+\section{Likelihood of a tagged sentence}
+
+We can compute the likelihood of a particluar sequence of tags for a sentence:
+
+\begin{itemize}
+  \item $p(t_1 ... t_n \mid w_1 ... w_n) = \prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1})$
+\end{itemize}
+
+
+Example: ``the$|$D dog$|$N walks$|$V''
+\begin{align*}
+  p(t_1 ... t_n \mid w_1 ... w_n) 
+    &\approx \prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1}) \\
+    &= p(D \mid \ngramstart) \cdot p(the   \mid D) \cdot
+       p(N \mid D)           \cdot p(dog   \mid N) \cdot
+       p(V \mid N)           \cdot p(walks \mid V) \cdot
+       p(\ngramend \mid V)
+\end{align*}
+
+\begin{itemize}
+  \item This says that the probability of the tag sequence is the probability of seeing \textit{D} as the first tag, \textit{the} given that the chosen first tag was \textit{D}, \textit{N} given that the previous tag was \textit{D}, \textit{dog} given that the chosen second tag was \textit{N}, etc...
+  \item Transition ($p(t_i \mid t_{i-1})$) and emission ($p(w_i \mid t_i)$) values are calculated as above  
+\end{itemize}
+
+
+
+
 
 
 \section{Decoding}
@@ -511,14 +550,14 @@ Idea: Smooth conditional distribution by interpolating the MLE with a unigram di
 Tagging a sentence
 
 \begin{itemize}
-  \item $\text{argmax}_{t_1^n}~\prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1})$
-  \item For ``the dog walks .'', we have to check all combinations: \vspace{2mm} \\
-        \ngramstart\ D D D D \ngramend  \vspace{2mm} \\
-        \ngramstart\ N D D D \ngramend  \vspace{2mm} \\
-        \ngramstart\ V D D D \ngramend  \vspace{2mm} \\
-        \ngramstart\ . D D D \ngramend  \vspace{2mm} \\
-        \ngramstart\ N N D D \ngramend  \vspace{2mm} \\
-        \ngramstart\ N V D D \ngramend  \vspace{2mm} \\
+  \item $\hat{t}_i^n = \text{argmax}_{t_1^n}~p(t_1 ... t_n \mid w_1 ... w_n) \approx \text{argmax}_{t_1^n}~\prod_{i=1}^n p(w_i \mid t_i) \cdot p(t_i \mid t_{i-1})$
+  \item For ``the dog walks'', we have to check all combinations: \vspace{2mm} \\
+        \ngramstart\ D D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ N D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ V D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ . D D \ngramend  \vspace{2mm} \\
+        \ngramstart\ N N D \ngramend  \vspace{2mm} \\
+        \ngramstart\ N V D \ngramend  \vspace{2mm} \\
         ...
   \item But this is insane.
 \end{itemize}
@@ -556,7 +595,7 @@ The Viterbi Algorithm
       % \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the likelihood of tagging $t_i=k$ given \textit{all possible ways of tagging the $i$-1 previous words}.
       \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the highest probability sequence of tags for the previous $i$-1 words and ending with $t_i=k$, given \textit{all possible ways of tagging the $i$-1 previous words}.
         \[
-          v_i(k) = \text{max}_{t_1, ..., t_{i-1}}~p(t_1, ..., t_{i-1}, w_1, ..., w_{i-1}, t_i=k \mid \text{HMM})
+          v_i(k) = \text{max}_{t_1, ..., t_{i-1}}~p(w_1, ..., w_i, t_1, ..., t_{i-1}, t_i=k)
         \]
       \item With our independence assumptions:
         \[
@@ -647,7 +686,9 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{}
+\caption{
+  Calculating $v_1(D)$, $v_1(N)$, and $v_1(V)$.  Since \ngramstart\ is only choice for the previous tag, each score $v_1(k)$ is calculated as $p(\text{the} \mid k) \cdot v_0(\ngramstart) \cdot p(k \mid \ngramstart)$.  So, for example, \\\\ ~~~~~~ $v_1(D) = p(\text{the} \mid D) \cdot v_0(\ngramstart) \cdot p(D \mid \ngramstart) = 0.47 \cdot 1.0 \cdot 0.78 = 0.37$
+}
 \end{figure} 
 
 
@@ -708,9 +749,9 @@ The Viterbi Algorithm
 
 
   
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
   
   \node[draw, fill=white!50!green] at ([shift={(95:-0.57)}]Dthe) {0.002};
   \node[draw, draw=white] at ([shift={(95:-0.57)}]Nthe) {\color{black!60!green}0.00003};
@@ -722,7 +763,14 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{Find the maximum probability leading to dog$|$D.  Dotted arrows give the best known path to get to the node.}
+\caption{
+  Find the maximum probability of all possible tag sequences leading to dog$|$D at token $i$.  We do so by finding the best previous tag for getting there, given all possible ways of getting to the previous token.  Since each viterbi score $v_1(k)$ stores the highest probability path for getting to $t_1=k$, all we need to do is find the best way of getting to $t_2=D$ given all the best ways of getting to each possible tag for the previous token, and the probabilities of getting from each possible previous tag to $k$. For example:\\\\
+  ~~~~ $v_2(D) = p(\text{dog}|D) \cdot \text{max}(v_1(D) \cdot p(D|D), v_1(N) \cdot p(N|D), v_1(V) \cdot p(V|D)) \\
+  ~~~~ ~~~~ ~ = 0.06 \cdot \text{max}(0.37 \cdot 0.08, 0.007 \cdot 0.08, 0.008 \cdot 0.30) \\
+  ~~~~ ~~~~ ~ = 0.06 \cdot \text{max}(0.03, 0.0006, 0.002) \\
+  ~~~~ ~~~~ ~ = 0.06 \cdot 0.03 = 0.002$ \\\\
+  $t_1=D$ turns out to be the best previous tag for getting to $t_2=D$, so $t_1=D$ is remembered (with a dotted arrow) as the best way to get to $t_2=D$.
+}
 \end{figure} 
 
 
@@ -783,10 +831,10 @@ The Viterbi Algorithm
 
 
   
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
-  \path (Dthe) edge [connect, dotted] (Ddog);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
+  \path (Ddog) edge [connect, dotted] (Dthe);
 
 
   \node[draw, fill=white!50!green] at ([shift={(95:-0.57)}]Dthe) {0.08};
@@ -799,7 +847,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{}
+\caption{Calculate $v_2(N)$ and find the best path to it, which turns out to be the path ending with $t_1=D$.}
 \end{figure} 
 
 
@@ -860,11 +908,11 @@ The Viterbi Algorithm
 
 
   
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
-  \path (Dthe) edge [connect, dotted] (Ddog);
-  \path (Dthe) edge [connect, dotted] (Ndog);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
+  \path (Ddog) edge [connect, dotted] (Dthe);
+  \path (Ndog) edge [connect, dotted] (Dthe);
 
 
   \path (Dthe) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Vdog);
@@ -877,7 +925,7 @@ The Viterbi Algorithm
 
 
 \end{tikzpicture}
-\caption{}
+\caption{Calculate $v_2(V)$ and find the best path to it, which turns out to be the path ending with $t_1=D$}
 \end{figure} 
 
 
@@ -939,12 +987,12 @@ The Viterbi Algorithm
 
 
   
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
-  \path (Dthe) edge [connect, dotted] (Ddog);
-  \path (Dthe) edge [connect, dotted] (Ndog);
-  \path (Dthe) edge [connect, dotted] (Vdog);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
+  \path (Ddog) edge [connect, dotted] (Dthe);
+  \path (Ndog) edge [connect, dotted] (Dthe);
+  \path (Vdog) edge [connect, dotted] (Dthe);
 
   \path (Ddog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Druns);
   \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Druns);
@@ -957,7 +1005,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{}
+\caption{Calculate $v_3(D)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
 \end{figure} 
 
 
@@ -1019,13 +1067,13 @@ The Viterbi Algorithm
 
   
   
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
-  \path (Dthe) edge [connect, dotted] (Ddog);
-  \path (Dthe) edge [connect, dotted] (Ndog);
-  \path (Dthe) edge [connect, dotted] (Vdog);
-  \path (Ndog) edge [connect, dotted] (Druns);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
+  \path (Ddog) edge [connect, dotted] (Dthe);
+  \path (Ndog) edge [connect, dotted] (Dthe);
+  \path (Vdog) edge [connect, dotted] (Dthe);
+  \path (Druns) edge [connect, dotted] (Ndog);
 
   \path (Ddog) edge [connect] node [pos=0.5, above, blue, sloped] {0.75} (Nruns);
   \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.08} (Nruns);
@@ -1037,7 +1085,7 @@ The Viterbi Algorithm
 
 
 \end{tikzpicture}
-\caption{}
+\caption{Calculate $v_3(N)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
 \end{figure} 
 
 
@@ -1097,14 +1145,14 @@ The Viterbi Algorithm
 
 
   
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
-  \path (Dthe) edge [connect, dotted] (Ddog);
-  \path (Dthe) edge [connect, dotted] (Ndog);
-  \path (Dthe) edge [connect, dotted] (Vdog);
-  \path (Ndog) edge [connect, dotted] (Druns);
-  \path (Ndog) edge [connect, dotted] (Nruns);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
+  \path (Ddog) edge [connect, dotted] (Dthe);
+  \path (Ndog) edge [connect, dotted] (Dthe);
+  \path (Vdog) edge [connect, dotted] (Dthe);
+  \path (Druns) edge [connect, dotted] (Ndog);
+  \path (Nruns) edge [connect, dotted] (Ndog);
 
   \path (Ddog) edge [connect] node [pos=0.43, above, blue, sloped] {0.08} (Vruns);
   \path (Ndog) edge [connect] node [pos=0.5, above, blue, sloped] {0.58} (Vruns);
@@ -1116,7 +1164,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{}
+\caption{Calculate $v_3(V)$ and find the best path to it, which turns out to be the path ending with $t_2=N$}
 \end{figure} 
 
 
@@ -1165,7 +1213,7 @@ The Viterbi Algorithm
   \node[draw, draw=white] at ([shift={(55:-0.67)}]Druns) {\color{black!60!green}0.00003};
   \node[main] (Nruns)       [below of =Druns]     {0.00038};
   \node[draw, draw=white] at ([shift={(55:-0.67)}]Nruns) {\color{black!60!green}0.0001};
-  \node[main, fill=white!50!green] (Vruns)       [below of =Nruns]     {0.006};
+  \node[main] (Vruns)       [below of =Nruns]     {0.006};
   \node[draw, fill=white!50!green] at ([shift={(55:-0.67)}]Vruns) {\color{black!60!green}0.003};
   \node[hidden] (endruns)   [below of =Vruns]     {};
 
@@ -1177,15 +1225,15 @@ The Viterbi Algorithm
   \node[main]   (endend)    [below of =Vend]      {};
 
 
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
-  \path (Dthe) edge [connect, dotted] (Ddog);
-  \path (Dthe) edge [connect, dotted] (Ndog);
-  \path (Dthe) edge [connect, dotted] (Vdog);
-  \path (Ndog) edge [connect, dotted] (Druns);
-  \path (Ndog) edge [connect, dotted] (Nruns);
-  \path (Ndog) edge [connect, dotted] (Vruns);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
+  \path (Ddog) edge [connect, dotted] (Dthe);
+  \path (Ndog) edge [connect, dotted] (Dthe);
+  \path (Vdog) edge [connect, dotted] (Dthe);
+  \path (Druns) edge [connect, dotted] (Ndog);
+  \path (Nruns) edge [connect, dotted] (Ndog);
+  \path (Vruns) edge [connect, dotted] (Ndog);
   
   \path (Druns) edge [connect] node [pos=0.35, above, blue, sloped] {0.08} (endend);
   \path (Nruns) edge [connect] node [pos=0.25, above, blue, sloped] {0.25} (endend);
@@ -1193,7 +1241,7 @@ The Viterbi Algorithm
   
 
 \end{tikzpicture}
-\caption{}
+\caption{Calculate $v_4(\ngramend)$ and find the best path to it, which turns out to be the path ending with $t_3=V$}
 \end{figure} 
 
 
@@ -1250,20 +1298,20 @@ The Viterbi Algorithm
   \node[main, fill=white!50!green]   (endend)    [below of =Vend]      {};
 
 
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
-  \path (Dthe) edge [connect, dotted] (Ddog);
-  \path (Dthe) edge [connect, dotted] (Ndog);
-  \path (Dthe) edge [connect, dotted] (Vdog);
-  \path (Ndog) edge [connect, dotted] (Druns);
-  \path (Ndog) edge [connect, dotted] (Nruns);
-  \path (Ndog) edge [connect, dotted] (Vruns);
-  \path (Vruns) edge [connect, dotted] (endend);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
+  \path (Ddog) edge [connect, dotted] (Dthe);
+  \path (Ndog) edge [connect, dotted] (Dthe);
+  \path (Vdog) edge [connect, dotted] (Dthe);
+  \path (Druns) edge [connect, dotted] (Ndog);
+  \path (Nruns) edge [connect, dotted] (Ndog);
+  \path (Vruns) edge [connect, dotted] (Ndog);
+  \path (endend) edge [connect, dotted] (Vruns);
   
 
 \end{tikzpicture}
-\caption{}
+\caption{The tag for \ngramend\ is always \ngramend, so we can always start by selecting that tag.}
 \end{figure} 
 
 
@@ -1320,25 +1368,25 @@ The Viterbi Algorithm
 
 
 
-  \path (startstart) edge [connect, dotted] (Dthe);
-  \path (startstart) edge [connect, dotted] (Nthe);
-  \path (startstart) edge [connect, dotted] (Vthe);
-  \path (Dthe) edge [connect, dotted] (Ddog);
-  \path (Dthe) edge [connect, dotted] (Ndog);
-  \path (Dthe) edge [connect, dotted] (Vdog);
-  \path (Ndog) edge [connect, dotted] (Druns);
-  \path (Ndog) edge [connect, dotted] (Nruns);
-  \path (Ndog) edge [connect, dotted] (Vruns);
-  \path (Vruns) edge [connect, dotted] (endend);
+  \path (Dthe) edge [connect, dotted] (startstart);
+  \path (Nthe) edge [connect, dotted] (startstart);
+  \path (Vthe) edge [connect, dotted] (startstart);
+  \path (Ddog) edge [connect, dotted] (Dthe);
+  \path (Ndog) edge [connect, dotted] (Dthe);
+  \path (Vdog) edge [connect, dotted] (Dthe);
+  \path (Druns) edge [connect, dotted] (Ndog);
+  \path (Nruns) edge [connect, dotted] (Ndog);
+  \path (Vruns) edge [connect, dotted] (Ndog);
+  \path (endend) edge [connect, dotted] (Vruns);
   
-    \path (Dthe) edge [connect, line width=0.8mm, red] (startstart);
+  \path (Dthe) edge [connect, line width=0.8mm, red] (startstart);
   \path (Ndog) edge [connect, line width=0.8mm, red] (Dthe);
   \path (Vruns) edge [connect, line width=0.8mm, red] (Ndog);  
   \path (endend) edge [connect, line width=0.8mm, red] (Vruns);
   
 
 \end{tikzpicture}
-\caption{}
+\caption{For each tag $t_{i+1}$, we examine the backpointer that indicates the way to the best path to $t_{i+1}$, and choose $t_i$ accordingly.}
 \end{figure} 
 
 
@@ -1359,15 +1407,6 @@ The Viterbi Algorithm
   \item Prune low-probability tags.
 \end{itemize}
 
-
-
-\section{Three Tasks for HMM}
-
-\begin{enumerate}
-  \item Likelihood: Given a tagged sequnce, determine its likelihood
-  \item Decoding: Given an untagged sequence, determine the best tag sequence for it
-  \item Learning: Given an untagged sequence, and a set of tags, learn the HMM parameters.
-\end{enumerate}
 
 
 \section{Learning: Forward-Backward}
