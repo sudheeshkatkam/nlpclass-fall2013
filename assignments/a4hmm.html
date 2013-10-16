@@ -1,0 +1,299 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment 4 - Hidden Markov Models</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../assignments.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5sentiment.html'>#5 - Sentiment</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment 4 - Hidden Markov Models</h1>
+        <ol class="toc"><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_implement_an_unsmoothed_hmm_tagger">Problem 1: Implement an Unsmoothed HMM Tagger</a></li><li><a href="#problem_2_add_smoothed_hmm_tagger">Problem 2: Add-λ Smoothed HMM Tagger</a></li><li><a href="#problem_3_tag_dictionary">Problem 3: Tag Dictionary</a></li><li><a href="#problem_4_pruned_tag_dictionary">Problem 4: Pruned Tag Dictionary</a></li></ol>
+        <p><strong>Due: Thursday, October 31. Programming at noon. Written portions at 2pm.</strong></p>
+
+<ul>
+<li>Written portions are found throughout the assignment, and are clearly marked.</li>
+
+<li>Coding portions must be turned in via GitHub using the tag <code>a4</code>.</li>
+</ul>
+
+<h2 id='introduction'>Introduction</h2>
+
+<p>This assignment will guide you though the implementation of a Hidden Markov Model with various approaches to handling sparse data. You will apply your model to the task of part-of-speech tagging.</p>
+
+<p>To complete the homework, use the interfaces found in the class GitHub repository.</p>
+
+<ul>
+<li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
+
+<li>Programming portions should be turned in via GitHub by noon on the assignment due date.</li>
+</ul>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
+
+<p>The used here classes will extend traits that are found in the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0006&quot; changing()</code></pre>
+
+<p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
+
+<p><strong>If you have any questions or problems with any of the materials, don&#8217;t hesitate to ask!</strong></p>
+
+<p><strong>Tip:</strong> Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.</p>
+
+<p>Finally: if possible, don&#8217;t print this homework out! Just read it online, which ensures you&#8217;ll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won&#8217;t waste paper.</p>
+
+<h2 id='problem_1_implement_an_unsmoothed_hmm_tagger'>Problem 1: Implement an Unsmoothed HMM Tagger</h2>
+
+<p>You will implement an Hidden Markov Model for tagging sentences with part-of-speech tags. The data we will be using comes from the <a href='http://www.cis.upenn.edu/~treebank/'>Penn Treebank</a> corpus. The list of tags used can be found <a href='http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html'>here</a>.</p>
+
+<p>Create a class <code>nlp.a4.HiddenMarkovModel[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L163'><code>nlpclass.HiddenMarkovModelToImplement[Word, Tag]</code></a>.</p>
+
+<p>Your class will implement two methods:</p>
+<div class='highlight'><pre><code class='scala'><span class='cm'>/**</span>
+<span class='cm'> * Compute the probability of the tagged sentence.  The result</span>
+<span class='cm'> * should be represented as a logarithm.</span>
+<span class='cm'> */</span>
+<span class='k'>def</span> <span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>sentence</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Double</span>
+
+<span class='cm'>/**</span>
+<span class='cm'> * Accepts a sentence of word tokens and returns a sequence of </span>
+<span class='cm'> * tags corresponding to each of those words.</span>
+<span class='cm'> */</span>
+<span class='k'>def</span> <span class='n'>tagSentence</span><span class='o'>(</span><span class='n'>sentence</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Word</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>]</span>
+</code></pre></div>
+<p>The <code>setenceProb</code> method should compute the probability in log-space and return it as a logarithm. It should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>s</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>map</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\|&quot;</span><span class='o'>)).</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>Array</span><span class='o'>(</span><span class='n'>w</span><span class='o'>,</span> <span class='n'>t</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='o'>(</span><span class='n'>w</span><span class='o'>,</span> <span class='n'>t</span><span class='o'>)</span> <span class='o'>}.</span><span class='n'>toVector</span>
+
+<span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='nc'>Hmm</span><span class='o'>.</span><span class='n'>taggedSentencesFile</span><span class='o'>(</span><span class='s'>&quot;ptbtag/train.txt&quot;</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]()</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='s'>&quot;The|DT man|NN saw|VBD a|DT house|NN .|.&quot;</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>))</span>
+<span class='c1'>// -34.38332797005687</span>
+</code></pre></div>
+<p>The <code>tagSentence</code> method should implement the Viterbi algorithm to find the most likely tag sequence for a given sentence. It should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(DT, NN, VBD, DT, NN, .)</span>
+</code></pre></div>
+<p>In order to train your model, you will implement a class <code>UnsmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.HmmTrainerToImplement[Word, Tag]</code></a>. It must have the following <code>train</code> method:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>taggedSentences</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>)]])</span><span class='k'>:</span> <span class='kt'>HiddenMarkovModelToImplement</span><span class='o'>[</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>]</span>
+</code></pre></div>
+<p>Finally, you should create an object <code>nlp.a4.Hmm</code> with a main method. The program should accept the following parameters:</p>
+
+<ul>
+<li><code>-train FILE</code>, which specifies a file of pos-tagged sentences for training</li>
+
+<li><code>--test FILE</code>, which specifies a file of pos-tagged sentences for evaluation</li>
+</ul>
+
+<p>The main method should output the accuracy of the tagger as the percentage of tokens that are labeled correctly. It should also output an ordered list of the top ten most frequent mistakes made by the tagger showing the &#8220;gold&#8221; tag (what the tag should have been), the &#8220;model&#8221; tag (what the model outputed), and the number of times that specific mistagging occurred.</p>
+
+<p>You should get this output from this command:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt&quot;
+Accuracy: 64.83  (58196/89773)
+count  gold  model
+ 4820    NN     IN
+ 3865   NNP     IN
+ 2295    DT     IN
+ 2160    JJ     IN
+ 2105   NNS     IN
+ 2098     ,     IN
+ 1824     .     IN
+ 1699    CD     IN
+  977   VBD     IN
+  941    CC     IN</code></pre>
+
+<p><strong>It&#8217;s possible that your numbers won&#8217;t match this exactly since there could be some randomness in choosing equally-likely tags</strong></p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Why does the error report say that the model is outputting the same tag (in this case, &#8220;IN&#8221;) so often?</p>
+</blockquote>
+
+<h2 id='problem_2_add_smoothed_hmm_tagger'>Problem 2: Add-λ Smoothed HMM Tagger</h2>
+
+<p>Implement a class <code>AddLambdaSmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.HmmTrainerToImplement[Word, Tag]</code></a></p>
+
+<p>Add the option <code>--lambda</code> to your <code>main</code> method to specify the amount of smoothing.</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --lambda 1.0&quot;
+Accuracy: 92.12  (82696/89773)
+count  gold  model
+  363    NN     JJ
+  271   NNP     JJ
+  194    NN    NNP
+  169   NNS     NN
+  164   NNP     NN
+  157    RB     IN
+  156    JJ     NN
+  149  NNPS    NNP
+  146   VBD    VBN
+  144   VBG     NN</code></pre>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Experiment with different values for <code>--lambda</code>. Report your findings.</p>
+</blockquote>
+
+<h2 id='problem_3_tag_dictionary'>Problem 3: Tag Dictionary</h2>
+
+<p>In order to improve your tagger, you will now update your implementation to allow for the specification of a <strong>tag dictionary</strong>. A tag dictionary is a mapping from word types to sets of their potential tags. For example, <em>the</em> may point to the set <em>{DT}</em>, while <em>walks</em> may point to <em>{VBZ, NNS}</em>.</p>
+
+<p>You may want to represent your tag dictionary with something like the following:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>case</span> <span class='k'>class</span> <span class='nc'>TagDictionary</span><span class='o'>[</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>](</span><span class='n'>map</span><span class='k'>:</span> <span class='kt'>Map</span><span class='o'>[</span><span class='kt'>Word</span>, <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>]],</span> <span class='n'>allTags</span><span class='k'>:</span> <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>])</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>apply</span><span class='o'>(</span><span class='n'>w</span><span class='k'>:</span> <span class='kt'>Word</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>]</span> <span class='k'>=</span> <span class='n'>map</span><span class='o'>.</span><span class='n'>getOrElse</span><span class='o'>(</span><span class='n'>w</span><span class='o'>,</span> <span class='n'>allTags</span><span class='o'>)</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>You should update your <strong>trainer</strong> to have a parameter that determines whether a tag dictionary should be used. If this parameter says so, then the trainer should create a tag dictionary based on the training data. So the tag dictionary entry for a particular word will be the set of all tags that were seen with that word in the training data. If a word was never seen in the training corpus, then you should assume that it can take <em>any</em> tag.</p>
+
+<p>You should also update your <strong>model</strong> to have the newly-constructed tag dictionary as a parameter for use during tagging. In other words, you should use the tag dictionary to restrict your search for the best tag for each word.</p>
+
+<p>Then update your command-line interface to allow for a tag dictionary option:</p>
+
+<ul>
+<li><code>--tagdict true|false</code>, which specifies whether a tag dictionary should be used</li>
+</ul>
+
+<p>If the <code>--tagdict</code> parameter is <code>false</code> or not specified, then no tag dictionary should be used. Note that this is equivalent to having an empty tag dictionary, where every word is mapped to the set of all tags.</p>
+
+<p>You should be able to run your code like this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --tagdict true&quot;
+Accuracy: 90.28  (81043/89773)
+count  gold  model
+ 1226   NNP     IN
+  717    DT     IN
+  434    CD     IN
+  420    JJ     IN
+  416    NN     IN
+  297    NN     JJ
+  280   VBD    VBN
+  266   POS    PRP
+  254   NNS     IN
+  241   VBN    VBD</code></pre>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Why are the results so dramatically better when the tag dictionary is used on an unsmoothed HMM?</p>
+</blockquote>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --tagdict true --lambda 1.0&quot;
+Accuracy: 93.35  (83802/89773)
+count  gold  model
+  390   NNP   SBAR
+  384   NNP   NNPS
+  289    NN     JJ
+  201   VBD    VBN
+  159    NN    NNP
+  140    IN     RB
+  127    NN   SBAR
+  123    JJ   SBAR
+  123   VBN    VBD
+  117    JJ     NN</code></pre>
+
+<p><strong>It&#8217;s possible that your numbers won&#8217;t match this exactly since there could be some randomness in choosing equally-likely tags</strong></p>
+
+<h2 id='problem_4_pruned_tag_dictionary'>Problem 4: Pruned Tag Dictionary</h2>
+
+<p>Unfortunately, it is the case that the Penn Treebank corpus contains a large number of tagging mistakes. As a For example, the word <em>the</em> is actually tagged with several tags other than <em>DT</em>, even though it is reasonable for the tagger to always assign <em>DT</em> to <em>the</em>. These mistakes can lead to confusion in the tagger when it is trying to handle ambiguous words.</p>
+
+<p>To help the tagger, we can implement a simple strategy for cleaning up the tag dictionary: remove low-probability tags. So, for a given word, we can remove any tags that occur less than, for example, 10% of the time. This will remove tags that were mistakenly used on a word, since those mistakes will likely be seen very few times relative to the number of times the word appears.</p>
+
+<p>You should add a parameter <code>--tdcutoff</code> that is used to determine the minimum percentage that a tag must occur. So <code>--tdcutoff 0.1</code> will remove any tags that occur less than 10% of the time for a given word.</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --tagdict true --tdcutoff 0.1&quot;
+Accuracy: 91.35  (82011/89773)
+count  gold  model
+ 1226   NNP     IN
+  456   VBD    VBN
+  436    JJ     IN
+  434    CD     IN
+  420    NN     IN
+  394    NN     JJ
+  264    VB     NN
+  254   NNS     IN
+  215    RB     IN
+  168   NNP     JJ
+
+$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --tagdict true --tdcutoff 0.1 --lambda 1.0&quot;
+Accuracy: 93.41  (83860/89773)
+count  gold  model
+  469   NNP   NNPS
+  312    NN     JJ
+  250   NNP     LS
+  210   VBD    VBN
+  157    NN    NNP
+  144   VBN    VBD
+  124    IN     RB
+  117    JJ     NN
+  106    RB     IN
+  103   VBP     VB</code></pre>
+
+<p><strong>NOTE:</strong> Be sure to make use of your tag dictionary to contrain the smoothing of your emission distributions! In other words, for each tag, only add λ to the words that appear in the tag dictionary with that tag. To do this, it may be useful to &#8220;reverse&#8221; your tag dictionary.</p>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

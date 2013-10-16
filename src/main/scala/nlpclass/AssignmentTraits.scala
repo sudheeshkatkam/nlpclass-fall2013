@@ -116,11 +116,11 @@ trait NgramModelToImplement {
 
   /**
    * The order of the ngram model.
-   * 
+   *
    * This can be implemented as a `val`.
    */
   def n: Int
-  
+
   /**
    * Determine the (log) probability of a full sentence.  Return the probability
    * as the logarithm of the probability.
@@ -154,4 +154,28 @@ trait NgramModelEvaluator extends ((NgramModelToImplement, Vector[Vector[String]
 
   override def apply(model: NgramModelToImplement, tokenizedSentences: Vector[Vector[String]]): Double
 
+}
+
+////////////////////////////////
+// Assignment 4
+////////////////////////////////
+
+trait HiddenMarkovModelToImplement[Word, Tag] {
+
+  /**
+   * Compute the probability of the tagged sentence.  The result
+   * should be represented as a logarithm.
+   */
+  def sentenceProb(sentence: Vector[(Word, Tag)]): Double
+
+  /**
+   * Accepts a sentence of word tokens and returns a sequence of
+   * tags corresponding to each of those words.
+   */
+  def tagSentence(sentence: Vector[Word]): Vector[Tag]
+
+}
+
+trait HmmTrainerToImplement[Word, Tag] {
+  def train(taggedSentences: Vector[Vector[(Word, Tag)]]): HiddenMarkovModelToImplement[Word, Tag]
 }

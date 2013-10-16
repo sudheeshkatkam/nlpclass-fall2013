@@ -18,7 +18,7 @@ This assignment is based in part on on problems from [Jason Eisner](http://www.c
 
 This assignment will guide you though the implementation of an ngram language model with various approaches to handling sparse data.  You will also apply your model to the task of decipherment.
 
-To complete the homework, use the stub programs and data found in the class GitHub repository.
+To complete the homework, use the interfaces and stub program found in the class GitHub repository.
 
 * Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.
 * Programming portions should be turned in via GitHub by noon on the assignment due date.
@@ -618,7 +618,7 @@ def scoreCipherKey(cipherText: Vector[Vector[String]], cipherKey: Vector[String]
 
 The `train` method corresponds to step 1 above, `swapLetters` to step 3a, and `scoreCipherKey` to 3b and 3c.  The `decipher` method on the trait may be useful for deciphering a text with a given key.
 
-The `train` method that you must implement receives tokenized sentences.  However, unlike previous problem, you should train a *character* ngram model instead of a *token* model.  To do this, you will treat each word as a "sentence" of letters, and train the model as such.
+The `train` method that you must implement receives tokenized sentences.  However, unlike previous problem, you should train a *character* ngram model instead of a *word* model.  To do this, you will treat each word as a "sentence" of letters, and train the model as such.
 
 You can run the decipher program from the command line:
 
