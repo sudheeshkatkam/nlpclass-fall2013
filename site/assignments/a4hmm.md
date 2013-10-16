@@ -40,7 +40,7 @@ Finally: if possible, don't print this homework out! Just read it online, which 
 
 
 
-## Problem 1: Implement an Unsmoothed HMM Tagger
+## Problem 1: Implement an Unsmoothed HMM Tagger (60 points)
 
 You will implement an Hidden Markov Model for tagging sentences with part-of-speech tags.  The data we will be using comes from the [Penn Treebank](http://www.cis.upenn.edu/~treebank/) corpus.  The list of tags used can be found [here](http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html).
 
@@ -118,7 +118,7 @@ You should get this output from this command:
 
 
 
-## Problem 2: Add-λ Smoothed HMM Tagger
+## Problem 2: Add-λ Smoothed HMM Tagger (40 points)
 
 Implement a class `AddLambdaSmoothedHmmTrainer[Word, Tag]` that extends the trait [`nlpclass.HmmTrainerToImplement[Word, Tag]`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179)
 
@@ -144,7 +144,7 @@ Add the option `--lambda` to your `main` method to specify the amount of smoothi
 
 
 
-## Problem 3: Tag Dictionary
+## Problem 3: Tag Dictionary (NOT REQUIRED)
 
 In order to improve your tagger, you will now update your implementation to allow for the specification of a **tag dictionary**.  A tag dictionary is a mapping from word types to sets of their potential tags.  For example, *the* may point to the set *{DT}*, while *walks* may point to *{VBZ, NNS}*.
 
@@ -203,7 +203,7 @@ You should be able to run your code like this:
 
 
 
-## Problem 4: Pruned Tag Dictionary
+## Problem 4: Pruned Tag Dictionary (NOT REQUIRED)
 
 Unfortunately, it is the case that the Penn Treebank corpus contains a large number of tagging mistakes.  As a For example, the word *the* is actually tagged with several tags other than *DT*, even though it is reasonable for the tagger to always assign *DT* to *the*.  These mistakes can lead to confusion in the tagger when it is trying to handle ambiguous words.  
 
