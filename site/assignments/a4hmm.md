@@ -139,7 +139,9 @@ Add the option `--lambda` to your `main` method to specify the amount of smoothi
       144   VBG     NN
 
 
-> **Written Answer (a):**  Experiment with different values for `--lambda`.  Report your findings.
+> **Written Answer (a):**  Experiment with different values for `--lambda`.  Report your findings on **dev.txt**.
+
+> **Written Answer (b):**  Using the best value found on dev.txt, report your results on **test.txt**.
 
 
 
