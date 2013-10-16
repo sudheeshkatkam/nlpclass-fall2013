@@ -71,7 +71,7 @@
       </div>
       <div id='content'>
         <h1>Assignment 4 - Hidden Markov Models</h1>
-        <ol class="toc"><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_implement_an_unsmoothed_hmm_tagger">Problem 1: Implement an Unsmoothed HMM Tagger</a></li><li><a href="#problem_2_add_smoothed_hmm_tagger">Problem 2: Add-λ Smoothed HMM Tagger</a></li><li><a href="#problem_3_tag_dictionary">Problem 3: Tag Dictionary</a></li><li><a href="#problem_4_pruned_tag_dictionary">Problem 4: Pruned Tag Dictionary</a></li></ol>
+        <ol class="toc"><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_implement_an_unsmoothed_hmm_tagger_60_points">Problem 1: Implement an Unsmoothed HMM Tagger (60 points)</a></li><li><a href="#problem_2_add_smoothed_hmm_tagger_40_points">Problem 2: Add-λ Smoothed HMM Tagger (40 points)</a></li><li><a href="#problem_3_tag_dictionary_not_required">Problem 3: Tag Dictionary (NOT REQUIRED)</a></li><li><a href="#problem_4_pruned_tag_dictionary_not_required">Problem 4: Pruned Tag Dictionary (NOT REQUIRED)</a></li></ol>
         <p><strong>Due: Thursday, October 31. Programming at noon. Written portions at 2pm.</strong></p>
 
 <ul>
@@ -106,7 +106,7 @@
 
 <p>Finally: if possible, don&#8217;t print this homework out! Just read it online, which ensures you&#8217;ll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won&#8217;t waste paper.</p>
 
-<h2 id='problem_1_implement_an_unsmoothed_hmm_tagger'>Problem 1: Implement an Unsmoothed HMM Tagger</h2>
+<h2 id='problem_1_implement_an_unsmoothed_hmm_tagger_60_points'>Problem 1: Implement an Unsmoothed HMM Tagger (60 points)</h2>
 
 <p>You will implement an Hidden Markov Model for tagging sentences with part-of-speech tags. The data we will be using comes from the <a href='http://www.cis.upenn.edu/~treebank/'>Penn Treebank</a> corpus. The list of tags used can be found <a href='http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html'>here</a>.</p>
 
@@ -174,7 +174,7 @@ count  gold  model
 <p><strong>Written Answer (a):</strong> Why does the error report say that the model is outputting the same tag (in this case, &#8220;IN&#8221;) so often?</p>
 </blockquote>
 
-<h2 id='problem_2_add_smoothed_hmm_tagger'>Problem 2: Add-λ Smoothed HMM Tagger</h2>
+<h2 id='problem_2_add_smoothed_hmm_tagger_40_points'>Problem 2: Add-λ Smoothed HMM Tagger (40 points)</h2>
 
 <p>Implement a class <code>AddLambdaSmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.HmmTrainerToImplement[Word, Tag]</code></a></p>
 
@@ -198,7 +198,7 @@ count  gold  model
 <p><strong>Written Answer (a):</strong> Experiment with different values for <code>--lambda</code>. Report your findings.</p>
 </blockquote>
 
-<h2 id='problem_3_tag_dictionary'>Problem 3: Tag Dictionary</h2>
+<h2 id='problem_3_tag_dictionary_not_required'>Problem 3: Tag Dictionary (NOT REQUIRED)</h2>
 
 <p>In order to improve your tagger, you will now update your implementation to allow for the specification of a <strong>tag dictionary</strong>. A tag dictionary is a mapping from word types to sets of their potential tags. For example, <em>the</em> may point to the set <em>{DT}</em>, while <em>walks</em> may point to <em>{VBZ, NNS}</em>.</p>
 
@@ -255,7 +255,7 @@ count  gold  model
 
 <p><strong>It&#8217;s possible that your numbers won&#8217;t match this exactly since there could be some randomness in choosing equally-likely tags</strong></p>
 
-<h2 id='problem_4_pruned_tag_dictionary'>Problem 4: Pruned Tag Dictionary</h2>
+<h2 id='problem_4_pruned_tag_dictionary_not_required'>Problem 4: Pruned Tag Dictionary (NOT REQUIRED)</h2>
 
 <p>Unfortunately, it is the case that the Penn Treebank corpus contains a large number of tagging mistakes. As a For example, the word <em>the</em> is actually tagged with several tags other than <em>DT</em>, even though it is reasonable for the tagger to always assign <em>DT</em> to <em>the</em>. These mistakes can lead to confusion in the tagger when it is trying to handle ambiguous words.</p>
 
