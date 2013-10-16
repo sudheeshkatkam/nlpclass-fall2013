@@ -86,7 +86,7 @@
 
 <p>This assignment will guide you though the implementation of an ngram language model with various approaches to handling sparse data. You will also apply your model to the task of decipherment.</p>
 
-<p>To complete the homework, use the stub programs and data found in the class GitHub repository.</p>
+<p>To complete the homework, use the interfaces and stub program found in the class GitHub repository.</p>
 
 <ul>
 <li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
@@ -670,7 +670,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 </code></pre></div>
 <p>The <code>train</code> method corresponds to step 1 above, <code>swapLetters</code> to step 3a, and <code>scoreCipherKey</code> to 3b and 3c. The <code>decipher</code> method on the trait may be useful for deciphering a text with a given key.</p>
 
-<p>The <code>train</code> method that you must implement receives tokenized sentences. However, unlike previous problem, you should train a <em>character</em> ngram model instead of a <em>token</em> model. To do this, you will treat each word as a &#8220;sentence&#8221; of letters, and train the model as such.</p>
+<p>The <code>train</code> method that you must implement receives tokenized sentences. However, unlike previous problem, you should train a <em>character</em> ngram model instead of a <em>word</em> model. To do this, you will treat each word as a &#8220;sentence&#8221; of letters, and train the model as such.</p>
 
 <p>You can run the decipher program from the command line:</p>
 
