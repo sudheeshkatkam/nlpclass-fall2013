@@ -197,6 +197,7 @@ Materials
 <span style="color: red">Assignments</span>
 
 * [Assignment 3: N-Gram Language Models]({{ page.root }}assignments/a3ngrams.html), **Due (programming submitted by noon, written by 2pm)**
+* [Assignment 4: HMMs]({{ page.root }}assignments/a4.html), Assigned
 
 
 ###Thursday, Oct 17
@@ -209,10 +210,6 @@ Topics
 Materials
 
 * [Learning a Part-of-Speech Tagger from Two Hours of Annotation](http://www.cs.utexas.edu/~dhg/papers/garrette_baldridge_naacl2013.pdf)
-
-<span style="color: red">Assignments</span>
-
-* [Assignment 4: HMMs]({{ page.root }}assignments/a4.html), Assigned
 
 
 ## Week 9

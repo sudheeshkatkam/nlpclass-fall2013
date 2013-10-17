@@ -67,7 +67,7 @@ The `setenceProb` method should compute the probability in log-space and return 
 {% highlight scala %}
 def taggedSentenceString(s: String) = s.split("\\s+").map(_.split("\\|")).map { case Array(w, t) => (w, t) }.toVector
 
-val trainData = Hmm.taggedSentencesFile("ptbtag/train.txt")
+val trainData = ... read from ptbtag/train.txt ...
 val trainer = new UnsmoothedHmmTrainer[String, String]()
 val model = trainer.train(trainData)
 val s = "The|DT man|NN saw|VBD a|DT house|NN .|."
