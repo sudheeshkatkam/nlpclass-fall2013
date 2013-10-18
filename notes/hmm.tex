@@ -593,14 +593,11 @@ The Viterbi Algorithm
   \item The forward pass
     \begin{itemize}
       % \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the likelihood of tagging $t_i=k$ given \textit{all possible ways of tagging the $i$-1 previous words}.
-      \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the highest probability sequence of tags for the previous $i$-1 words and ending with $t_i=k$, given \textit{all possible ways of tagging the $i$-1 previous words}.
-        \[
-          v_i(k) = \text{max}_{t_1, ..., t_{i-1}}~p(w_1, ..., w_i, t_1, ..., t_{i-1}, t_i=k)
-        \]
-      \item With our independence assumptions:
-        \[
-          v_i(k) = p(w_i \mid k) \cdot \text{max}_{k' \in T}~v_{i-1}(k') \cdot p(k \mid k')
-        \]
+      \item Compute, for each potential tag value $k$ of \tcurr\ in the sentence, the highest probability sequence of tags for the previous $i$-1 words and ending with $t_i=k$, given \textit{all possible ways of tagging the $i$-1 previous words}.  This can be simplified with our independence assumptions.
+        \begin{align*}
+          v_i(k) &= \text{max}_{t_1, ..., t_{i-1}}~p(w_1, ..., w_i, t_1, ..., t_{i-1}, t_i=k) \\
+                 &= p(w_i \mid k) \cdot \text{max}_{k' \in T}~v_{i-1}(k') \cdot p(k \mid k')
+        \end{align*}
       \item $v_i(k)$ is the probability of the most likely subsequence of tags that accounts for the first $i$ words and ends with tag $t_i = k$.
       % \item Note that this is a \textit{recursive} definitio since the last probability is just the result of this same equation, but for the previous iteration.
       \item So $k$ is the potential tag for the current token $i$
@@ -1414,14 +1411,10 @@ The Viterbi Algorithm
   \item forward$_i(k)$: probability of begin in state $k$ after seeing the first $i$ words (by summing over all paths leading to $k$)
   \item backward$_i(k)$: probability of seeing sequence of tags from $i$+1 to $N$, given that $t_i=k$
 \end{itemize}
-
 \begin{align*}
   forward_i(k) %&= p(t_i=k \mid w_{1:i}) \\
                %&= p(w_i \mid k) \cdot \sum_{k' \in T} p(k \mid k') \cdot p(t_{i-1}=k' \mid w_{1:i-1}) \\
-               &= p(w_i \mid k) \cdot \sum_{k' \in T} p(k \mid k') \cdot forward_{i-1}(k')
-\end{align*}
-
-\begin{align*}
+               &= p(w_i \mid k) \cdot \sum_{k' \in T} p(k \mid k') \cdot forward_{i-1}(k') \\\\
   backward_i(k) %&= p(t_i=k' \mid t_{i+1}, w_{1:N}) \\
                 %&= \sum_{k \in T} p(k \mid k') \cdot p(w_{i+1} \mid k) \cdot p(t_{i+1}=k \mid w_{1:i+1}) \\
                 &= \sum_{k' \in T} p(k' \mid k) \cdot p(w_{i+1} \mid k') \cdot backward_{i+1}(k')

@@ -23,7 +23,7 @@ To complete the homework, use the interfaces found in the class GitHub repositor
 
 There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.
 
-The used here classes will extend traits that are found in the `nlpclass-fall2013` dependency.  In order to get these updates, you will need to edit your root `build.sbt` file and update the version of the dependency:
+The classes used here will extend traits that are found in the `nlpclass-fall2013` dependency.  In order to get these updates, you will need to edit your root `build.sbt` file and update the version of the dependency:
 
     libraryDependencies += "com.utcompling" % "nlpclass-fall2013_2.10" % "0006" changing()
 
@@ -42,7 +42,7 @@ Finally: if possible, don't print this homework out! Just read it online, which 
 
 ## Problem 1: Implement an Unsmoothed HMM Tagger (60 points)
 
-You will implement an Hidden Markov Model for tagging sentences with part-of-speech tags.  The data we will be using comes from the [Penn Treebank](http://www.cis.upenn.edu/~treebank/) corpus.  The list of tags used can be found [here](http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html).
+You will implement a Hidden Markov Model for tagging sentences with part-of-speech tags.  The data we will be using comes from the [Penn Treebank](http://www.cis.upenn.edu/~treebank/) corpus.  The list of tags used can be found [here](http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html).
 
 Create a class `nlp.a4.HiddenMarkovModel[Word, Tag]` that extends the trait [`nlpclass.HiddenMarkovModelToImplement[Word, Tag]`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L163).
 
@@ -62,35 +62,71 @@ def sentenceProb(sentence: Vector[(Word, Tag)]): Double
 def tagSentence(sentence: Vector[Word]): Vector[Tag]
 {% endhighlight %}
 
-The `setenceProb` method should compute the probability in log-space and return it as a logarithm.  It should behave like this:
-
-{% highlight scala %}
-def taggedSentenceString(s: String) = s.split("\\s+").map(_.split("\\|")).map { case Array(w, t) => (w, t) }.toVector
-
-val trainData = ... read from ptbtag/train.txt ...
-val trainer = new UnsmoothedHmmTrainer[String, String]()
-val model = trainer.train(trainData)
-val s = "The|DT man|NN saw|VBD a|DT house|NN .|."
-model.sentenceProb(taggedSentenceString(s))
-// -34.38332797005687
-{% endhighlight %}
-
-The `tagSentence` method should implement the Viterbi algorithm to find the most likely tag sequence for a given sentence.  It should behave like this:
-
-{% highlight scala %}
-model.tagSentence("The man saw a house .".split("\\s+").toVector)
-// Vector(DT, NN, VBD, DT, NN, .)
-{% endhighlight %}
-
 In order to train your model, you will implement a class `UnsmoothedHmmTrainer[Word, Tag]` that extends the trait [`nlpclass.HmmTrainerToImplement[Word, Tag]`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179).  It must have the following `train` method:
 
 {% highlight scala %}
 def train(taggedSentences: Vector[Vector[(Word, Tag)]]): HiddenMarkovModelToImplement[Word, Tag]
 {% endhighlight %}
 
+Assuming some training dataset that contains this:
+
+    the|D man|N walks|V the|D dog|N
+    the|D dog|N runs|V
+    the|D dog|N walks|V
+    the|D man|N walks|V
+    a|D man|N saw|V the|D dog|N
+    the|D cat|N walks|V
+
+The `sentenceProb` method should compute the probability in log-space and return it as a logarithm.  It should  behave like this:
+
+{% highlight scala %}
+val trainData = ... from the above data ...
+val trainer = new UnsmoothedHmmTrainer[String, String](...)
+val model = trainer.train(trainData)
+
+val s1 = Vector(("the", "D"), ("dog", "N"), ("runs", "V"))
+val p1 = model.sentenceProb(s1)
+println(f"$p1%.4f  ${exp(p1)}%.4f") // -3.3116  0.0365
+
+val s2 = Vector(("the", "D"), ("cat", "N"), ("runs", "V"))
+val p2 = model.sentenceProb(s2)
+println(f"$p2%.4f  ${exp(p2)}%.4f") // -4.6979  0.0091
+
+val s3 = Vector(("the", "D"), ("man", "N"), ("held", "V"), ("the", "D"), ("saw", "N"))
+val p3 = model.sentenceProb(s3)
+println(f"$p3%.4f  ${exp(p3)}%.4f") // -Infinity  0.0000
+{% endhighlight %}
+
+The `tagSentence` method should implement the Viterbi algorithm to find the most likely tag sequence for a given sentence.  It should behave like this:
+
+{% highlight scala %}
+println(model.tagSentence("the dog runs".split("\\s+").toVector))
+Vector("D", "N", "V")
+println(model.tagSentence("the cat runs".split("\\s+").toVector))
+Vector("D", "N", "V")
+{% endhighlight %}
+
+Testing on the `ptbtag` data should behave like this:
+
+{% highlight scala %}
+val trainData = ... read from ptbtag/train.txt ...
+val trainer = new UnsmoothedHmmTrainer[String, String](...)
+val model = trainer.train(trainData)
+val s = Vector(("The","DT"), ("man","NN"), ("saw","VBD"), ("a","DT"), ("house","NN"), (".","."))
+
+model.sentenceProb(taggedSentenceString(s))
+// -34.38332797005687
+
+model.tagSentence("The man saw a house .".split("\\s+").toVector)
+// Vector(DT, NN, VBD, DT, NN, .)
+{% endhighlight %}
+
+
+
+
 Finally, you should create an object `nlp.a4.Hmm` with a main method.  The program should accept the following parameters: 
 
-* `-train FILE`, which specifies a file of pos-tagged sentences for training
+* `--train FILE`, which specifies a file of pos-tagged sentences for training
 * `--test FILE`, which specifies a file of pos-tagged sentences for evaluation
 
 The main method should output the accuracy of the tagger as the percentage of tokens that are labeled correctly.  It should also output an ordered list of the top ten most frequent mistakes made by the tagger showing the "gold" tag (what the tag should have been), the "model" tag (what the model outputed), and the number of times that specific mistagging occurred.
@@ -122,6 +158,35 @@ You should get this output from this command:
 
 Implement a class `AddLambdaSmoothedHmmTrainer[Word, Tag]` that extends the trait [`nlpclass.HmmTrainerToImplement[Word, Tag]`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179)
 
+You should see behavior like this:
+
+{% highlight scala %}
+val trainData = ... from the above data ...
+val trainer = new AddLambdaSmoothedHmmTrainer[String, String](...)
+val model = trainer.train(trainData)
+
+println(model.tagSentence("the dog runs".split("\\s+").toVector))
+Vector("D", "N", "V")
+println(model.tagSentence("the cat runs".split("\\s+").toVector))
+Vector("D", "N", "V")
+println(model.tagSentence("the man held the saw".split("\\s+").toVector))
+Vector("D", "N", "V", "D", "N")
+{% endhighlight %}
+
+Testing on the `ptbtag` data should behave like this:
+
+{% highlight scala %}
+val trainData = ... read from ptbtag/train.txt ...
+val trainer = new UnsmoothedHmmTrainer[String, String](...)
+val model = trainer.train(trainData)
+val s = Vector(("The","DT"), ("man","NN"), ("saw","VBD"), ("a","DT"), ("house","NN"), (".","."))
+model.sentenceProb(taggedSentenceString(s))
+// -34.38332797005687
+model.tagSentence("The man saw a house .".split("\\s+").toVector)
+// Vector(DT, NN, VBD, DT, NN, .)
+{% endhighlight %}
+
+
 Add the option `--lambda` to your `main` method to specify the amount of smoothing.
 
     $ sbt "run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --lambda 1.0"
@@ -139,9 +204,9 @@ Add the option `--lambda` to your `main` method to specify the amount of smoothi
       144   VBG     NN
 
 
-> **Written Answer (a):**  Experiment with different values for `--lambda`.  Report your findings on **dev.txt**.
+> **Written Answer (a):**  Experiment with different values for `--lambda`.  Report your findings on **ptbtag/dev.txt**.
 
-> **Written Answer (b):**  Using the best value found on dev.txt, report your results on **test.txt**.
+> **Written Answer (b):**  Using the best value found on ptbdev/dev.txt, report your results on **test.txt**.
 
 
 
