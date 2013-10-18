@@ -94,7 +94,7 @@
 
 <p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
 
-<p>The used here classes will extend traits that are found in the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+<p>The classes used here will extend traits that are found in the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
 
 <pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0006&quot; changing()</code></pre>
 
@@ -108,7 +108,7 @@
 
 <h2 id='problem_1_implement_an_unsmoothed_hmm_tagger_60_points'>Problem 1: Implement an Unsmoothed HMM Tagger (60 points)</h2>
 
-<p>You will implement an Hidden Markov Model for tagging sentences with part-of-speech tags. The data we will be using comes from the <a href='http://www.cis.upenn.edu/~treebank/'>Penn Treebank</a> corpus. The list of tags used can be found <a href='http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html'>here</a>.</p>
+<p>You will implement a Hidden Markov Model for tagging sentences with part-of-speech tags. The data we will be using comes from the <a href='http://www.cis.upenn.edu/~treebank/'>Penn Treebank</a> corpus. The list of tags used can be found <a href='http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html'>here</a>.</p>
 
 <p>Create a class <code>nlp.a4.HiddenMarkovModel[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L163'><code>nlpclass.HiddenMarkovModelToImplement[Word, Tag]</code></a>.</p>
 
@@ -125,27 +125,57 @@
 <span class='cm'> */</span>
 <span class='k'>def</span> <span class='n'>tagSentence</span><span class='o'>(</span><span class='n'>sentence</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Word</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>]</span>
 </code></pre></div>
-<p>The <code>setenceProb</code> method should compute the probability in log-space and return it as a logarithm. It should behave like this:</p>
-<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>s</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>map</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\|&quot;</span><span class='o'>)).</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>Array</span><span class='o'>(</span><span class='n'>w</span><span class='o'>,</span> <span class='n'>t</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='o'>(</span><span class='n'>w</span><span class='o'>,</span> <span class='n'>t</span><span class='o'>)</span> <span class='o'>}.</span><span class='n'>toVector</span>
-
-<span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
-<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]()</span>
-<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
-<span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='s'>&quot;The|DT man|NN saw|VBD a|DT house|NN .|.&quot;</span>
-<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>))</span>
-<span class='c1'>// -34.38332797005687</span>
-</code></pre></div>
-<p>The <code>tagSentence</code> method should implement the Viterbi algorithm to find the most likely tag sequence for a given sentence. It should behave like this:</p>
-<div class='highlight'><pre><code class='scala'><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
-<span class='c1'>// Vector(DT, NN, VBD, DT, NN, .)</span>
-</code></pre></div>
 <p>In order to train your model, you will implement a class <code>UnsmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.HmmTrainerToImplement[Word, Tag]</code></a>. It must have the following <code>train</code> method:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>taggedSentences</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>)]])</span><span class='k'>:</span> <span class='kt'>HiddenMarkovModelToImplement</span><span class='o'>[</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>]</span>
+</code></pre></div>
+<p>Assuming some training dataset that contains this:</p>
+
+<pre><code>the|D man|N walks|V the|D dog|N
+the|D dog|N runs|V
+the|D dog|N walks|V
+the|D man|N walks|V
+a|D man|N saw|V the|D dog|N
+the|D cat|N walks|V</code></pre>
+
+<p>The <code>sentenceProb</code> method should compute the probability in log-space and return it as a logarithm. It should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>the</span> <span class='n'>above</span> <span class='n'>data</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+
+<span class='k'>val</span> <span class='n'>s1</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;dog&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;runs&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p1</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s1</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p1%.4f  ${exp(p1)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -3.3116  0.0365</span>
+
+<span class='k'>val</span> <span class='n'>s2</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;cat&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;runs&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p2</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s2</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p2%.4f  ${exp(p2)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -4.6979  0.0091</span>
+
+<span class='k'>val</span> <span class='n'>s3</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;held&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p3</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s3</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p3%.4f  ${exp(p3)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -Infinity  0.0000</span>
+</code></pre></div>
+<p>The <code>tagSentence</code> method should implement the Viterbi algorithm to find the most likely tag sequence for a given sentence. It should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the dog runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
+<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
+<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>)</span>
+</code></pre></div>
+<p>Testing on the <code>ptbtag</code> data should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;The&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span><span class='s'>&quot;VBD&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;house&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;.&quot;</span><span class='o'>,</span><span class='s'>&quot;.&quot;</span><span class='o'>))</span>
+
+<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>))</span>
+<span class='c1'>// -34.38332797005687</span>
+
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(DT, NN, VBD, DT, NN, .)</span>
 </code></pre></div>
 <p>Finally, you should create an object <code>nlp.a4.Hmm</code> with a main method. The program should accept the following parameters:</p>
 
 <ul>
-<li><code>-train FILE</code>, which specifies a file of pos-tagged sentences for training</li>
+<li><code>--train FILE</code>, which specifies a file of pos-tagged sentences for training</li>
 
 <li><code>--test FILE</code>, which specifies a file of pos-tagged sentences for evaluation</li>
 </ul>
@@ -178,6 +208,28 @@ count  gold  model
 
 <p>Implement a class <code>AddLambdaSmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.HmmTrainerToImplement[Word, Tag]</code></a></p>
 
+<p>You should see behavior like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>the</span> <span class='n'>above</span> <span class='n'>data</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaSmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+
+<span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the dog runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
+<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
+<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the man held the saw&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
+<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>)</span>
+</code></pre></div>
+<p>Testing on the <code>ptbtag</code> data should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;The&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span><span class='s'>&quot;VBD&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;house&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;.&quot;</span><span class='o'>,</span><span class='s'>&quot;.&quot;</span><span class='o'>))</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>))</span>
+<span class='c1'>// -34.38332797005687</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(DT, NN, VBD, DT, NN, .)</span>
+</code></pre></div>
 <p>Add the option <code>--lambda</code> to your <code>main</code> method to specify the amount of smoothing.</p>
 
 <pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --lambda 1.0&quot;
@@ -195,11 +247,11 @@ count  gold  model
   144   VBG     NN</code></pre>
 
 <blockquote>
-<p><strong>Written Answer (a):</strong> Experiment with different values for <code>--lambda</code>. Report your findings on <strong>dev.txt</strong>.</p>
+<p><strong>Written Answer (a):</strong> Experiment with different values for <code>--lambda</code>. Report your findings on <strong>ptbtag/dev.txt</strong>.</p>
 </blockquote>
 
 <blockquote>
-<p><strong>Written Answer (b):</strong> Using the best value found on dev.txt, report your results on <strong>test.txt</strong>.</p>
+<p><strong>Written Answer (b):</strong> Using the best value found on ptbdev/dev.txt, report your results on <strong>test.txt</strong>.</p>
 </blockquote>
 
 <h2 id='problem_3_tag_dictionary_not_required'>Problem 3: Tag Dictionary (NOT REQUIRED)</h2>
