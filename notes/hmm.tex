@@ -142,7 +142,7 @@ Complexitites:
 \section{Hidden Markov Models}
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[circle, minimum size = 13mm, thick, draw =black!80, node distance = 20mm]
@@ -180,7 +180,7 @@ Complexitites:
 \caption{Second-order HMM showing conditional dependencies}
 \end{figure} 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[circle, minimum size = 13mm, thick, draw =black!80, node distance = 20mm]
@@ -465,7 +465,7 @@ Idea: Smooth conditional distribution by interpolating the MLE with a unigram di
 }
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[rectangle, thick, draw =black!80, node distance = 40mm]
@@ -621,12 +621,9 @@ The Viterbi Algorithm
 \end{itemize}
 
 
-\textbf{Example:} Viterbi algorithm for tagging the sentence ``the dog walks'' is given in the figures below
 
 
-
-
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -695,7 +692,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -777,7 +774,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -854,7 +851,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -933,7 +930,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -1012,7 +1009,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -1091,7 +1088,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -1171,7 +1168,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -1248,7 +1245,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -1317,7 +1314,7 @@ The Viterbi Algorithm
 
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \begin{tikzpicture}
 \tikzstyle{main}=[ellipse, thick, draw =black!80, node distance = 15mm, minimum height = 5mm, minimum width = 15mm]
@@ -1408,18 +1405,58 @@ The Viterbi Algorithm
 \end{itemize}
 
 
+\section{Semi-Supervised Learning: The Forward-Backward Algorithm}
 
-\section{Learning: Forward-Backward}
-
-\begin{enumerate}
+\begin{itemize}
   \item Given some unlabeled text, and a set of labels, learn the best set of parameters for an HMM tagger.
   \item Usually needs a tag dictionary to constrain the search space.
+  \item Similar to Viterbi, but instead of finding the max-probability path, we estimate the probability of each tag for each token.
+  \item forward$_i(k)$: probability of begin in state $k$ after seeing the first $i$ words (by summing over all paths leading to $k$)
+  \item backward$_i(k)$: probability of seeing sequence of tags from $i$+1 to $N$, given that $t_i=k$
+\end{itemize}
 
-\end{enumerate}
+\begin{align*}
+  forward_i(k) %&= p(t_i=k \mid w_{1:i}) \\
+               %&= p(w_i \mid k) \cdot \sum_{k' \in T} p(k \mid k') \cdot p(t_{i-1}=k' \mid w_{1:i-1}) \\
+               &= p(w_i \mid k) \cdot \sum_{k' \in T} p(k \mid k') \cdot forward_{i-1}(k')
+\end{align*}
 
+\begin{align*}
+  backward_i(k) %&= p(t_i=k' \mid t_{i+1}, w_{1:N}) \\
+                %&= \sum_{k \in T} p(k \mid k') \cdot p(w_{i+1} \mid k) \cdot p(t_{i+1}=k \mid w_{1:i+1}) \\
+                &= \sum_{k' \in T} p(k' \mid k) \cdot p(w_{i+1} \mid k') \cdot backward_{i+1}(k')
+\end{align*}
 
+expected transitions from $t_i=k_1$ to $t_{i+1}=k_2$: 
+\[
+  \frac{forward_i(k_1) \cdot p(k_2 \mid k_1) \cdot p(w_{i+1} \mid k_2) \cdot backward_{i+1}(k_2)}
+       {p(w_{1:N})}
+\]
 
+expected emissions of $w_i$ when $t_i=k$
+\[
+  \frac{forward_i(k) \cdot backward_i(k)}
+       {p(w_{1:N})}
+\]
 
+Re-estimating transitions:
+\begin{align*}
+  p(t_2 \mid t_1) &= \frac{\text{expected number of transitions from $t_1$ to $t_2$}}
+                          {\text{expected number of transitions from $t_1$}}
+\end{align*}
+
+Re-estimating emissions:
+\begin{align*}
+  p(w \mid t) &= \frac{\text{expected number of times word $w$ occurs with tag $t$}}
+                      {\text{expected number of times tag $t$ occurs}}
+\end{align*}
+
+The Forward-Backward Algorithm (Expectation-Maximization):
+
+\begin{itemize}
+  \item E Step: Use $forward$ and $backward$ to compute the expected transition and emission counts
+  \item M Step: Re-estimate transition and emission distributions
+\end{itemize}
 
 
 \end{document}
