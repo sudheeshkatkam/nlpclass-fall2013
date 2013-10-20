@@ -101,9 +101,9 @@ The `tagSentence` method should implement the Viterbi algorithm to find the most
 
 {% highlight scala %}
 println(model.tagSentence("the dog runs".split("\\s+").toVector))
-Vector("D", "N", "V")
+// Vector(D, N, V)
 println(model.tagSentence("the cat runs".split("\\s+").toVector))
-Vector("D", "N", "V")
+// Vector(D, N, V)
 {% endhighlight %}
 
 Testing on the `ptbtag` data should behave like this:
@@ -134,7 +134,7 @@ The main method should output the accuracy of the tagger as the percentage of to
 You should get this output from this command:
 
     $ sbt "run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt"
-    Accuracy: 64.83  (58196/89773)
+    Accuracy: 64.82  (58191/89773)
     count  gold  model
      4820    NN     IN
      3865   NNP     IN
@@ -158,30 +158,30 @@ You should get this output from this command:
 
 Implement a class `AddLambdaSmoothedHmmTrainer[Word, Tag]` that extends the trait [`nlpclass.HmmTrainerToImplement[Word, Tag]`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179)
 
-You should see behavior like this:
+With λ=0.1, you should see behavior like this:
 
 {% highlight scala %}
 val trainData = ... from the above data ...
 val trainer = new AddLambdaSmoothedHmmTrainer[String, String](...)
 val model = trainer.train(trainData)
 
-println(model.tagSentence("the dog runs".split("\\s+").toVector))
-Vector("D", "N", "V")
-println(model.tagSentence("the cat runs".split("\\s+").toVector))
-Vector("D", "N", "V")
-println(model.tagSentence("the man held the saw".split("\\s+").toVector))
-Vector("D", "N", "V", "D", "N")
+model.tagSentence("the dog runs".split("\\s+").toVector)
+// Vector(D, N, V)
+model.tagSentence("the cat runs".split("\\s+").toVector)
+// Vector(D, N, V)
+model.tagSentence("the man held the saw".split("\\s+").toVector)
+// Vector(D, N, V, D, N)
 {% endhighlight %}
 
-Testing on the `ptbtag` data should behave like this:
+Testing on the `ptbtag` data with λ=1.0 should behave like this:
 
 {% highlight scala %}
 val trainData = ... read from ptbtag/train.txt ...
-val trainer = new UnsmoothedHmmTrainer[String, String](...)
+val trainer = new AddLambdaSmoothedHmmTrainer[String, String](...)
 val model = trainer.train(trainData)
 val s = Vector(("The","DT"), ("man","NN"), ("saw","VBD"), ("a","DT"), ("house","NN"), (".","."))
 model.sentenceProb(taggedSentenceString(s))
-// -34.38332797005687
+// -37.56746722307677
 model.tagSentence("The man saw a house .".split("\\s+").toVector)
 // Vector(DT, NN, VBD, DT, NN, .)
 {% endhighlight %}
@@ -190,19 +190,18 @@ model.tagSentence("The man saw a house .".split("\\s+").toVector)
 Add the option `--lambda` to your `main` method to specify the amount of smoothing.
 
     $ sbt "run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --lambda 1.0"
-    Accuracy: 92.12  (82696/89773)
+    Accuracy: 92.13  (82704/89773)
     count  gold  model
-      363    NN     JJ
-      271   NNP     JJ
-      194    NN    NNP
-      169   NNS     NN
-      164   NNP     NN
+      349    NN     JJ
+      241   NNP     JJ
+      206    NN    NNP
+      159   NNP     NN
+      159    JJ     NN
       157    RB     IN
-      156    JJ     NN
-      149  NNPS    NNP
-      146   VBD    VBN
-      144   VBG     NN
-
+      153   NNS     NN
+      151  NNPS    NNP
+      142   VBG     NN
+      136    JJ     DT
 
 > **Written Answer (a):**  Experiment with different values for `--lambda`.  Report your findings on **ptbtag/dev.txt**.
 
