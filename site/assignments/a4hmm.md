@@ -165,6 +165,18 @@ val trainData = ... from the above data ...
 val trainer = new AddLambdaSmoothedHmmTrainer[String, String](...)
 val model = trainer.train(trainData)
 
+val s1 = Vector(("the", "D"), ("dog", "N"), ("runs", "V"))
+val p1 = model.sentenceProb(s1)
+println(f"$p1%.4f  ${exp(p1)}%.4f") // -3.6339  0.0264
+
+val s2 = Vector(("the", "D"), ("cat", "N"), ("runs", "V"))
+val p2 = model.sentenceProb(s2)
+println(f"$p2%.4f  ${exp(p2)}%.4f") // -4.9496  0.0071
+
+val s3 = Vector(("the", "D"), ("man", "N"), ("held", "V"), ("the", "D"), ("saw", "N"))
+val p3 = model.sentenceProb(s3)
+println(f"$p3%.4f  ${exp(p3)}%.4f") // -13.0951  0.0000
+
 model.tagSentence("the dog runs".split("\\s+").toVector)
 // Vector(D, N, V)
 model.tagSentence("the cat runs".split("\\s+").toVector)
