@@ -156,9 +156,9 @@ the|D cat|N walks|V</code></pre>
 </code></pre></div>
 <p>The <code>tagSentence</code> method should implement the Viterbi algorithm to find the most likely tag sequence for a given sentence. It should behave like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the dog runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
-<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>)</span>
+<span class='c1'>// Vector(D, N, V)</span>
 <span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
-<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>)</span>
+<span class='c1'>// Vector(D, N, V)</span>
 </code></pre></div>
 <p>Testing on the <code>ptbtag</code> data should behave like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
@@ -185,7 +185,7 @@ the|D cat|N walks|V</code></pre>
 <p>You should get this output from this command:</p>
 
 <pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt&quot;
-Accuracy: 64.83  (58196/89773)
+Accuracy: 64.82  (58191/89773)
 count  gold  model
  4820    NN     IN
  3865   NNP     IN
@@ -208,43 +208,43 @@ count  gold  model
 
 <p>Implement a class <code>AddLambdaSmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.HmmTrainerToImplement[Word, Tag]</code></a></p>
 
-<p>You should see behavior like this:</p>
+<p>With λ=0.1, you should see behavior like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>the</span> <span class='n'>above</span> <span class='n'>data</span> <span class='o'>...</span>
 <span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaSmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
 <span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
 
-<span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the dog runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
-<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>)</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
-<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>)</span>
-<span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the man held the saw&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
-<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>)</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the dog runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(D, N, V)</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(D, N, V)</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the man held the saw&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(D, N, V, D, N)</span>
 </code></pre></div>
-<p>Testing on the <code>ptbtag</code> data should behave like this:</p>
+<p>Testing on the <code>ptbtag</code> data with λ=1.0 should behave like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
-<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaSmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
 <span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
 <span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;The&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span><span class='s'>&quot;VBD&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;house&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;.&quot;</span><span class='o'>,</span><span class='s'>&quot;.&quot;</span><span class='o'>))</span>
 <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>))</span>
-<span class='c1'>// -34.38332797005687</span>
+<span class='c1'>// -37.56746722307677</span>
 <span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
 <span class='c1'>// Vector(DT, NN, VBD, DT, NN, .)</span>
 </code></pre></div>
 <p>Add the option <code>--lambda</code> to your <code>main</code> method to specify the amount of smoothing.</p>
 
 <pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --lambda 1.0&quot;
-Accuracy: 92.12  (82696/89773)
+Accuracy: 92.13  (82704/89773)
 count  gold  model
-  363    NN     JJ
-  271   NNP     JJ
-  194    NN    NNP
-  169   NNS     NN
-  164   NNP     NN
+  349    NN     JJ
+  241   NNP     JJ
+  206    NN    NNP
+  159   NNP     NN
+  159    JJ     NN
   157    RB     IN
-  156    JJ     NN
-  149  NNPS    NNP
-  146   VBD    VBN
-  144   VBG     NN</code></pre>
+  153   NNS     NN
+  151  NNPS    NNP
+  142   VBG     NN
+  136    JJ     DT</code></pre>
 
 <blockquote>
 <p><strong>Written Answer (a):</strong> Experiment with different values for <code>--lambda</code>. Report your findings on <strong>ptbtag/dev.txt</strong>.</p>
