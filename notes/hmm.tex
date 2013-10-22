@@ -759,10 +759,11 @@ The Viterbi Algorithm
 \end{tikzpicture}
 \caption{Viterbi Algorithm: 
   Find the maximum probability of all possible tag sequences leading to dog$|$D at token $i$.  We do so by finding the best previous tag for getting there, given all possible ways of getting to the previous token.  Since each viterbi score $v_1(k)$ stores the highest probability path for getting to $t_1=k$, all we need to do is find the best way of getting to $t_2=D$ given all the best ways of getting to each possible tag for the previous token, and the probabilities of getting from each possible previous tag to $k$. For example:\\\\
-  ~~~~ $v_2(D) = p(\text{dog}|D) \cdot \text{max}(v_1(D) \cdot p(D|D), v_1(N) \cdot p(N|D), v_1(V) \cdot p(V|D)) \\
+  ~~~~ $v_2(D) = p(\text{dog}|D) \cdot \text{max}(v_1(D) \cdot p(D|D), v_1(N) \cdot p(D|N), v_1(V) \cdot p(D|V)) \\
   ~~~~ ~~~~ ~ = 0.06 \cdot \text{max}(0.37 \cdot 0.08, 0.007 \cdot 0.08, 0.008 \cdot 0.30) \\
   ~~~~ ~~~~ ~ = 0.06 \cdot \text{max}(0.03, 0.0006, 0.002) \\
-  ~~~~ ~~~~ ~ = 0.06 \cdot 0.03 = 0.002$ \\\\
+  ~~~~ ~~~~ ~ = 0.06 \cdot 0.03 \\
+  ~~~~ ~~~~ ~ = 0.002$ \\\\
   $t_1=D$ turns out to be the best previous tag for getting to $t_2=D$, so $t_1=D$ is remembered (with a dotted arrow) as the best way to get to $t_2=D$.
 }
 \end{figure} 
