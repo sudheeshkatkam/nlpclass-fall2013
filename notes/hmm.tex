@@ -336,11 +336,11 @@ Again, just like before.
   \item Transitions: $p(t_i \mid t_{i-1}) 
              = \frac{C(t_{i-1}~t_i)+\lambda}{\sum_x (C(t_{i-1}~x)+\lambda)} 
              = \frac{C(t_{i-1}~t_i)+\lambda}{(\sum_x C(t_{i-1}~x))+\lambda\cdot|T|} 
-             = \frac{C(t_{i-1}~t_i)}{C(t_{i-1})}$
+             = \frac{C(t_{i-1}~t_i)+\lambda}{C(t_{i-1})+\lambda\cdot|T|}$
   \item Emissions: $p(w_i \mid t_i) 
              = \frac{C(t_i,w_i)+\lambda}{\sum_x (C(t_i,x)+\lambda)} 
              = \frac{C(t_i,w_i)+\lambda}{(\sum_x C(t_i,x))+\lambda\cdot|V|} 
-             = \frac{C(t_i,w_i)}{C(t_i)}$
+             = \frac{C(t_i,w_i)+\lambda}{C(t_i)+\lambda\cdot|V|}$
 \end{itemize}
 
 Some probabilities (with $\lambda=2$):
