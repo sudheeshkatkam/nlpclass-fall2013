@@ -6,7 +6,7 @@ title: Schedule
 This is a tentative schedule of the course.  All dates are subject to change based on how the class progresses.
 
 
-## Week 1
+## Week 1: Aug 29
 
 ###Thursday, Aug 29
 
@@ -27,7 +27,7 @@ Materials
 
 
 
-## Week 2
+## Week 2: Sept 3, 5
 
 ###Tuesday, Sept 3
 
@@ -48,7 +48,7 @@ Materials
 * Your own questions!
 
 
-## Week 3
+## Week 3: Sept 10, 12
 
 ###Tuesday, Sept 10
 
@@ -79,7 +79,7 @@ Materials
 * [Document classification slides](http://lnc-s11.utcompling.com/schedule/LNC-DocClassify.pdf)
 
 
-## Week 4
+## Week 4: Sept 17, 19
 
 ###Tuesday, Sept 17
 
@@ -93,8 +93,9 @@ Topics
 
 Topics
 
+* Train/Dev/Test Datasets
 * Precision and Recall
-* Partially-supervised learning for Naive Bayes (3/3)
+* Semi-supervised learning for Naive Bayes with Gibbs Sampling (3/3)
 
 
 <span style="color: red">Assignments</span>
@@ -103,7 +104,7 @@ Topics
 * [Assignment 2: Text Classification]({{ page.root }}assignments/a2classification.html), Assigned
 
 
-## Week 5
+## Week 5: Sept 24, 26
 
 ###Tuesday, Sept 24
 
@@ -125,10 +126,10 @@ Materials
 Topics
 
 * N-Gram Language Models (2/4)
-* Maximum Likelihood Estimation for N-Gram Models
+* Maximum Likelihood Estimation (MLE) for N-Gram Models
 
 
-## Week 6
+## Week 6: Oct 1, 3
 
 ###Tuesday, Oct 1
 
@@ -156,7 +157,7 @@ Topics
 * [Assignment 3: N-Gram Language Models]({{ page.root }}assignments/a3ngrams.html), Assigned
 
 
-## Week 7
+## Week 7: Oct 8, 10
 
 ###Tuesday, Oct 8
 
@@ -176,19 +177,25 @@ Materials
 Topics
 
 * Hidden Markov Models (2/4)
+* HMM Assumptions
+* MLE
+* Add-Lambda Smoothing
+* One-Count Smoothing
 
 Materials
 
 * JM 6: 173-192
 
 
-## Week 8
+## Week 8: Oct 15, 17
 
 ###Tuesday, Oct 15
 
 Topics
 
 * Hidden Markov Models (3/4)
+* Decoding (Viterbi Algorithm)
+* Tag Dictionary
 
 Materials
 
@@ -205,6 +212,7 @@ Materials
 Topics
 
 * Hidden Markov Models (4/4)
+* Semi-Supervised Learning (Forward-Backward Algorithm)
 * Low-Resource POS-Tagger Learning
 
 Materials
@@ -212,7 +220,7 @@ Materials
 * [Learning a Part-of-Speech Tagger from Two Hours of Annotation](http://www.cs.utexas.edu/~dhg/papers/garrette_baldridge_naacl2013.pdf)
 
 
-## Week 9
+## Week 9: Oct 22, 24
 
 ###Tuesday, Oct 22
 
@@ -224,7 +232,7 @@ Materials
 Topics
 
 * Discriminative models
-* Maximum entropy Markov models (1/4)
+* Maximum entropy Markov models (1/3)
 
 Materials
 
@@ -232,20 +240,20 @@ Materials
 
 
 
-## Week 10
+## Week 10: Oct 29, 31
 
 ###Tuesday, Oct 29
 
 Topics
 
-* Maximum entropy Markov models (2/4)
+* Maximum entropy Markov models (2/3)
 
 
 ###Thursday, Oct 31
 
 Topics
 
-* Maximum entropy Markov models (3/4)
+* Maximum entropy Markov models (3/3)
 * Information extraction (NER, Relation Extraction, Coref?)
 
 Materials
@@ -261,19 +269,9 @@ Materials
 
 
 
-## Week 11
+## Week 11: Nov 5, 7
 
 ###Tuesday, Nov 5
-
-Topics
-
-* ?
-
-Materials
-
-
-
-###Thursday, Nov 7
 
 Topics
 
@@ -286,9 +284,7 @@ Materials
 * JM 13. 427-443
 
 
-## Week 12
-
-###Tuesday, Nov 12
+###Thursday, Nov 7
 
 Topics
 
@@ -299,61 +295,87 @@ Materials
 * JM 14: 459-467
 
 
-###Thursday, Nov 14
+
+## Week 12: Nov 12, 14
+
+###Tuesday, Nov 12
 
 Topics
 
 * Parsing (3/4)
+* Decoding: CKY
 
 Materials
 
+<span style="color: red">Assignments</span>
+
+* [Assignment 5: Sentiment]({{ page.root }}assignments/a5.html), **Due (programming submitted by noon, written by 2pm)**
 
 
-## Week 13
-
-###Tuesday, Nov 19
+###Thursday, Nov 14
 
 Topics
 
 * Parsing (4/4)
 * Dependency Parsing?
 * Semantic Role Labeling?
+* Combinatory Categorial Grammar?
 
 Materials
 
 * JM 17: 545-572
+
+<span style="color: red">Assignments</span>
+
+* [Assignment 6: Parsing]({{ page.root }}assignments/a6.html), Assigned
+
+
+
+## Week 13: Nov 19, 21
+
+###Tuesday, Nov 19
+
+Topics
+
+* Representing Meaning
+* Logical Semantics
+* Compositionality
+* Entailment
+
+Materials
+
+* JM 18: 583-591
 
 
 ###Thursday, Nov 21
 
 Topics
 
-* Parsing (5/4)
-* Combinatory Categorial Grammar?
+* Distributional Semantics
+* Vector Spaces
 
 Materials
 
-
-<span style="color: red">Assignments</span>
-
-* [Assignment 5: Sentiment]({{ page.root }}assignments/a5.html), **Due (programming submitted by noon, written by 2pm)**
-* [Assignment 6: Parsing]({{ page.root }}assignments/a6.html), Assigned
+* JM ??
 
 
 
-## Week 14
+## Week 14: Nov 26, 28
 
 ###Tuesday, Nov 26
 
 Topics
 
-* Representing Meaning
-* Logical Semantics
-* Entailment
+* Topic Models
 
 Materials
 
-* JM 18: 583-591
+* [Probabilistic topic models](http://cocosci.berkeley.edu/tom/papers/SteyversGriffiths.pdf) (Steyvers and Griffiths 2007)
+* David Blei's topic modeling talk: [video](http://video.google.com/videoplay?docid=3077213787166426672) and [slides](http://www.cs.princeton.edu/~blei/modeling-science.pdf).
+
+<span style="color: red">Assignments</span>
+
+* [Assignment 6: Parsing]({{ page.root }}assignments/a6.html), **Due (programming submitted by noon, written by 2pm)**
 
 
 ###Thursday, Nov 28
@@ -362,20 +384,17 @@ No Class - Thanksgiving
 
 
 
-## Week 15
+## Week 15: Dec 3, 5
 
 ###Tuesday, Dec 3
 
 Topics
 
-* Distributional Semantics (Vector-Space Models)
-* Topic Models
-* Other stuff (coref)?
+* ???  
+* Course Evaluations
 
 Materials
 
-* [Probabilistic topic models](http://cocosci.berkeley.edu/tom/papers/SteyversGriffiths.pdf) (Steyvers and Griffiths 2007)
-* David Blei's topic modeling talk: [video](http://video.google.com/videoplay?docid=3077213787166426672) and [slides](http://www.cs.princeton.edu/~blei/modeling-science.pdf).
 
 
 ###Thursday, Dec 5
@@ -385,9 +404,5 @@ Materials
 <br/>
 
 <br/>
-
-<span style="color: red">Assignments</span>
-
-* [Assignment 6: Parsing]({{ page.root }}assignments/a6.html), **Due (programming submitted by noon, written by 2pm)**
 
 
