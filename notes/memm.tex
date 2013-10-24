@@ -1,0 +1,145 @@
+\documentclass[11pt,letterpaper]{article}
+\topmargin -.5truein
+\textheight 9.0truein
+\oddsidemargin 0truein
+\evensidemargin 0truein
+\textwidth 6.5truein
+\setlength{\parskip}{5pt}
+\setlength\parindent{0pt}
+\usepackage[table]{xcolor}% http://ctan.org/pkg/xcolor
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{qtree}
+\usepackage{algorithmic}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usepackage{multirow}
+\usepackage[all]{xy}
+\usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
+
+
+
+\newcommand{\bs}{\textbackslash}
+%\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\vv}[1]{\ensuremath{\vec{\mathbf{#1}}}}
+
+\newcommand{\ngramstart}{\ensuremath{\langle \textsc{s} \rangle}}
+\newcommand{\ngramend}{\ensuremath{\langle \textsc{e} \rangle}}
+\newcommand{\ngramunk}{\ensuremath{\langle unk \rangle}}
+
+\newcommand{\wcurr}{\ensuremath{w_i}}
+\newcommand{\tcurr}{\ensuremath{t_i}}
+\newcommand{\tprev}{\ensuremath{t_{i-1}}}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\title{NLP: Maximum Entropy Markov Models}
+\author{Dan Garrette\\\small{dhg@cs.utexas.edu}}
+
+\begin{document}
+\maketitle
+
+
+
+\section{Features}
+
+Why do we like feature?
+
+\begin{itemize}
+  \item Give us additional, useful information.
+  \item Parts of speech: prefixes, suffixes, capitalization, word shape, is a number, ...
+\end{itemize}
+
+Why do we like sequence models?
+
+\begin{itemize}
+  \item Nouns and Adjectives more likely to follow Determiners
+  \item ``I enjoy walks''.  Typically, ``walks'' is a verb, but not here since ``enjoy'' is definitely a verb.
+\end{itemize}
+
+
+
+\section{Linear Regression}
+
+\begin{itemize}
+  \item Each feature $f_i$ has an associated weight $w_i$
+  \item Assign a real value $y \in (-\infty,\infty)$ based on features
+    \begin{align*} 
+      y &= w_0 + w_1 \times f_1 + w_2 \times f_2 + w_3 \times f_3 + ...\\
+        &= \sum_{i=0}^N w_i \times f_i  = \vv{w} \cdot \vv{f} ~~ \text{(dot product)}
+     \end{align*}
+  \item For a particular instance $j$: \vspace{-5mm}
+    \begin{align*} 
+      y_{\textit{pred}}^{(j)} &= \sum_{i=0}^N w_i \times f_i^{(j)}
+     \end{align*}
+  \item Learning: choose weights $W$ that minimize the sum-squared error:
+    \begin{align*} 
+      cost(W) &= \sum_{j=0}^M (y_{\textit{pred}}^{(j)}-y_{\textit{obs}}^{(j)})
+     \end{align*}
+\end{itemize}
+
+
+\section{Logistic Regression}
+
+\begin{itemize}
+  \item For many NLP applications, we don't want a real value output, we want a \textit{classification}.
+  \item Moreover, we want to assign a \textit{probability} to each class
+  \item Want to be able to use wighted features
+  \item But, can't simply apply linear regression because it doesn't give us probabilities
+\end{itemize}
+
+Binary Classification
+
+\begin{itemize}
+  \item Need $p(y=\text{true} \mid x)$
+  \item For instance $x$, we want to make use of $\sum_{i=0}^N w_i \times f_i$
+  \item Maybe a ratio?  $\frac{p(y=\text{true} \mid x)}{p(y=\text{false} \mid x)} = \frac{p(y=\text{true} \mid x)}{1-p(y=\text{true} \mid x)}$, but this yields a value between 0 (definitely false) and $\infty$ (definitely true)
+  \item Logarithm gets us a value between $-\infty$ and $\infty$: $\ln(\frac{p(y=\text{true} \mid x)}{1-p(y=\text{true} \mid x)}) = \vv{w} \cdot \vv{f}$
+  \item Exponentiating both sides gives us: $\frac{p(y=\text{true} \mid x)}{1-p(y=\text{true} \mid x)} = e^{\vv{w} \cdot \vv{f}}$
+  %\item ... and re-arranging gives us $p(y=\text{true} \mid x) = \frac{e^{\vv{w} \cdot \vv{f}}}{1 + e^{\vv{w} \cdot \vv{f}}}$
+  %\item Likewise: $p(y=\text{false} \mid x) = \frac{1}{1 + e^{\vv{w} \cdot \vv{f}}}$
+  \item Classify with \vspace{-5mm}
+    \begin{align*} 
+      p(y=\text{true}\mid x) &> p(y=\text{false}\mid x) \\
+      \frac{p(y=\text{true}\mid x)}{p(y=\text{false}\mid x)} &> 1 \\
+      \frac{p(y=\text{true}\mid x)}{1-p(y=\text{true}\mid x)} &> 1 \\
+      e^{\vv{w} \cdot \vv{f}} &> 1  ~~~~\text{from above} \\
+      \vv{w} \cdot \vv{f} &> 0 \\
+      \sum_{i=0}^N w_i \times f_i &> 0
+     \end{align*}
+\end{itemize}
+
+Learning
+
+\begin{align*} 
+  \hat{w} &= argmax_w~\prod_i~p(y^{(i)}\mid x^{(i)}) \\
+          &= argmax_w~\prod_i~\{p(y^{(i)}=1 \mid x^{(i)}) \text{ for } y^{(i)}=1 ~~ \text{ OR } ~~ 
+                                p(y^{(i)}=0 \mid x^{(i)}) \text{ for } y^{(i)}=0
+\end{align*}
+
+\begin{itemize}
+  \item convex optimization
+  \item gradient ascent or L-BFGS
+\end{itemize}
+
+
+
+
+
+
+
+\end{document}
+
