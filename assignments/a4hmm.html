@@ -160,13 +160,31 @@ the|D cat|N walks|V</code></pre>
 <span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
 <span class='c1'>// Vector(D, N, V)</span>
 </code></pre></div>
+<p>Here are the viterbi tables for each of these sentences, with backpointers for each non-zero cell:</p>
+<table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td />  <td><b>the</b>        </td>  <td><b>dog</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td />  <td>-0.1335, &lt;S&gt;</td>  <td>-Infinity </td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td />  <td>-Infinity         </td>  <td>-0.8267, D</td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td />  <td>-Infinity         </td>  <td>-Infinity </td>  <td>-2.9061, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-3.3116, V      </td> </tr>
+</table>
+<p>&#160; <br /><table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td />  <td><b>the</b>        </td>  <td><b>cat</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td />  <td>-0.1335, &lt;S&gt;</td>  <td>-Infinity </td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td />  <td>-Infinity         </td>  <td>-2.2130, D</td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td />  <td>-Infinity         </td>  <td>-Infinity </td>  <td>-4.2924, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-4.6967, V      </td> </tr>
+</table></p>
+
 <p>Testing on the <code>ptbtag</code> data should behave like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
 <span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
 <span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
 <span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;The&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span><span class='s'>&quot;VBD&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;house&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;.&quot;</span><span class='o'>,</span><span class='s'>&quot;.&quot;</span><span class='o'>))</span>
 
-<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>))</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s</span><span class='o'>)</span>
 <span class='c1'>// -34.38332797005687</span>
 
 <span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
@@ -232,12 +250,30 @@ count  gold  model
 <span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the man held the saw&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
 <span class='c1'>// Vector(D, N, V, D, N)</span>
 </code></pre></div>
+<p>Here are the viterbi tables for each of these sentences, with backpointers for each non-zero cell:</p>
+<table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td />  <td><b>the</b>        </td>  <td><b>dog</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td />  <td>-0.2469, &lt;S&gt;</td>  <td>-9.1551, D</td>  <td>-9.9552, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td />  <td>-8.6205, &lt;S&gt;</td>  <td>-1.0471, D</td>  <td>-9.9552, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td />  <td>-8.3626, &lt;S&gt;</td>  <td>-8.8972, D</td>  <td>-3.1886, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-3.6339, V      </td> </tr>
+</table>
+<p>&#160; <br /><table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td />  <td><b>the</b>        </td>  <td><b>cat</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td />  <td>-0.2469, &lt;S&gt;</td>  <td>-9.1551, D</td>  <td>-11.2709, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td />  <td>-8.6205, &lt;S&gt;</td>  <td>-2.3627, D</td>  <td>-11.2709, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td />  <td>-8.3626, &lt;S&gt;</td>  <td>-8.8972, D</td>  <td> -4.5043, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-4.9496, V      </td> </tr>
+</table></p>
+
 <p>Testing on the <code>ptbtag</code> data with λ=1.0 should behave like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
 <span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaSmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
 <span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
 <span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;The&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span><span class='s'>&quot;VBD&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;house&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;.&quot;</span><span class='o'>,</span><span class='s'>&quot;.&quot;</span><span class='o'>))</span>
-<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>taggedSentenceString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>))</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s</span><span class='o'>)</span>
 <span class='c1'>// -37.56746722307677</span>
 <span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
 <span class='c1'>// Vector(DT, NN, VBD, DT, NN, .)</span>
