@@ -106,6 +106,28 @@ println(model.tagSentence("the cat runs".split("\\s+").toVector))
 // Vector(D, N, V)
 {% endhighlight %}
 
+
+Here are the viterbi tables for each of these sentences, with backpointers for each non-zero cell:
+
+<table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td></td>  <td><b>the</b>        </td>  <td><b>dog</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td></td>  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td></td>  <td>-0.1335, &lt;S&gt;</td>  <td>-Infinity </td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td></td>  <td>-Infinity         </td>  <td>-0.8267, D</td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td></td>  <td>-Infinity         </td>  <td>-Infinity </td>  <td>-2.9061, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td></td>  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-3.3116, V      </td> </tr>
+</table>
+&nbsp;   
+<table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td></td>  <td><b>the</b>        </td>  <td><b>cat</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td></td>  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td></td>  <td>-0.1335, &lt;S&gt;</td>  <td>-Infinity </td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td></td>  <td>-Infinity         </td>  <td>-2.2130, D</td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td></td>  <td>-Infinity         </td>  <td>-Infinity </td>  <td>-4.2924, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td></td>  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-4.6967, V      </td> </tr>
+</table>
+
+
 Testing on the `ptbtag` data should behave like this:
 
 {% highlight scala %}
@@ -114,7 +136,7 @@ val trainer = new UnsmoothedHmmTrainer[String, String](...)
 val model = trainer.train(trainData)
 val s = Vector(("The","DT"), ("man","NN"), ("saw","VBD"), ("a","DT"), ("house","NN"), (".","."))
 
-model.sentenceProb(taggedSentenceString(s))
+model.sentenceProb(s)
 // -34.38332797005687
 
 model.tagSentence("The man saw a house .".split("\\s+").toVector)
@@ -185,6 +207,27 @@ model.tagSentence("the man held the saw".split("\\s+").toVector)
 // Vector(D, N, V, D, N)
 {% endhighlight %}
 
+Here are the viterbi tables for each of these sentences, with backpointers for each non-zero cell:
+
+<table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td></td>  <td><b>the</b>        </td>  <td><b>dog</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td></td>  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td></td>  <td>-0.2469, &lt;S&gt;</td>  <td>-9.1551, D</td>  <td>-9.9552, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td></td>  <td>-8.6205, &lt;S&gt;</td>  <td>-1.0471, D</td>  <td>-9.9552, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td></td>  <td>-8.3626, &lt;S&gt;</td>  <td>-8.8972, D</td>  <td>-3.1886, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td></td>  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-3.6339, V      </td> </tr>
+</table>
+&nbsp;   
+<table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td></td>  <td><b>the</b>        </td>  <td><b>cat</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td></td>  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td></td>  <td>-0.2469, &lt;S&gt;</td>  <td>-9.1551, D</td>  <td>-11.2709, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td></td>  <td>-8.6205, &lt;S&gt;</td>  <td>-2.3627, D</td>  <td>-11.2709, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td></td>  <td>-8.3626, &lt;S&gt;</td>  <td>-8.8972, D</td>  <td> -4.5043, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td></td>  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-4.9496, V      </td> </tr>
+</table>
+
+
 Testing on the `ptbtag` data with λ=1.0 should behave like this:
 
 {% highlight scala %}
@@ -192,7 +235,7 @@ val trainData = ... read from ptbtag/train.txt ...
 val trainer = new AddLambdaSmoothedHmmTrainer[String, String](...)
 val model = trainer.train(trainData)
 val s = Vector(("The","DT"), ("man","NN"), ("saw","VBD"), ("a","DT"), ("house","NN"), (".","."))
-model.sentenceProb(taggedSentenceString(s))
+model.sentenceProb(s)
 // -37.56746722307677
 model.tagSentence("The man saw a house .".split("\\s+").toVector)
 // Vector(DT, NN, VBD, DT, NN, .)
