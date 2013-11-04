@@ -48,30 +48,32 @@ trait FeatureFileAsDistributionsToImplement {
 // Assignment 2
 ////////////////////////////////
 
-/**
- * For Assignment 2 - Part 2:
- */
-trait NaiveBayesModelToImplement[Label, Feature, Value] {
+trait Classifier[Label, Feature, Value] {
   def predict(features: Vector[(Feature, Value)]): Label
 }
 
-/**
- * For Assignment 2 - Part 2:
- */
-trait NaiveBayesTrainerToImplement[Label, Feature, Value] {
-  def train(instances: Vector[(Label, Vector[(Feature, Value)])]): NaiveBayesModelToImplement[Label, Feature, Value]
+trait ClassifierTrainer[Label, Feature, Value] {
+  def train(instances: Vector[(Label, Vector[(Feature, Value)])]): Classifier[Label, Feature, Value]
 }
 
-/**
- * For Assignment 2 - Part 2:
- */
-trait NaiveBayesScorerToImplement {
-
+trait ClassifierScorerToImplement {
   def score[Label, Feature, Value](
-    naiveBayesModel: NaiveBayesModelToImplement[Label, Feature, Value],
+    classifier: Classifier[Label, Feature, Value],
+    testInstances: Vector[(Label, Vector[(Feature, Value)])])
+}
+
+/** TODO: REMOVE THIS */
+trait NaiveBayesModelToImplement[Label, Feature, Value] extends Classifier[Label, Feature, Value]
+
+/** TODO: REMOVE THIS */
+trait NaiveBayesTrainerToImplement[Label, Feature, Value] extends ClassifierTrainer[Label, Feature, Value]
+
+/** TODO: REMOVE THIS */
+trait NaiveBayesScorerToImplement {
+  def score[Label, Feature, Value](
+    classifier: Classifier[Label, Feature, Value],
     testInstances: Vector[(Label, Vector[(Feature, Value)])],
     positveLabel: Label)
-
 }
 
 /**
