@@ -41,12 +41,9 @@ For this homework, you will create a sentiment analysis system for tweets by imp
 
 To complete the homework, you need to obtain some training and testing data:
 
-* The [tennis](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/tennis) data from Assignment 2
-* The [prepositional phrase attachment](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/ppa) data from Assignment 2
 * [Bing Liu](http://www.google.com/url?q=http%3A%2F%2Fwww.cs.uic.edu%2F%257Eliub%2F&sa=D&sntz=1&usg=AFrqEzdMHP-wFPNtogumAiASdvJ6BXGaWQ)'s [Opinion Lexicon](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/opinion-lexicon)
 * The [debate08](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/debate08) data
 * The [health care reform](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/hcr) data
-* The Penn Treebank part-of-speech dataset from Assignment 4, available on Piazza
 
 Check out Bo Pang and Lillian Lee's book: Opinion Mining and Sentiment Analysis (free online!)
 
@@ -78,7 +75,7 @@ Here is an example of what your output should look like:
     negative  72.46  36.85  48.86
     neutral   28.82  62.11  39.37
     positive  37.38  46.51  41.45
-    avg       44.04  44.04  44.04
+    avg       46.22  48.49  43.23
 
 The lexicon ratio accuracy of 44% isn't great, but it's better than the expected 33% from random guessing.
 
@@ -155,7 +152,7 @@ Here is an expected run:
     negative  68.64  77.37  72.75
     neutral   52.34  41.61  46.37
     positive  45.21  38.37  41.51
-    avg       61.73  61.73  61.73
+    avg       55.40  52.45  53.54
 
 In the "iterations", you will see how the likelihood of the training data increases as the iterations progress.
 
@@ -172,7 +169,7 @@ Now, since both `MaxEntModel` and `NaiveBayesModel` extend `Classifier` we can d
     negative  65.37  36.21  46.60
     neutral   32.21  65.22  43.12
     positive  31.31  38.95  34.72
-    avg       42.66  42.66  42.66
+    avg       42.96  46.79  41.48
 
 Experiment with different values for `--lambda` and see how it affects the accuracy.
 
