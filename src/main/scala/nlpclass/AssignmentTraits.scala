@@ -162,7 +162,7 @@ trait NgramModelEvaluator extends ((NgramModelToImplement, Vector[Vector[String]
 // Assignment 4
 ////////////////////////////////
 
-trait HiddenMarkovModelToImplement[Word, Tag] {
+trait Tagger[Word, Tag] {
 
   /**
    * Compute the probability of the tagged sentence.  The result
@@ -178,6 +178,12 @@ trait HiddenMarkovModelToImplement[Word, Tag] {
 
 }
 
-trait HmmTrainerToImplement[Word, Tag] {
-  def train(taggedSentences: Vector[Vector[(Word, Tag)]]): HiddenMarkovModelToImplement[Word, Tag]
+trait TaggerTrainer[Word, Tag] {
+  def train(taggedSentences: Vector[Vector[(Word, Tag)]]): Tagger[Word, Tag]
 }
+
+/** TODO: REMOVE THIS */
+trait HiddenMarkovModelToImplement[Word, Tag] extends Tagger[Word, Tag]
+
+/** TODO: REMOVE THIS */
+trait HmmTrainerToImplement[Word, Tag] extends TaggerTrainer[Word, Tag]
