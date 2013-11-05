@@ -24,7 +24,7 @@
 \usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
 
 
-
+\newcommand{\ra}{\rightarrow}
 \newcommand{\bs}{\textbackslash}
 %\renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\vv}[1]{\ensuremath{\vec{\mathbf{#1}}}}
@@ -56,6 +56,107 @@
 
 \section{Grammar}
 
+\vspace{-7mm}\Tree 
+  [.S  
+    [.NP [.D the ] [.N man ] ] 
+    [.VP 
+      [.V walks ] 
+      [.NP [.D a ] [.N dog ] ] 
+    ] 
+  ]
+\vspace{-2mm}
+\begin{itemize}
+  \item ``Consitiuency'' parse
+  \item S (sentence), NP (noun phrase), VP (verb phrase) are constituents
+  \item Words combine to make phrases, and phrases combine to make larger phrases and sentences.
+\end{itemize}
+
+
+\section{Context-Free Grammars}
+
+\begin{itemize}
+  \item Context-free grammars can be specified by a table of ``productions''
+	\begin{center}
+	\begin{tabular}{llll p{10mm} lll}
+	  S & $\ra$ & NP VP   &                                && D & $\ra$ & \{\textit{the, a}\}      \\
+	  NP & $\ra$ & D N    & (``\underline{a dog} barks'')  && N & $\ra$ & \{\textit{man, dog}\}    \\
+	  NP & $\ra$ & N      & (``\underline{dogs} bark'')    && V & $\ra$ & \{\textit{barks, walks, sees}\} \\
+	  VP & $\ra$ & VP NP  & (transitive verb)              \\
+	  VP & $\ra$ & VP     & (intransitive verb)
+	\end{tabular}
+	\end{center}
+  \item Words are called ``terminals'' and other nodes are ``non-terminals''
+\end{itemize}
+
+Syntactic Ambiguity
+
+\begin{itemize}
+  \item For a given CFG, there can be multiple trees that describe the same sentence
+  \item Add the following rules to the above:
+	\begin{center}
+	\begin{tabular}{llll p{10mm} lll}
+	  NP & $\ra$ & D N    & (``\underline{a dog} barks'')  && N & $\ra$ & \{\textit{telescope}\}    \\
+	  NP & $\ra$ & N      & (``\underline{dogs} bark'')    && \\
+	  VP & $\ra$ & VP NP  & (transitive verb)              \\
+	  VP & $\ra$ & VP     & (intransitive verb)
+	\end{tabular}
+	\end{center}
+  \item ``The man saw a dog with a telescope''
+
+\end{itemize}
+
+\begin{figure}[h]
+        %\centering
+        \begin{subfigure}[b]{0.5\textwidth}
+                \Tree 
+				  [.S  
+				    [.NP [.D the ] [.N man ] ] 
+				    [.VP 
+				      [.V saw ] 
+				      [.NP [.D a ] [.N dog ] ] 
+				      [.PP [.P with ] [.NP [.D a ] [.N telescope ] ] ]
+				    ] 
+				  ]
+        \end{subfigure}
+        \begin{subfigure}[b]{0.3\textwidth}
+          \begin{small}
+                \Tree 
+				  [.S  
+				    [.NP [.D the ] [.N man ] ] 
+				    [.VP 
+				      [.V saw ] 
+				      [.NP 
+				        [.D a ] [.N dog ] 
+				        [.PP [.P with ] [.NP [.D a ] [.N telescope ] ] ]
+				      ] 
+				    ] 
+				  ]
+		  \end{small}
+        \end{subfigure}
+\end{figure}
+
+
+
+
+\section{Generative Model}
+
+\begin{itemize}
+  \item Like na\"{i}ve Bayes models, N-Gram models, and hidden Markov models
+  \item Two probability distribution: $p(\beta \mid \alpha)$, for production rules $\alpha \ra \beta$, and $p(\sigma)$, where $\sigma$ is a possible ``start'' symbol
+  \item Generative story:
+    \begin{enumerate}
+      \item Choose a start symbol $x$ from the distribution over start symbols $p(\sigma)$
+      \item If $x$ is a terminal, STOP
+      \item Else, choose some $\beta$ from $p(\beta \mid x)$
+      \item ~~~For each symbol $y$ in $\beta$, go to step 2
+    \end{enumerate}
+  \item For each node with symbol $x$, we choose a production rule of the form $x \ra \beta$ according to their probabilities and then recursively choose rules for every node in $\beta$ until we reach terminals for all branches.
+\end{itemize}
+
+
+
+
+
 
 
 
@@ -65,7 +166,7 @@
 
 \section{Other Grammatical Formalisms}
 
-TAG: Tree-Adjoining Grammar: http://www.seas.upenn.edu/~joshi/joshi-schabes-tag-97.pdf
+TAG: Tree-Adjoining Grammar: http://www.seas.upenn.edu/$\sim$joshi/joshi-schabes-tag-97.pdf
 
 CCG: Combinatory Categorial Grammar
 
