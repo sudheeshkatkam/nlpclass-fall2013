@@ -252,7 +252,7 @@ Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
 <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>NaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div>
 <p>that extends</p>
-<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>NaiveBayesModelToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div>
 <p>The <code>NaiveBayesModel</code> class will contain your naive Bayes implementation. It requires a method:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>predict</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Label</span>
@@ -264,7 +264,7 @@ Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
   <span class='n'>labels</span><span class='k'>:</span> <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Label</span><span class='o'>],</span>
   <span class='n'>pLabel</span><span class='k'>:</span> <span class='kt'>ProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>Label</span><span class='o'>],</span>
   <span class='n'>pValue</span><span class='k'>:</span> <span class='kt'>Map</span><span class='o'>[</span><span class='kt'>Feature</span>, <span class='kt'>ConditionalProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Value</span><span class='o'>]])</span>
-  <span class='k'>extends</span> <span class='nc'>NaiveBayesModelToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+  <span class='k'>extends</span> <span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div>
 <p>When trained on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a>, you should get the following behavior:</p>
 <div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbm</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>NaiveBayesModel</span><span class='o'>[</span><span class='kt'>String</span>,<span class='kt'>String</span>,<span class='kt'>String</span><span class='o'>](...)</span>
@@ -283,10 +283,10 @@ Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
 <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>UnsmoothedNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div>
 <p>that extends</p>
-<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>NaiveBayesTrainerToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>ClassifierTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div>
 <p>The <code>UnsmoothedNaiveBayesTrainer</code> class requires a method:</p>
-<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Label</span>, <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])])</span><span class='k'>:</span> <span class='kt'>NaiveBayesModelToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Label</span>, <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])])</span><span class='k'>:</span> <span class='kt'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div>
 <p>The <code>train</code> method takes a Vector of labeled instances, uses those instances to calculate probability distributions (without smoothing, of course), and then instantiates a <code>NaiveBayesModel</code> to be returned.</p>
 
@@ -309,11 +309,11 @@ Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
 <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>NaiveBayesScorer</span>
 </code></pre></div>
 <p>that extends</p>
-<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>NaiveBayesScorerToImplement</span>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>ClassifierScorerToImplement</span>
 </code></pre></div>
 <p>The <code>NaiveBayesScorer</code> class requires a method:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>score</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>](</span>
-    <span class='n'>naiveBayesModel</span><span class='k'>:</span> <span class='kt'>NaiveBayesModelToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>],</span>
+    <span class='n'>naiveBayesModel</span><span class='k'>:</span> <span class='kt'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>],</span>
     <span class='n'>testInstances</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Label</span>, <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])],</span>
     <span class='n'>positveLabel</span><span class='k'>:</span> <span class='kt'>Label</span><span class='o'>)</span>
 </code></pre></div>
@@ -392,7 +392,7 @@ f1 = 44.44</code></pre>
 <div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>com.typesafe.scalalogging.log4j.Logging</span>
 
 <span class='k'>class</span> <span class='nc'>NaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>](...)</span>
-  <span class='k'>extends</span> <span class='nc'>NaiveBayesModelToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+  <span class='k'>extends</span> <span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
   <span class='k'>with</span> <span class='nc'>Logging</span>
 </code></pre></div>
 <p>Then you will have to add logging statements to print out relevant information. There are 6 levels of logging statements: trace, debug, info, warn, error, and fatal. Trace is the lowest, fatal is the highest. You can log statements using the syntax <code>logger.debug</code>, <code>logger.info</code>, etc. (<code>logger</code> is a field on the <code>Logging</code> trait, which is why it exists even though you aren&#8217;t explicitly declaring it.)</p>
@@ -535,7 +535,7 @@ f1 = 71.59</code></pre>
 <p><strong>Part (b) <span>20 pts</span>.</strong> Implementation.</p>
 
 <p>Similar to what you did for <a href='#problem_2__implement_basic_naive_bayes_30_pts'>Problem 2</a>, you should create a class <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>AddLambdaNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
-</code></pre></div> that extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>NaiveBayesTrainerToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div> that extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>ClassifierTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div></p>
 
 <p>Again, you will need to implement the <code>train</code> method, but this time it should perform smoothing on the training data. The λ class-level parameter should be configurable.</p>
@@ -637,7 +637,7 @@ f1 = 84.21</code></pre>
 <p>Create a new class <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>LogNaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div></p>
 
-<p>that, like the previous version, extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>NaiveBayesModelToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+<p>that, like the previous version, extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
 </code></pre></div></p>
 
 <p>As before, you will have to implement the <code>predict</code> method: <div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>predict</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Label</span>
@@ -696,9 +696,9 @@ f1 = 84.21</code></pre>
 
 <p>In order to make use of your <code>FeatureExtender</code> class, you will need to update your <code>NaiveBayesModel</code> and <code>NaiveBayesTrainer</code> implementations (as well as their <code>Log</code> versions from Problem 4) to store an additional field of type <code>FeatureExtender[Feature, Label]</code>. Your trainer requires this field so that it can adjust the features of any training instances that it sees as it counts for the model. It also needs the field so that it can give it as an argument to <code>NaiveBayesModel</code> during construction. The model needs the field so that it can adjust the features of a instance during prediction.</p>
 
-<p>For command-line use, add an option <code>--extend</code> to <code>NaiveBayes</code> that takes either <code>true</code> or <code>false</code> as an argument. If <code>true</code>, then the <code>main</code> method should instantiate your FeatureExtender and pass it to the trainer. If <code>false</code>, or if the option is not present, you should, instead, instantiate <code>nlpclass.NoOpFeatureExtender</code> and pass <em>it</em> to the trainer. <code>NoOpFeatureExtender</code> is a <code>FeatureExtender</code> implementation that does not change the feature it is given. (<em>Note:</em> For a real implementation you would likely have different feature extenders that could be specified from the command line option, but, for the sake of grading, you will only have one implementaiton available from the <code>--extend</code> option). We should be able to run your classifier like this:</p>
+<p>For command-line use, add an option <code>--extend</code> to <code>NaiveBayes</code> that takes either a key indicating a specific FeatureExtender to use, or &#8220;none&#8221;, indicating that no extended features should be used. If a key is given, then the <code>main</code> method should instantiate the FeatureExtender specific to this key and pass it to the trainer. If &#8220;none&#8221;, or if the option is not present, you should, instead, instantiate <code>nlpclass.NoOpFeatureExtender</code> and pass <em>it</em> to the trainer. <code>NoOpFeatureExtender</code> is a <code>FeatureExtender</code> implementation that does not change the feature it is given. For this assignment, you will have the key &#8220;ppa&#8221; point to the <code>FeatureExtender</code> you create specifically for the ppa dataset. We should be able to run your classifier like this:</p>
 
-<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V --lambda 1.0 --log true --extend true&quot;</code></pre>
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V --lambda 1.0 --log true --extend ppa&quot;</code></pre>
 
 <p>To keep your code modular, you may want to create a variety of <code>FeatureExtender</code> implementations that each focus on a subset of useful features: one for number features, one for lemma features, one for wordshape feature, etc. This could be useful during testing when you want to easily try different combinations of features. To make it easy to combine these separate implementations, I have created a class <code>CompositeFeatureExtender</code> (which is itself a <code>FeatureExtender</code>) that will compose separate other <code>FeatureExtender</code>s into one <code>FeatureExtender</code>:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>featureExtender</span> <span class='k'>=</span> 
@@ -707,10 +707,8 @@ f1 = 84.21</code></pre>
     <span class='k'>new</span> <span class='nc'>LemmaFeatureExtender</span><span class='o'>(),</span>
     <span class='k'>new</span> <span class='nc'>WordShapeFeatureExtender</span><span class='o'>()))</span>
 </code></pre></div>
-<p>You should come up with at least five new features, but are encouraged to do much more. Be creative!</p>
-
 <blockquote>
-<p><strong>Written answer.</strong> Describe five of the features you added, and why you think they would be useful.</p>
+<p><strong>Written answer.</strong> Come up with at least five <strong>new</strong> feature extensions. You can implement the feature extensions described here, but you must come up with five novel extensions on your own that are not just variants of each other. Be creative! Describe five of the features you added, and why you think they would be useful.</p>
 </blockquote>
 
 <p><strong>Tip.</strong> Some resources have been imported for you:</p>
