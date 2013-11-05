@@ -71,7 +71,7 @@
       </div>
       <div id='content'>
         <h1>Assignment 5 - Maximum Entropy Models</h1>
-        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_lexicon_ratio_sentiment_analysis_baseline">Problem 1: Lexicon Ratio Sentiment Analysis Baseline</a></li><li><a href="#problem_2_sentiment_analysis_with_a_maximum_entropy_model">Problem 2: Sentiment Analysis with a Maximum Entropy Model</a></li><li><a href="#problem_3_extended_features_for_sentiment_analysis">Problem 3: Extended Features for Sentiment Analysis</a></li></ol>
+        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_lexicon_ratio_sentiment_analysis_baseline_20_points">Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)</a></li><li><a href="#problem_2_sentiment_analysis_with_a_maximum_entropy_model_20_points">Problem 2: Sentiment Analysis with a Maximum Entropy Model (20 points)</a></li><li><a href="#problem_3_extended_features_for_sentiment_analysis_60_points">Problem 3: Extended Features for Sentiment Analysis (60 points)</a></li></ol>
         <p><strong>Due: Thursday, November 14. Programming at noon. Written portions at 2pm.</strong></p>
 
 <ul>
@@ -122,7 +122,7 @@
 
 <p>Warning: there is a mix of software and resources in this homework, and you should not assume you can use them outside of the academic context. In other words, there are several things here that you cannot use in closed commercial applications. Licenses for each for resource are stated in the files themselves, or in the README. The core code is licensed under the GNU General Public License, which means you must follow the rules of that license: in sum, if you use it in any other application, then that application must also be released according to the GPL license.</p>
 
-<h2 id='problem_1_lexicon_ratio_sentiment_analysis_baseline'>Problem 1: Lexicon Ratio Sentiment Analysis Baseline</h2>
+<h2 id='problem_1_lexicon_ratio_sentiment_analysis_baseline_20_points'>Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)</h2>
 
 <p>The first thing that you will implement is an extremely simple baseline classifier for deciding whether a tweet has positive, negative, or neutral sentiment. The classifier will make use a <a href='https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/opinion-lexicon'>polarity lexicon</a> consisting of a set of words indicating <em>positive</em> sentiment and a set of words indicating <em>negative</em> sentiment. This classifier will compare tokens in the tweet against the lexicon and will judge a tweet to be <em>positive</em> if it has more positive words than negative words, <em>negative</em> if it has more negative than positive words, and <em>neutral</em> if it has the same number of positive and negative words.</p>
 
@@ -162,7 +162,7 @@ avg       46.22  48.49  43.23</code></pre>
 <li>The lexicon files contain all lower-cased words, but the tweets do not.</li>
 </ol>
 
-<h2 id='problem_2_sentiment_analysis_with_a_maximum_entropy_model'>Problem 2: Sentiment Analysis with a Maximum Entropy Model</h2>
+<h2 id='problem_2_sentiment_analysis_with_a_maximum_entropy_model_20_points'>Problem 2: Sentiment Analysis with a Maximum Entropy Model (20 points)</h2>
 
 <p>We will now attempt to improve our sentiment classifier by actually using training data. To accomplish this, I have provided you a few useful classes that wrap functionality in the <a href='http://opennlp.apache.org/'>OpenNLP MaxEnt</a> library:</p>
 
@@ -254,7 +254,7 @@ avg       42.96  46.79  41.48</code></pre>
 <p><strong>Written Answer (b):</strong> Use the hcr dev set to find a lambda value that works well. Report that that value and the accuracy it produces. (We will be using this value below).</p>
 </blockquote>
 
-<h2 id='problem_3_extended_features_for_sentiment_analysis'>Problem 3: Extended Features for Sentiment Analysis</h2>
+<h2 id='problem_3_extended_features_for_sentiment_analysis_60_points'>Problem 3: Extended Features for Sentiment Analysis (60 points)</h2>
 
 <p>Similarly to what we did in Assignment 2 with the extended feature set for our naive Bayes model of prepositional phrase attachment, we will implement extended features for sentiment classification.</p>
 
@@ -272,7 +272,7 @@ avg       42.96  46.79  41.48</code></pre>
 </li>
 
 <li>
-<p>Features that make use of the polarity lexicons seen in Problem 2. You should, again, pass the positive and negative files into the classifier on the command line via the <code>--pos</code> and <code>--neg</code> options.</p>
+<p>Features that make use of the polarity lexicons seen in Problem 1. You should, again, pass the positive and negative files into the classifier on the command line via the <code>--pos</code> and <code>--neg</code> options.</p>
 </li>
 
 <li>
