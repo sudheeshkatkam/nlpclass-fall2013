@@ -1,7 +1,7 @@
 target=general,username=B_E_X,token=Jim,token=Lehrer,token=just,token=directed,token=the,token=debate,token=audience,token=...,token=30,token=seconds,token=...,token=#tweetdebate,neutral
-target=general,username=Jonathan Fields,token=Here,token=we,token=go,token=.,token=#tweetdebate,neutral
+target=general,username=Jonathan_Fields,token=Here,token=we,token=go,token=.,token=#tweetdebate,neutral
 target=general,username=ferret67,token=what,token=is,token=an,token=appropriately,token=bi-partisan,token=food,token=to,token=bring,token=to,token=a,token=debate,token=party,token=?,token=#tweetdebate,neutral
-target=general,username=mobile jones,token=@current,token=one,token=minute,token=to,token=get,token=your,token=stuff,token=together,token=#current,neutral
+target=general,username=mobile_jones,token=@current,token=one,token=minute,token=to,token=get,token=your,token=stuff,token=together,token=#current,neutral
 target=general,username=kyeung808,token=@current,token=I've,token=got,token=the,token=live,token=stream,token=going,token=#current,token=....,token=awesome,token=!,positive
 target=general,username=themurmish,token=Anyone,token=else,token=actually,token=kinda,token=nervous,token=?,token=#tweetdebate,neutral
 target=mccain,username=drgilpin,token=Watching,token=by,token=myself,token=#tweetdebate,token=Not,token=drinking,token=:(,token=waiting,token=to,token=start,token=cringing,token=at,token=McCains,token=blunders,negative
@@ -15,7 +15,7 @@ target=general,username=danstuart,token=Any,token=drinking,token=game,token=idea
 target=general,username=kyeung808,token=Preparing,token=to,token=have,token=a,token=heart,token=attack,token=#tweetdebate,negative
 target=general,username=rebot,token=",token=no,token=debate,token=moderators,token=under,token=50,token=sorry,token=#tweetdebate,token=",negative
 target=general,username=Karoli,token=@current,token=Now,token=staring,token=at,token=black,token=screen,token=on,token=http://www.current.com/debate,token=grrrrrrrrrrrrrrr,token=#current,negative
-target=both,username=Nicolas Ward,token=Introducing,token=McCain,token=and,token=Obama,token=.,token=Wait,token=...,token=McCain,token=SHOWED,token=UP,token=!,token=Wow,token=...,token=guess,token=the,token=crisis,token=in,token=Washington,token=is,token=over,token=?,token=#tweetdebate,negative
+target=both,username=Nicolas_Ward,token=Introducing,token=McCain,token=and,token=Obama,token=.,token=Wait,token=...,token=McCain,token=SHOWED,token=UP,token=!,token=Wow,token=...,token=guess,token=the,token=crisis,token=in,token=Washington,token=is,token=over,token=?,token=#tweetdebate,negative
 target=general,username=starweaver,token=The,token=moderator,token=is,token=almost,token=as,token=important,token=as,token=the,token=debaters,token=.,token=#current,token=#tweetdebate,token=#debate08,neutral
 target=both,username=gminks,token=I,token=can't,token=imagine,token=McCaine,token=beating,token=Obama,token=in,token=a,token=war,token=of,token=words,token=.,token=#tweetdebate,positive
 target=general,username=naum,token=@mojosd,token=refresh,token=?,neutral
@@ -77,7 +77,7 @@ target=both,username=organicmania,token=A,token=silent,token=audience,token=is,t
 target=obama,username=johnmccrory,token=Obama,token=-1,token=for,token=answering,token=a,token=different,token=question,token=#tweetdebate,negative
 target=general,username=c4chaos,token=I,token=<3,token=lehrer,token=#tweetdebate,token=great,token=move,token=of,token=repeating,token=question,positive
 target=mccain,username=aeditor,token=McCain,token=-1,token=for,token=bringing,token=in,token=Kennedy,token=for,token=emotional,token=effect,token=#tweetdebate,negative
-target=general,username=Andrew K. Gay,token=#tweetdebate,token=greed,token=is,token=how,token=we,token=got,token=into,token=this,token=situation,token=in,token=the,token=first,token=place,negative
+target=general,username=Andrew_K._Gay,token=#tweetdebate,token=greed,token=is,token=how,token=we,token=got,token=into,token=this,token=situation,token=in,token=the,token=first,token=place,negative
 target=general,username=PinkOliveFamily,token=",token=+1,token=for,token=Jim,token=Lehrer,token=for,token=being,token=a,token=great,token=moderator,token=everyone,token=drink,token=!,token=#tweetdebate,token=",positive
 target=general,username=gwfrink3,token=@current,token=why,token=isn't,token=my,token=stuff,token=showing,token=up,token=on,token=tv,token=?!,token=#current,neutral
 target=mccain,username=webby2001,token=Kennedy,token=is,token=in,token=hospital,token=brought,token=up,token=by,token=McCain,token=#current,token=#tweetdebate,neutral
@@ -131,10 +131,10 @@ target=mccain,username=daveevans,token=-1,token=McCain,token=flag,token=waving,t
 target=mccain,username=Duhh,token=-2,token=McCain,token=for,token=stringing,token=too,token=many,token=colloquialisms,token=together,token=and,token=post-Reaganomics,token=sensationalism,token=#tweetdebate,negative
 target=mccain,username=themurmish,token=#tweetdebate,token=question,token=:,token=what,token=did,token=McCain,token=learn,token=from,token=his,token=good,token=friend,token=Charles,token=Keating,token=during,token=the,token=S,token=&,token=L,token=bailout,token=?,negative
 target=both,username=MichelleMMM,token=#tweetdebate,token=+1,token=for,token=Obama,token=for,token=shooting,token=straight,token=to,token=the,token=root,token=of,token=the,token=ideological,token=issue,token=.,token=+1,token=for,token=McCain,token=for,token=admitting,token=the,token=Republican,token=failure,token=.,positive
-target=mccain,username=Nicole Beauchemin,token=McCain,token=-3,token=for,token=personal,token=attack,token=#tweetdebate,negative
+target=mccain,username=Nicole_Beauchemin,token=McCain,token=-3,token=for,token=personal,token=attack,token=#tweetdebate,negative
 target=mccain,username=ehernandez20,token=",token=McCain,token=+3,token=quotable,token=-,token=symptoms,token=of,token=this,token="",token=disease,token="",token=he,token=calls,token=it,token=-,token=resp,token=.,token=to,token=runaway,token=.,token=spending,token=#tweetdebate,token=",positive
 target=both,username=Scott_Drummond,token=Mccain,token=+1,token=for,token=directly,token=differentiating,token=his,token=fiscal,token=policy,token=against,token=Obama,token=(,token=cut,token=spending,token=),token=#tweetdebate,positive
-target=general,username=Will Reynolds Young,token=@current,token=didn't,token=ask,token=one,token=.,token=Responded,token=to,token=yours,token=.,token=No,token=worries,token=.,neutral
+target=general,username=Will_Reynolds_Young,token=@current,token=didn't,token=ask,token=one,token=.,token=Responded,token=to,token=yours,token=.,token=No,token=worries,token=.,neutral
 target=general,username=bluejack,token=@andrewa121,token=We,token=needed,token=some,token=Ron,token=Paul,token=crazy,token=in,token=this,token=#debate,token=.,neutral
 target=general,username=mabraham1,token=True,token=or,token=false,token=$932M,token=dollars,token=.,token=#tweetdebate,token=#current,neutral
 target=mccain,username=gminks,token=mccain,token=-1,token=for,token=bringing,token=up,token=stupid,token=bear,token=study,token=AGAIN,token=#tweetdebate,negative
@@ -193,7 +193,7 @@ target=general,username=daveevans,token=@nohype,token=yes,token=is,token=polar,t
 target=general,username=NTWhite,token=#tweetdebate,token=McPain,token=:,token=we're,token=exporting,token=jobs,token=',token=cause,token=of,token=hi,token=biz,token=taxes,token=.,token=NOT,token=because,token=of,token=cheap,token=labor,token=?,token=Oh,token=geez,token=...,negative
 target=obama,username=damnneargenius,token=Obama,token=+1,token=for,token=laying,token=out,token=his,token=own,token=plan,token=accurately,token=and,token=rebutting,token=earmarks,token=#tweetdebate,positive
 target=obama,username=RobSample,token=",token=Face,token=it,token=Obama,token=is,token=going,token=to,token=win,token=regardless,token=of,token=debates,token=He,token=has,token=the,token=youth,token=voters,token=on,token=his,token=side,token=.,token=#current,token=#tweetdebate,token=",positive
-target=mccain,username=Christina Xu,token=",token=HOT,token=:,token=earmarks,token=http://buzztter.com/en/k/earmarks,token=and,token=mccain,token=is,token=#tweetdebate,token=",neutral
+target=mccain,username=Christina_Xu,token=",token=HOT,token=:,token=earmarks,token=http://buzztter.com/en/k/earmarks,token=and,token=mccain,token=is,token=#tweetdebate,token=",neutral
 target=general,username=damnneargenius,token=who,token=is,token=in,token=charge,token=of,token=the,token=reaction,token=audience,token=chart,token=??,token=#tweetdebate,token=#current,neutral
 target=mccain,username=ipapyrus,token=McCain,token=really,token=believes,token=earmarks,token=got,token=us,token=into,token=this,token=mess,token=and,token=tax,token=cuts,token=will,token=get,token=us,token=out,token=of,token=it,token=?,token=#tweetdebate,negative
 target=mccain,username=CarriBugbee,token=McCain,token=-,token=have,token=you,token=tried,token=buying,token=health,token=insurance,token=for,token=$5000,token=a,token=year,token=?,token=#tweetdebate,negative
@@ -245,7 +245,7 @@ target=both,username=themurmish,token=",token=#tweetdebate,token=Obama,token=rig
 target=obama,username=snooks56,token=+1,token=obama,token=for,token=mentioning,token=$4b,token=oil,token=co,token=tax,token=cuts,token=#tweetdebate,positive
 target=both,username=damnneargenius,token=#tweetdebate,token=Obama,token=is,token=insisting,token=that,token=McCain,token=back,token=up,token=his,token=claims,token=with,token=facts,token=.,positive
 target=mccain,username=aagha,token=McCain,token=-1,token=weird,token=smirking/laughing,token=#tweetdebate,negative
-target=general,username=Ken Booth,token=#tweetdebate,token=Word,token=of,token=the,token=night,token=:,token=FESTOONED,token=.,token=Luv,token=that,token=!,token=Use,token=that,token=all,token=day,token=tomorrow,token=at,token=PDX,token=Wordcamp,token=.,token=No,token=more,token=CSS,token=.,token=We'll,token=festoon,token=our,token=blogs,token=.,token=;-),neutral
+target=general,username=Ken_Booth,token=#tweetdebate,token=Word,token=of,token=the,token=night,token=:,token=FESTOONED,token=.,token=Luv,token=that,token=!,token=Use,token=that,token=all,token=day,token=tomorrow,token=at,token=PDX,token=Wordcamp,token=.,token=No,token=more,token=CSS,token=.,token=We'll,token=festoon,token=our,token=blogs,token=.,token=;-),neutral
 target=obama,username=sairy,token=@current,token=#current,token=Obama,token=is,token=stuttering,token=too,token=much,token=.,token=Sounds,token=like,token=Porky,token=Big,negative
 target=general,username=WazNeeni,token=Have,token=you,token=looked,token=at,token=the,token=#tweetdebate,token=at,token=the,token=top,token=of,token=home,token=screen,token=?,neutral
 target=general,username=daveevans,token=Financial,token=rescue,token=?,token=More,token=like,token=financial,token=bailout,token=!,token=#tweetdebate,negative
@@ -277,7 +277,7 @@ target=obama,username=arpit,token=New,token=electrical,token=grid,token=-,token=
 target=obama,username=nericksx,token=China,token=also,token=let,token=infants,token=drink,token=tainted,token=milk,token=do,token=we,token=REALLY,token=want,token=to,token=be,token=like,token=them,token=??,token=#debate08,token=#maccainshot,token=#obamashot,token=#tweetdebate,token=#current,negative
 target=general,username=Condoulo,token=",token=scoring,token=the,token=debate,token=on,token=twitter,token=#tweetdebate,token=tag,token=",neutral
 target=general,username=JeffLowe,token=slipped,token=that,token=in,token=#tweetdebate,negative
-target=mccain,username=Adam Zand,token=McCain,token=-3,token=another,token=personal,token=attack,token=#tweetdebate,negative
+target=mccain,username=Adam_Zand,token=McCain,token=-3,token=another,token=personal,token=attack,token=#tweetdebate,negative
 target=both,username=damnneargenius,token=+1,token=mccain,token=talking,token=about,token=how,token=far,token=obama,token=is,token=across,token=the,token=aisle,token=#tweetdebate,positive
 target=obama,username=daveevans,token=Obama,token=+3,token=for,token=having,token=most,token=liberal,token=voting,token=record,token=#tweetdebate,positive
 target=general,username=nericksx,token=",token=@sarking,token=Maybe,token=he,token=should,token=!,token=Earmarks,token=like,token=infrastructure,token=like,token=ROADS,token=and,token=BRIDGES,token=and,token=stuff,token=.",neutral
@@ -288,10 +288,10 @@ target=obama,username=francishopkins,token=",token=+5,token=Obama,token=for,toke
 target=mccain,username=themurmish,token=McCain,token=+3,token=for,token=good,token=sound,token=bite,token=about,token=reaching,token=so,token=far,token=across,token=the,token=aisle,token=from,token=that,token=far,token=left,token=#tweetdebate,positive
 target=mccain,username=naum,token=-2,token=McCain,token=for,token=redundancy,token=#tweetdebate,negative
 target=general,username=gminks,token=",token=on,token=a,token=cruise,token=ship,token=cruising,token=towards,token=ensenada,token=....,token=and,token=watching,token=#current,token=and,token=#tweetdebate,token=play,token=by,token=play,token=....,token=nice,token=",neutral
-target=mccain,username=Darnell Clayton,token=@current,token=#current,token=How,token=in,token=this,token=day,token=and,token=age,token=can,token=you,token=deny,token=help,token=to,token=anyone,token=who,token=wants,token=to,token=produce,token=alternative,token=fuel,token=-4,token=McCain,negative
+target=mccain,username=Darnell_Clayton,token=@current,token=#current,token=How,token=in,token=this,token=day,token=and,token=age,token=can,token=you,token=deny,token=help,token=to,token=anyone,token=who,token=wants,token=to,token=produce,token=alternative,token=fuel,token=-4,token=McCain,negative
 target=obama,username=PinkOliveFamily,token=#3,token=Obama,token=#tweetdebate,token=Obama,token=commits,token=to,token=broadband,token=for,token=rural,token=areas,token=.,token=thats,token=the,token=#1,token=priority,token=for,token=Coos,token=Co,token=.,token=NH,token=.,token=@blendahtom,token=@kramsey,positive
 target=general,username=starweaver,token=",token=#tweetdebate,token=How,token=many,token=people,token=know,token=what,token="",token=cost-plus,token="",token=contracts,token=are,token=?,token=I,token=wouldn't,token=know,token=if,token=I,token=hadn't,token=worked,token=for,token=construction-related,token=clients,token=.",negative
-target=both,username=Will Reynolds Young,token=McCain,token=-1,token=for,token=false,token=claims,token=on,token=Obama's,token=voting,token=record,token=.,token=#tweetdebate,negative
+target=both,username=Will_Reynolds_Young,token=McCain,token=-1,token=for,token=false,token=claims,token=on,token=Obama's,token=voting,token=record,token=.,token=#tweetdebate,negative
 target=general,username=janoss,token=#tweetdebate,neutral
 target=general,username=cmarlow480,token=",token=#tweetdebate,token=defence,token=contract,token=inefficiency,token=in,token=contracts,token=not,token=the,token=problem,token=a,token=symptom,token=warring,token=foreign,token=policy,token=is,token=the,token=REAL,token=problem,token=",negative
 target=obama,username=KenHUffman,token=",token=Unfortunately,token=Obama,token=didn't,token=answer,token=the,token=question,token=of,token=what,token=would,token=he,token=cut,token=...,token=#debate08,token=#tweetdebate,token=",negative
@@ -450,7 +450,7 @@ target=mccain,username=patrykbot,token=-2,token=McCain,token=for,token=saying,to
 target=general,username=EvilBert,token=""",token=I'm,token=a,token=Maverick,token="",token=#tweetdebate,token=#current,token=",neutral
 target=general,username=emlopez,token=#tweetdebate,token=McPain,token=:,token=I'm,token=proud,token=to,token=say,token=I've,token=got,token=a,token=good,token=partner,token=who,token=is,token=a,token=maverick,token=.,token=[,token=that's,token=ONE,token=way,token=to,token=describe,token=someone,token=who's,token=clueless,token=],negative
 target=general,username=starweaver,token=@current,token=Am,token=I,token=too,token=much,token=of,token=a,token=smartass,token=to,token=be,token=a,token=politician,token=?,token=#current,neutral
-target=mccain,username=Nicole Beauchemin,token=McCain,token=-2,token=for,token=saying,token=',token=were,token=winning,token=in,token=iraq,token=',token=i'm,token=pretty,token=sure,token=that's,token=not,token=true,token=#tweetdebate,negative
+target=mccain,username=Nicole_Beauchemin,token=McCain,token=-2,token=for,token=saying,token=',token=were,token=winning,token=in,token=iraq,token=',token=i'm,token=pretty,token=sure,token=that's,token=not,token=true,token=#tweetdebate,negative
 target=mccain,username=DominickEvans,token=Did,token=Mccain's,token=voice,token=just,token=crack,token=?,token=#current,token=#tweetdebate,neutral
 target=general,username=ethanbauley,token=",token=Not,token=being,token=mr,token=congeniality,token=is,token=a,token=BAD,token=thing,token=.,token=If,token=your,token=senate,token=won't,token=work,token=with,token=you,token=other,token=countries,token=won't,token=and,token=we,token=need,token=friends,token=#tweetdebate,token=",negative
 target=mccain,username=PJsMommy,token=McCain,token=-2,token=for,token=not,token=answering,token=the,token=question,token=#tweetdebate,negative
@@ -496,7 +496,7 @@ target=obama,username=emlopez,token=Obama,token=+1,token=on,token=timing,token=o
 target=general,username=Koalemos,token=@wrekehavoc,token=+3,token=to,token=wreke,token=for,token=humorous,token=asides,token=#tweetdebate,positive
 target=both,username=bradjodoin,token=retweet,token=Obama,token=+2,token=countering,token=that,token=the,token=issues,token=McCain,token=brought,token=up,token=don't,token=go,token=thru,token=his,token=subcommittee,token=#tweetdebate,positive
 target=both,username=ellekasey,token=Obama,token=+2,token=for,token=once,token=again,token=schooling,token=McCain,token=.,token=#tweetdebate,positive
-target=both,username=Dominick Evans,token=McCain,token=+2,token=for,token=pointing,token=out,token=that,token=Obama,token=hasn't,token=been,token=to,token=Iraq,token=.,token=#tweetdebate,positive
+target=both,username=Dominick_Evans,token=McCain,token=+2,token=for,token=pointing,token=out,token=that,token=Obama,token=hasn't,token=been,token=to,token=Iraq,token=.,token=#tweetdebate,positive
 target=general,username=VincentHorn,token=",token=#tweetdebate,token=Sen,token=O:,token=Surge,token=was,token=tactic,token=to,token=contain,token=damage,token=from,token=all,token=the,token=previous,token=mistakes,token=in,token=Iraq,token=.,token=John,token=you,token=talk,token=like,token=the,token=war,token=started,token=in,token=',token=01,token=!",neutral
 target=both,username=MrDelawareOhio,token=-1,token=for,token=obama,token=trying,token=to,token=ignore,token=the,token=fact,token=the,token=fact,token=that,token=mccain,token=has,token=been,token=a,token=lone,token=voice,token=calling,token=for,token=a,token=change,token=in,token=iraq,token=strategy,token=#tweetdebate,negative
 target=both,username=gregmcneilly,token=Mccain,token=-1,token=for,token=not,token=looking,token=at,token=Obama,token=when,token=Obama,token=is,token=looking,token=at,token=him,token=#tweetdebate,negative
@@ -666,7 +666,7 @@ target=obama,username=rgjo,token=#OBAMA,token=WITH,token=THE,token=SLAAAAAAMMM,t
 target=general,username=TarotByArwen,token=""",token=We,token=could,token=have,token=won,token=Vietnam,token=!"",token=#,token=Current,token=#debate08,token=#tweetdebate,token=",positive
 target=obama,username=ParandimeX,token=",token=Obama,token=+1,token=nice,token=come,token=back,token=with,token=bracelet,token=story,token=bk,token="",token=honor,token=all,token=the,token=service,token=prov,token="",token=&,token=ret,token=with,token=better,token=question,token=+2,token=#tweetdebate,token=",positive
 target=general,username=granleese,token=@BrianMcAlister,token=You,token=don't,token=say,token=that,token=out,token=loud,negative
-target=general,username=Mona Kasra,token=",token=It's,token=a,token=DEBATE,token=not,token=story,token=time,token=!,token=#tweetdebate,token=#current,token=#momocrats,token=",negative
+target=general,username=Mona_Kasra,token=",token=It's,token=a,token=DEBATE,token=not,token=story,token=time,token=!,token=#tweetdebate,token=#current,token=#momocrats,token=",negative
 target=obama,username=dianakuan,token=",token=Obama,token=+2,token=for,token="",token=I,token=have,token=a,token=bracelet,token=too,token=."",token=#tweetdebate,token=",positive
 target=obama,username=TheMacG33k,token=",token=Obama,token=+2,token=for,token=the,token=counter,token=story,token=don't,token=let,token=another,token=mother,token=go,token=through,token=this,token=#tweetdebate,token=",positive
 target=general,username=alpha_park,token=""",token=Yeah,token=well,token=I,token=have,token=a,token=necklace,token=and,token=2,token=anklets,token=!!"",token=#current,token=#debate08,token=#tweetdebate,token=",negative
@@ -702,7 +702,7 @@ target=both,username=nikiblack,token=#tweetdebate,token=McCain,token=seems,token
 target=general,username=RobinCollins,token=@snooks56,token=The,token=bracelet,token=wars,token=are,token=reminiscent,token=of,token=Danny,token=Glover,token=and,token=Mel,token=Gibson,token=comparing,token=scars,token=in,token=Lethal,token=Weapon,token=#current,token=#tweetdebate,negative
 target=general,username=thepete,token=#tweetdebate,token=Existential,token=???,token=John,token=McCamus,token=??,negative
 target=general,username=chuck006,token=Being,token=from,token=Germany,token=I,token=am,token=amazed,token=how,token=unemotional,token=the,token=debate,token=is,token=.,token=Ou,token=German,token=counterpart,token=is,token=much,token=wilder,token=#tweetdebate,neutral
-target=obama,username=Kathryn V Jones,token=Obama,token=+1,token=for,token=the,token=interesting,token=pronunciation,token=of,token=Pakistan,token=.,token=#tweetdebate,token=#debate08,positive
+target=obama,username=Kathryn_V_Jones,token=Obama,token=+1,token=for,token=the,token=interesting,token=pronunciation,token=of,token=Pakistan,token=.,token=#tweetdebate,token=#debate08,positive
 target=general,username=cgcumber,token=@current,token=straight,token=talk,token=!!!!,token=DRINKKK,token=!!!,token=BABY,token=DRINK,token=!!!,token=#current,neutral
 target=mccain,username=bookofjames,token=McCain,token=sound,token=bite,token=:,token=League,token=of,token=Democracies,token=.,token=Will,token=Supes,token=be,token=on,token=our,token=side,token=?,token=Are,token=they,token=going,token=to,token=fight,token=the,token=Axis,token=of,token=Evil,token=?,token=#tweetdebate,negative
 target=general,username=wahistorian,token=Aren't,token=we,token=talking,token=NATO,token=here,token=?,token=#tweetdebate,neutral
@@ -715,7 +715,7 @@ target=mccain,username=cadler,token=blinky's,token=back,token=!,token=(,token=ak
 target=mccain,username=RobinCollins,token=#tweetdebate,token=MCCain,token=Iranians,token=are,token=putting,token=lethal,token=IEDs,token=in,token=Iraq,token=.,negative
 target=mccain,username=InTheBurg,token=McCain's,token=gaffe,token=:,token=Iran,token=has,token=a,token=lousy,token=government,token=.,token=That's,token=some,token=good,token=int'l,token=diplomacy,token=!,token=#tweetdebate,negative
 target=general,username=pixel,token=#current,token=#tweetdebate,token=A,token=League,token=of,token=democracies,token=!!,neutral
-target=mccain,username=Cheryl Contee,token=McCain,token=+1,token=for,token=pointing,token=out,token=we,token=need,token=allies,token=in,token=handling,token=Iran,token=#tweetdebate,positive
+target=mccain,username=Cheryl_Contee,token=McCain,token=+1,token=for,token=pointing,token=out,token=we,token=need,token=allies,token=in,token=handling,token=Iran,token=#tweetdebate,positive
 target=general,username=crysharris,token=so,token=a,token=holocaust,token=caused,token=by,token=Iran,token=is,token=bad,token=but,token=what's,token=happening,token=in,token=Darfur,token=can,token=be,token=ignored,token=?,token=#tweetdebate,negative
 target=general,username=UltraNurd,token=",token=@current,token=If,token=I,token=were,token=running,token=I,token=would,token=try,token=to,token=blame,token=the,token=dog,token=or,token=global,token=warming,token=for,token=the,token=economic,token=failure,token=.,token=#current,token=",neutral
 target=mccain,username=gminks,token=McCain,token=mentions,token=existentialism,token=and,token=the,token=French,token=in,token=the,token=same,token=statement,token=.,token=Irony,token=.,token=#tweetdebate,negative
@@ -750,7 +750,7 @@ target=general,username=Condoulo,token=",token=OK,token=.......,token=what,token
 target=both,username=chadwright,token=+1,token=pts,token=for,token=McCain,token=going,token=after,token=Obama,token=for,token=talking,token=with,token=evil,token=leaders,token=without,token=preconditions,token=.,token=#tweetdebate,positive
 target=general,username=colinsurprenant,token=Good,token=God,token=can,token=we,token=STOP,token=invading,token=other,token=countries,token=?!,token=#tweetdebate,token=#current,token=#debate08,negative
 target=mccain,username=mcancino,token=",token=-1,token=mccain,token=nobody,token=understands,token=what,token=preconditions,token=are,token=#tweetdebate,token=",negative
-target=general,username=Chris Abraham,token=@janoss,token=-,token=It,token=doesn't,token=have,token=anything,token=to,token=do,token=with,token=his,token=preparations,token=for,token=this,token=debate,token=?,neutral
+target=general,username=Chris_Abraham,token=@janoss,token=-,token=It,token=doesn't,token=have,token=anything,token=to,token=do,token=with,token=his,token=preparations,token=for,token=this,token=debate,token=?,neutral
 target=both,username=blakeparsons,token=-3,token=McCain,token=for,token=mispronounce,token=of,token=world,token=leader's,token=name,token=.,token=-3,token=Obama,token=for,token=trying,token=to,token=correct,token=.,token=#tweetdebate,negative
 target=general,username=snowdeal,token=@current,token=keep,token=up,token=the,token=good,token=work,token=..,token=I,token=bet,token=your,token=getting,token=slammed,positive
 target=mccain,username=cityelf,token=McCain,token=-3,token=for,token=propaganda,token=platform,token=rubbish,token=.,token=What,token=an,token=arrogant,token=asshole,token=are,token=you,token=John,token=?!,token=#tweetdebate,negative
@@ -778,7 +778,7 @@ target=general,username=BigToys,token=@current,token=#current,token=I,token=don'
 target=both,username=QueenMayhem,token=Obama,token=+3,token=for,token=using,token=McCain's,token=advisers,token=against,token=him,token=.,token=#tweetdebate,positive
 target=obama,username=craw4d,token=+3,token=Obama,token=sound,token=bite,token=:,token=it,token=doesn't,token=mean,token=you,token=invite,token=them,token=for,token=tea,token=#tweetdebate,positive
 target=mccain,username=DonIrvine,token=",token=@cmarlow480,token=when,token=you,token=get,token=as,token=old,token=as,token=McCain,token=everything,token=is,token=supported,token=with,token=a,token=story,token=#tweetdebate,token=",negative
-target=obama,username=Dana Loesch,token=",token=+1,token=Obama,token=-,token=acknowleding,token=that,token=he,token=was,token=called,token="",token=naive,token="",token=#tweetdebate,token=",positive
+target=obama,username=Dana_Loesch,token=",token=+1,token=Obama,token=-,token=acknowleding,token=that,token=he,token=was,token=called,token="",token=naive,token="",token=#tweetdebate,token=",positive
 target=obama,username=davidweiner,token=+3,token=Obama,token=There,token=is,token=a,token=difference,token=between,token=pre-conditions,token=and,token=preparation,token=#tweetdebate,token=#,token=current,positive
 target=obama,username=seamusspeaks,token=#obamashot,token=everytime,token=i,token=get,token=invited,token=over,token=for,token=tea,token=#tweetdebate,neutral
 target=general,username=RiskAverse,token=Why,token=do,token=Republicans,token=do,token=that,token=smirk,token=?,token=It's,token=inherently,token=insulting,token=.,token=#tweetdebate,negative

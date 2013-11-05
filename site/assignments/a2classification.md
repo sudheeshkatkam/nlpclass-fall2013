@@ -192,7 +192,7 @@ nlp.a2.NaiveBayesModel[Label, Feature, Value]
 that extends
 
 {% highlight scala %}
-nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]
+nlpclass.Classifier[Label, Feature, Value]
 {% endhighlight %}
 
 The `NaiveBayesModel` class will contain your naive Bayes implementation.  It requires a method:
@@ -210,7 +210,7 @@ class NaiveBayesModel[Label, Feature, Value](
   labels: Set[Label],
   pLabel: ProbabilityDistributionToImplement[Label],
   pValue: Map[Feature, ConditionalProbabilityDistributionToImplement[Label, Value]])
-  extends NaiveBayesModelToImplement[Label, Feature, Value]
+  extends Classifier[Label, Feature, Value]
 {% endhighlight %}
 
 When trained on the tennis [training file](https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt), you should get the following behavior:
@@ -239,13 +239,13 @@ nlp.a2.UnsmoothedNaiveBayesTrainer[Label, Feature, Value]
 that extends
 
 {% highlight scala %}
-nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]
+nlpclass.ClassifierTrainer[Label, Feature, Value]
 {% endhighlight %}
 
 The `UnsmoothedNaiveBayesTrainer` class requires a method:
 
 {% highlight scala %}
-def train(instances: Vector[(Label, Vector[(Feature, Value)])]): NaiveBayesModelToImplement[Label, Feature, Value]
+def train(instances: Vector[(Label, Vector[(Feature, Value)])]): Classifier[Label, Feature, Value]
 {% endhighlight %}
 
 The `train` method takes a Vector of labeled instances, uses those instances to calculate probability distributions (without smoothing, of course), and then instantiates a `NaiveBayesModel` to be returned.  
@@ -280,14 +280,14 @@ nlp.a2.NaiveBayesScorer
 that extends
 
 {% highlight scala %}
-nlpclass.NaiveBayesScorerToImplement
+nlpclass.ClassifierScorerToImplement
 {% endhighlight %}
 
 The `NaiveBayesScorer` class requires a method:
 
 {% highlight scala %}
 def score[Label, Feature, Value](
-    naiveBayesModel: NaiveBayesModelToImplement[Label, Feature, Value],
+    naiveBayesModel: Classifier[Label, Feature, Value],
     testInstances: Vector[(Label, Vector[(Feature, Value)])],
     positveLabel: Label)
 {% endhighlight %}
@@ -364,7 +364,7 @@ First, you will have to extend the trait `com.typesafe.scalalogging.log4j.Loggin
 import com.typesafe.scalalogging.log4j.Logging
 
 class NaiveBayesModel[Label, Feature, Value](...)
-  extends NaiveBayesModelToImplement[Label, Feature, Value]
+  extends Classifier[Label, Feature, Value]
   with Logging
 {% endhighlight %}
 
@@ -509,7 +509,7 @@ Here, L is the set of labels, like {V, N} or {yes, no}, and |L| is the size of t
 
 **Part (b) [20 pts].** Implementation. 
 
-Similar to what you did for [Problem 2](#problem_2__implement_basic_naive_bayes_30_pts), you should create a class {% highlight scala %}nlp.a2.AddLambdaNaiveBayesTrainer[Label, Feature, Value]{% endhighlight %} that extends {% highlight scala %}nlpclass.NaiveBayesTrainerToImplement[Label, Feature, Value]{% endhighlight %}
+Similar to what you did for [Problem 2](#problem_2__implement_basic_naive_bayes_30_pts), you should create a class {% highlight scala %}nlp.a2.AddLambdaNaiveBayesTrainer[Label, Feature, Value]{% endhighlight %} that extends {% highlight scala %}nlpclass.ClassifierTrainer[Label, Feature, Value]{% endhighlight %}
 
 Again, you will need to implement the `train` method, but this time it should perform smoothing on the training data.  The λ class-level parameter should be configurable.
 
@@ -621,7 +621,7 @@ Since multiplying numbers becomes addition of logarithms values, when determinin
 
 Create a new class {% highlight scala %}nlp.a2.LogNaiveBayesModel[Label, Feature, Value]{% endhighlight %} 
 
-that, like the previous version, extends {% highlight scala %}nlpclass.NaiveBayesModelToImplement[Label, Feature, Value]{% endhighlight %}
+that, like the previous version, extends {% highlight scala %}nlpclass.Classifier[Label, Feature, Value]{% endhighlight %}
 
 As before, you will have to implement the `predict` method: {% highlight scala %}def predict(features: Vector[(Feature, Value)]): Label{% endhighlight %}
 
@@ -681,9 +681,9 @@ You may call your implementation class whatever you want (maybe `PpaFeatureExten
 
 In order to make use of your `FeatureExtender` class, you will need to update your `NaiveBayesModel` and `NaiveBayesTrainer` implementations (as well as their `Log` versions from Problem 4) to store an additional field of type `FeatureExtender[Feature, Label]`.  Your trainer requires this field so that it can adjust the features of any training instances that it sees as it counts for the model.  It also needs the field so that it can give it as an argument to `NaiveBayesModel` during construction.  The model needs the field so that it can adjust the features of a instance during prediction. 
 
-For command-line use, add an option `--extend` to `NaiveBayes` that takes either `true` or `false` as an argument.  If `true`, then the `main` method should instantiate your FeatureExtender and pass it to the trainer.  If `false`, or if the option is not present, you should, instead, instantiate `nlpclass.NoOpFeatureExtender` and pass *it* to the trainer.  `NoOpFeatureExtender` is a `FeatureExtender` implementation that does not change the feature it is given.  (*Note:* For a real implementation you would likely have different feature extenders that could be specified from the command line option, but, for the sake of grading, you will only have one implementaiton available from the `--extend` option).  We should be able to run your classifier like this:
+For command-line use, add an option `--extend` to `NaiveBayes` that takes either a key indicating a specific FeatureExtender to use, or "none", indicating that no extended features should be used.  If a key is given, then the `main` method should instantiate the FeatureExtender specific to this key and pass it to the trainer.  If "none", or if the option is not present, you should, instead, instantiate `nlpclass.NoOpFeatureExtender` and pass *it* to the trainer.  `NoOpFeatureExtender` is a `FeatureExtender` implementation that does not change the feature it is given.  For this assignment, you will have the key "ppa" point to the `FeatureExtender` you create specifically for the ppa dataset.  We should be able to run your classifier like this:
 
-    $ sbt "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V --lambda 1.0 --log true --extend true"
+    $ sbt "run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V --lambda 1.0 --log true --extend ppa"
 
 To keep your code modular, you may want to create a variety of `FeatureExtender` implementations that each focus on a subset of useful features: one for number features, one for lemma features, one for wordshape feature, etc.  This could be useful during testing when you want to easily try different combinations of features.  To make it easy to combine these separate implementations, I have created a class `CompositeFeatureExtender` (which is itself a `FeatureExtender`) that will compose separate other `FeatureExtender`s into one `FeatureExtender`:
 
@@ -695,9 +695,9 @@ val featureExtender =
     new WordShapeFeatureExtender()))
 {% endhighlight %}
 
-You should come up with at least five new features, but are encouraged to do much more. Be creative!
+> **Written answer.** Come up with at least five **new** feature extensions.  You can implement the feature extensions described here, but you must come up with five novel extensions on your own that are not just variants of each other.  Be creative!  Describe five of the features you added, and why you think they would be useful.
 
-> **Written answer.** Describe five of the features you added, and why you think they would be useful.
+
 
 **Tip.** Some resources have been imported for you:
 
