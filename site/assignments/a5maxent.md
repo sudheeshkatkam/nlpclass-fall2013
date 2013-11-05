@@ -51,7 +51,7 @@ Warning: there is a mix of software and resources in this homework, and you shou
 
 
 
-## Problem 1: Lexicon Ratio Sentiment Analysis Baseline
+## Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)
 
 The first thing that you will implement is an extremely simple baseline classifier for deciding whether a tweet has positive, negative, or neutral sentiment.  The classifier will make use a [polarity lexicon](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/opinion-lexicon) consisting of a set of words indicating *positive* sentiment and a set of words indicating *negative* sentiment.  This classifier will compare tokens in the tweet against the lexicon and will judge a tweet to be *positive* if it has more positive words than negative words, *negative* if it has more negative than positive words, and *neutral* if it has the same number of positive and negative words.
 
@@ -86,7 +86,7 @@ A couple notes:
 
 
 
-## Problem 2: Sentiment Analysis with a Maximum Entropy Model
+## Problem 2: Sentiment Analysis with a Maximum Entropy Model (20 points)
 
 We will now attempt to improve our sentiment classifier by actually using training data.  To accomplish this, I have provided you a few useful classes that wrap functionality in the [OpenNLP MaxEnt](http://opennlp.apache.org/) library:
 
@@ -176,7 +176,7 @@ Experiment with different values for `--lambda` and see how it affects the accur
 > **Written Answer (b):** Use the hcr dev set to find a lambda value that works well.  Report that that value and the accuracy it produces.  (We will be using this value below).
 
 
-## Problem 3: Extended Features for Sentiment Analysis
+## Problem 3: Extended Features for Sentiment Analysis (60 points)
 
 Similarly to what we did in Assignment 2 with the extended feature set for our naive Bayes model of prepositional phrase attachment, we will implement extended features for sentiment classification.
 
@@ -189,7 +189,7 @@ For this assignment, you will create a `FeatureExtender` specific to the hcr dat
 As with Assignment 2, your hcr `FeatureExtender` should add various kinds of features.  Here are several ideas:
 
 1. Lower-cased versions of all tokens
-2. Features that make use of the polarity lexicons seen in Problem 2.  You should, again, pass the positive and negative files into the classifier on the command line via the `--pos` and `--neg` options.
+2. Features that make use of the polarity lexicons seen in Problem 1.  You should, again, pass the positive and negative files into the classifier on the command line via the `--pos` and `--neg` options.
 3. Some analysis of the username.  E.g. contains "gop" vs. "dem"
 4. You might try conditioning some new features based on the "target" feature.  For example: 
   * `if(target == "obama" && username.contains("gop"))` add a feature `user-target=gop-obama`
