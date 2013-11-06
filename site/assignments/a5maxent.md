@@ -23,7 +23,7 @@ There are 100 points total in this assignment. Point values for each problem/sub
 
 The classes used here will extend traits that are found in the `nlpclass-fall2013` dependency.  In order to get these updates, you will need to edit your root `build.sbt` file and update the version of the dependency:
 
-    libraryDependencies += "com.utcompling" % "nlpclass-fall2013_2.10" % "0007" changing()
+    libraryDependencies += "com.utcompling" % "nlpclass-fall2013_2.10" % "0008" changing()
 
 If you use Eclipse, then after you modify the dependency you will once again have to run `sbt "eclipse with-source=true"` and refresh your project in Eclipse.
 
