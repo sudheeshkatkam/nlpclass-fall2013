@@ -71,7 +71,7 @@ trait NaiveBayesTrainerToImplement[Label, Feature, Value] extends ClassifierTrai
 /** TODO: REMOVE THIS */
 trait NaiveBayesScorerToImplement {
   def score[Label, Feature, Value](
-    classifier: Classifier[Label, Feature, Value],
+    naiveBayesModel: NaiveBayesModelToImplement[Label, Feature, Value],
     testInstances: Vector[(Label, Vector[(Feature, Value)])],
     positveLabel: Label)
 }

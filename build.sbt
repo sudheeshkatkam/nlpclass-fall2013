@@ -4,7 +4,7 @@ name := "nlpclass-fall2013"
 
 organization := "com.utcompling"
 
-version := "0007"
+version := "0008"
 
 scalaVersion := "2.10.2"
 
