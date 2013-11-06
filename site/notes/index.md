@@ -6,7 +6,7 @@ root: "../"
 
 ## Lecture Notes
 
-<table>
+<table style="font-size: 11pt">
 	<tr><td style="border-bottom: 0px" width="20%">Aug 29, 2013</td>  <td style="border-bottom: 0px">Course Introduction    <a href="intro.pdf">(pdf)</a></td></tr>
 	<tr><td style="border-bottom: 0px">Sept 10, 2013</td>             <td style="border-bottom: 0px">Probability            <a href="prob.pdf">(pdf)</a></td></tr>
 	<tr><td style="border-bottom: 0px">Sept 12, 2013</td>             <td style="border-bottom: 0px">Classification         <a href="classify.pdf">(pdf)</a></td></tr>
