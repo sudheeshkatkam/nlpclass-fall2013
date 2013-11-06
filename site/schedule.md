@@ -265,7 +265,7 @@ Materials
 <span style="color: red">Assignments</span>
 
 * [Assignment 4: HMMs]({{ page.root }}assignments/a4.html), **Due (programming submitted by noon, written by 2pm)**
-* [Assignment 5: Sentiment]({{ page.root }}assignments/a5.html), Assigned
+* [Assignment 5: MaxEnt]({{ page.root }}assignments/a5.html), Assigned
 
 
 
@@ -307,9 +307,6 @@ Topics
 
 Materials
 
-<span style="color: red">Assignments</span>
-
-* [Assignment 5: Sentiment]({{ page.root }}assignments/a5.html), **Due (programming submitted by noon, written by 2pm)**
 
 
 ###Thursday, Nov 14
@@ -327,6 +324,7 @@ Materials
 
 <span style="color: red">Assignments</span>
 
+* [Assignment 5: MaxEnt]({{ page.root }}assignments/a5.html), **Due (programming submitted by noon, written by 2pm)**
 * [Assignment 6: Parsing]({{ page.root }}assignments/a6.html), Assigned
 
 

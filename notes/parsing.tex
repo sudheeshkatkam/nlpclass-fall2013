@@ -257,20 +257,22 @@
 	\end{itemize}
 
 	\begin{figure}[h]
-		\begin{subfigure}[b]{0.4\textwidth}
+	    \centering
+		\begin{subfigure}[t]{0.4\textwidth}
 		  \begin{small}
 			\Tree 
 			  [.S  
 			    [.NP$_{\text{[num=$x$]}}$ 
-			      [.D$_{\text{[num=$x$]}}$\\\\\\D$_{\text{[num=z]}}$ the ] 
+			      [.D$_{\text{[num=$x$]}}$\\\\\\D$_{\text{[num=$z$]}}$ the ] 
 			      [.N$_{\text{[num=$x$]}}$\\\\\\N$_{\text{[num=sg]}}$ dog ] ] 
-			    [.VP$_{\text{[num=$x$]}}$ 
+			    [.VP$_{\text{[num=$x$]}}$  
 			      [.V$_{\text{[num=$x$]}}$\\\\\\V$_{\text{[num=sg]}}$ barks ] ] 
 			  ]
 		  \end{small}
 		  \caption{Need to unify underspecified features in the rules with secified features in the N and V terminal rules}
 		\end{subfigure}
-		\begin{subfigure}[b]{0.3\textwidth}
+		~~~~~~  ~~~~~
+		\begin{subfigure}[t]{0.3\textwidth}
 		  \begin{small}
 			\Tree 
 			  [.S  
@@ -301,6 +303,11 @@
 	  \item Problematic since we want to say that every sentence is \textit{possible}, even if it's not likely
 	\end{itemize}
   \item A PCFG is a CFG in which, for every non-terminal, we have a probability distribution over possible productions
+  \item In other words, for each non-terminal A, we have a distribution $p(\beta \mid A)$
+	\begin{itemize}
+	  \item The probability that, given a parent non-terminal A, we choose the production rule that yields $\beta$
+	  \item We can alternatively write this as $p(A \ra \beta)$
+	\end{itemize}
 \end{itemize}
 
 	\begin{center}
@@ -311,19 +318,101 @@
 	  NP & $\ra$ & N        &  0.2  &&  N & $\ra$ & \textit{man}        & 0.5 \\
 	  NP & $\ra$ & D N PP   &  0.1  &&  N & $\ra$ & \textit{dog}        & 0.4 \\
 	     &       &          &       &&  N & $\ra$ & \textit{telescope}  & 0.1 \\
-	  VP & $\ra$ & VP NP    &  0.4  &&    &       &                     &     \\
-	  VP & $\ra$ & VP       &  0.4  &&  V & $\ra$ & \textit{barks}      & 0.2 \\
+	  VP & $\ra$ & V NP     &  0.4  &&    &       &                     &     \\
+	  VP & $\ra$ & V        &  0.4  &&  V & $\ra$ & \textit{barks}      & 0.2 \\
 	  VP & $\ra$ & V NP PP  &  0.2  &&  V & $\ra$ & \textit{walks}      & 0.4 \\
 	     &       &          &       &&  V & $\ra$ & \textit{saw}        & 0.4
 	\end{tabular}
 	\end{center}
 
+
+Estimating parameters (MLE)
+
+\begin{itemize}
+  \item We can calculate the MLE parameters of a PCFG model by counting productions in a corpus of parse trees
+  \item Assume these three sentences comprise a corpus:
+	\begin{figure}[h]
+	        \centering
+	        \begin{subfigure}[b]{0.3\textwidth}
+	          \begin{small} \Tree [.S [.NP [.D the ] [.N dog ] ] [.VP [.V ran ] ] ] \end{small}
+	        \end{subfigure}
+	        \begin{subfigure}[b]{0.3\textwidth}
+	          \begin{small} \Tree [.S  [.NP [.D the ] [.N man ] ] [.VP [.V walked ] [.NP [.D a ] [.N dog ] ] ] ] \end{small}
+	        \end{subfigure}
+	        \begin{subfigure}[b]{0.3\textwidth}
+	          \begin{small} \Tree [.S  [.NP [.D the ] [.N man ] ] [.VP [.V walked ] ] ] \end{small}
+	        \end{subfigure}
+	\end{figure}
+  \item We estimate by counting up all productions in the corpus and normalizing
+    \begin{itemize}
+      \item Since every non-terminal $A$ must produce \textit{something}, we can simplify slightly
+    \end{itemize}
+    \[ p(\beta \mid A) = \frac{C(A \ra\beta)}{\sum_{\beta' \in P} C(A \ra\beta')} = \frac{C(A \ra\beta)}{C(A)} \]
+  \item Estimates from the above corpus of trees yield: \vspace{-3mm}
+	\begin{center}
+	\begin{tabular}{lllcc p{13mm} lllcc}
+	     &       &          & $C(A\ra\beta)$ & $p(\beta\mid A)$ &&    &       &                   & $C(A\ra\beta)$ & $p(\beta\mid A)$ \\
+	  \hline
+	  S  & $\ra$ & NP VP    &  3             & 1.0              &&  D & $\ra$ & \textit{the}      & 3              & 0.75             \\
+	     &       &          &                &                  &&  D & $\ra$ & \textit{a}        & 1              & 0.25             \\
+	  NP & $\ra$ & D N      &  4             & 1.0              &&    &       &                   &                &                  \\
+	     &       &          &                &                  &&  N & $\ra$ & \textit{dog}      & 2              & 0.5              \\
+	  VP & $\ra$ & V        &  2             & 0.66             &&  N & $\ra$ & \textit{man}      & 2              & 0.5              \\
+	  VP & $\ra$ & V NP     &  1             & 0.33             \\
+	     &       &          &                &                  &&  V & $\ra$ & \textit{walked}   & 2              & 0.66             \\
+	     &       &          &                &                  &&  V & $\ra$ & \textit{ran}      & 1              & 0.33             
+	\end{tabular}
+	\end{center}
+\end{itemize}
+
+
+Add-$\lambda$ smoothing
+
+\begin{itemize}
+  \item Same as always (where $P$ is the set of all possible $\beta$s produced):
+    \[ p(\beta \mid A) 
+      = \frac{C(A \ra\beta)+\lambda}{\sum_{\beta' \in P} (C(A \ra\beta')+\lambda)} 
+      = \frac{C(A \ra\beta)+\lambda}{(\sum_{\beta' \in P} C(A \ra\beta'))+\lambda|P|} 
+      = \frac{C(A \ra\beta)+\lambda}{C(A)+\lambda|P|} \]
+\end{itemize}
+
+
+Likelihood of a (parsed) sentence
+
 \begin{itemize}
   \item We can use this to calculate the likelihood of seeing a particular parse of a particular sentence
-	\begin{itemize}
-	  \item Multiply the probabilities of all productions found in the tree
-	\end{itemize}
+  \item Multiply the probabilities of all productions found in the tree
+  \item Assume this tree:
+	\begin{small} \Tree [.S [.NP [.D the ] [.N dog ] ] [.VP [.V walked ] [.NP [.D a ] [.N man ] ] ] ] \end{small}
+  \item Count up the number of each production in the tree, and get the probability of each production from the above table
+	\begin{center}
+	\begin{tabular}{lllcc p{13mm} lllcc}
+	     &       &          & count & prob  &&    &       &                   & count & prob \\
+	  \hline
+	  S  & $\ra$ & NP VP    &  1    & 1.0   &&  D & $\ra$ & \textit{the}      & 1     & 0.75             \\
+	     &       &          &       &       &&  D & $\ra$ & \textit{a}        & 1     & 0.25             \\
+	  NP & $\ra$ & D N      &  2    & 1.0   &&    &       &                   &       &                  \\
+	     &       &          &       &       &&  N & $\ra$ & \textit{dog}      & 1     & 0.5              \\
+	  VP & $\ra$ & V NP     &  1    & 0.33  &&  N & $\ra$ & \textit{man}      & 1     & 0.5              \\
+	     &       &          &       &       \\
+	     &       &          &       &       &&  V & $\ra$ & \textit{walked}   & 1     & 0.66             \\
+	\end{tabular}
+	\end{center}
+  \item Find the product:
+    \begin{align*}
+      & p(\text{S}\ra\text{NP VP}) \cdot
+        p(\text{NP}\ra\text{D N})^{2} \cdot
+        p(\text{VP}\ra\text{V NP}) \cdot
+        p(\text{D}\ra\textit{the}) \cdot
+        p(\text{D}\ra\textit{a}) \cdot
+        p(\text{N}\ra\textit{dog}) \\&~~~\cdot
+        p(\text{N}\ra\textit{man}) \cdot
+        p(\text{V}\ra\textit{walked}) \\
+      &= 1.0 \cdot 1.0^{2} \cdot 0.33 \cdot 0.75 \cdot 0.25 \cdot 0.5 \cdot 0.5 \cdot 0.66
+    \end{align*}
+	\item Note that the $p(\text{NP}\ra\text{D N})$ term is squared since the production ``$\text{NP}\ra\text{D N}$'' appears twice in the tree
 \end{itemize}
+
 
 
 
@@ -334,81 +423,102 @@
   \item Production rules are independent
   \item These two sentence have \textit{exactly} the same likelihood
 	\begin{figure}[h]
-	        %\centering
-	        \begin{subfigure}[b]{0.5\textwidth}
-	          \begin{small}
-	                \Tree 
-					  [.S  
-					    [.NP [.D the ] [.N \textbf{dog} ] ] 
-					    [.VP 
-					      [.V bit ] 
-					      [.NP [.D a ] [.N \textbf{man} ] ] 
-					    ] 
-					  ]
-			  \end{small}
-	        \end{subfigure}
-	        \begin{subfigure}[b]{0.3\textwidth}
-	          \begin{small}
-	                \Tree 
-					  [.S  
-					    [.NP [.D the ] [.N \textbf{man} ] ] 
-					    [.VP 
-					      [.V bit ] 
-					      [.NP 
-					        [.D a ] [.N \textbf{dog} ] 
-					      ] 
-					    ] 
-					  ]
-			  \end{small}
-	        \end{subfigure}
+        \centering
+        \begin{subfigure}[b]{0.5\textwidth}
+		  \begin{small} \Tree [.S [.NP [.D the ] [.N \textbf{dog} ] ] [.VP [.V bit ] [.NP [.D a ] [.N \textbf{man} ] ] ] ] \end{small}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.3\textwidth}
+		  \begin{small} \Tree [.S [.NP [.D the ] [.N \textbf{man} ] ] [.VP [.V bit ] [.NP [.D a ] [.N \textbf{dog} ] ] ] ] \end{small}
+        \end{subfigure}
 	\end{figure}
+  \item Since it's a product, we can swap two productions without changing the result
+	\begin{small}
+    \[
+       p(\text{S}\ra\text{NP VP}) \cdot
+        p(\text{NP}\ra\text{D N})^{2} \cdot
+        p(\text{VP}\ra\text{V NP}) \cdot
+        p(\text{D}\ra\textit{the}) \cdot
+        p(\text{D}\ra\textit{a}) \cdot
+        \mathbf{p(\textbf{N}\ra\textbf{\textit{dog}})} \cdot
+        \mathbf{p(\textbf{N}\ra\textbf{\textit{man}})} \cdot
+        p(\text{V}\ra\textit{bit}) 
+        \vspace{-2.5mm}\]
+        \hspace{4.5in}$\mathbf{\downarrow}$\hspace{0.8in}$\mathbf{\downarrow}$
+        \vspace{-2mm}
+    \[ p(\text{S}\ra\text{NP VP}) \cdot
+        p(\text{NP}\ra\text{D N})^{2} \cdot
+        p(\text{VP}\ra\text{V NP}) \cdot
+        p(\text{D}\ra\textit{the}) \cdot
+        p(\text{D}\ra\textit{a}) \cdot
+        \mathbf{p(\textbf{N}\ra\textbf{\textit{man}})} \cdot
+        \mathbf{p(\textbf{N}\ra\textbf{\textit{dog}})} \cdot
+        p(\text{V}\ra\textit{bit}) \]
+    \end{small}
   \item Solution: lexicalize the grammar
   \item Subcategorize rules with their head words:
-    \begin{verbatim}
-      Ndog -> dog
-      NPdog -> D Ndog
-      Nman -> man
-      NPman -> D Nman
-
-      Vbit -> bit
-      VPbit -> Vbit NPman
-      VPbit -> Vbit NPdog
-      X VPbit -> Vbit
-    \end{verbatim}
+	\begin{center}
+	\begin{tabular}{llll p{18mm} llll}
+	  S  & $\ra$ & NP(man) VP(bite)            &  0.3  &&  D & $\ra$ & \textit{the}        & 0.6 \\
+	  S  & $\ra$ & NP(dog) VP(bite)            &  0.7  &&  D & $\ra$ & \textit{a}          & 0.4 \\
+	  S$^1$  & $\ra$ & NP(sandwich) VP(bite)       &  0.0  &&    &       &                     &     \\
+	     &       &                             &       &&    &       &                     &     \\
+	  NP(man)$^2$ & $\ra$ & D N(man)               &  0.8  &&  N(man)$^2$ & $\ra$ & \textit{man}   & 0.7 \\
+	  NP(man)$^2$ & $\ra$ & N(man)                 &  0.2  &&  N(man)$^2$ & $\ra$ & \textit{men}   & 0.3 \\
+	     &       &                             &       &&    &       &                     &     \\
+	  NP(dog)$^3$ & $\ra$ & D N(dog)               &  0.4  &&  N(dog)$^3$ & $\ra$ & \textit{dog}   & 0.2 \\
+	  NP(dog)$^3$ & $\ra$ & N(dog)                 &  0.6  &&  N(dog)$^3$ & $\ra$ & \textit{dogs}  & 0.8 \\
+	     &       &                             &       &&    &       &                     &     \\
+	  VP(bite)$^4$ & $\ra$ & V(bite) NP(man)       &  0.2  &&  V(bite) & $\ra$ & \textit{bite}    & 0.3 \\
+	  VP(bite)$^4$ & $\ra$ & V(bite) NP(dog)       &  0.1  &&  V(bite) & $\ra$ & \textit{bites}   & 0.2 \\
+	  VP(bite)$^4$ & $\ra$ & V(bite) NP(sandwich)  &  0.7  &&  V(bite) & $\ra$ & \textit{biting}  & 0.1 \\
+	  VP(bite)$^5$ & $\ra$ & V(bite)               &  0.0  &&  V(bite) & $\ra$ & \textit{bit}     & 0.4 \\
+	\end{tabular}
+	\end{center}
+  \begin{itemize}
+    \item {}$^1$Sandwiches don't bite
+    \item {}$^2$Men are likely talked about in the singular
+    \item {}$^3$Dogs are likely talked about in the plural
+    \item {}$^4$Men are bitten infrequently, dogs are bitten less frequently, and sandwiches are bitten often.
+    \item {}$^5$``Biting'' can't be intransitive
+  \end{itemize}
 
 	\begin{figure}[h]
-	        %\centering
+	        \centering
 	        \begin{subfigure}[b]{0.5\textwidth}
 	          \begin{small}
 	                \Tree 
 					  [.S  
-					    [.NPdog [.D the ] [.Ndog \textbf{dog} ] ] 
-					    [.VPbit 
-					      [.Vbit bit ] 
-					      [.NPman [.D a ] [.Nman \textbf{man} ] ] 
+					    [.NP(dog) [.D the ] [.N(dog) \textbf{dog} ] ] 
+					    [.VP(bite) 
+					      [.V(bite) bit ] 
+					      [.NP(man) [.D a ] [.N(man) \textbf{man} ] ] 
 					    ] 
 					  ]
 			  \end{small}
+			  \caption{more likely}
 	        \end{subfigure}
 	        \begin{subfigure}[b]{0.3\textwidth}
 	          \begin{small}
 	                \Tree 
 					  [.S  
-					    [.NPman [.D the ] [.Nman \textbf{man} ] ] 
-					    [.VPbit 
-					      [.Vbit bit ] 
-					      [.NPdog 
-					        [.D a ] [.Ndog \textbf{dog} ] 
+					    [.NP(man) [.D the ] [.N(man) \textbf{man} ] ] 
+					    [.VP(bite) 
+					      [.V(bite) bit ] 
+					      [.NP(dog) 
+					        [.D a ] [.N(dog) \textbf{dog} ] 
 					      ] 
 					    ] 
 					  ]
 			  \end{small}
+			  \caption{unlikely}
 	        \end{subfigure}
 	\end{figure}
+
+  \item Downside: increased sparsity!
 \end{itemize}
 
 
-
+\newpage
 \section{Generative Model}
 
 \begin{itemize}
@@ -426,7 +536,11 @@
 
 
 
-\section{N-Best Parsers}
+\section{N-Best Parses}
+
+Useful for providing multiple possiblities to down-stream applications.
+
+Can be fed into a discriminative re-ranker that uses something like MaxEnt with features built from linguistic knowlege to re-score the parses.  The discriminative model isn't use for \textit{parsing}, just to calculate the likelihoods of the parses that were found.
 
 
 
