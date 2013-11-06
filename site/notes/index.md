@@ -6,10 +6,12 @@ root: "../"
 
 ## Lecture Notes
 
-Aug 29, 2013 - Course Introduction [(pdf)](intro.pdf)  
-Sept 10, 2013 - Probability [(pdf)](prob.pdf)  
-Sept 12, 2013 - Classification [(pdf)](classify.pdf)  
-Sept 24, 2013 - N-Grams [(pdf)](ngrams.pdf)  
-Oct 8, 2013 - Hidden Markov Models [(pdf)](hmm.pdf)  
-Oct 24, 2013 - Maximum Entropy Models [(pdf)](maxent.pdf)  
-Nov 5, 2013 - Parsing [(pdf)](parsing.pdf)  
+<table>
+	<tr><td style="border-bottom: 0px" width="20%">Aug 29, 2013</td>  <td style="border-bottom: 0px">Course Introduction    <a href="intro.pdf">(pdf)</a></td></tr>
+	<tr><td style="border-bottom: 0px">Sept 10, 2013</td>             <td style="border-bottom: 0px">Probability            <a href="prob.pdf">(pdf)</a></td></tr>
+	<tr><td style="border-bottom: 0px">Sept 12, 2013</td>             <td style="border-bottom: 0px">Classification         <a href="classify.pdf">(pdf)</a></td></tr>
+	<tr><td style="border-bottom: 0px">Sept 24, 2013</td>             <td style="border-bottom: 0px">N-Grams                <a href="ngrams.pdf">(pdf)</a></td></tr>
+	<tr><td style="border-bottom: 0px">Oct 8, 2013</td>               <td style="border-bottom: 0px">Hidden Markov Models   <a href="hmm.pdf">(pdf)</a></td></tr>
+	<tr><td style="border-bottom: 0px">Oct 24, 2013</td>              <td style="border-bottom: 0px">Maximum Entropy Models <a href="maxent.pdf">(pdf)</a></td></tr>
+	<tr><td style="border-bottom: 0px">Nov 5, 2013</td>               <td style="border-bottom: 0px">Parsing                <a href="parsing.pdf">(pdf)</a></td></tr>
+</table>
