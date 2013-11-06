@@ -535,6 +535,18 @@ Likelihood of a (parsed) sentence
 \end{itemize}
 
 
+\section{Parsing with P-CKY}
+
+Find the mostly likely parse tree $t$ for the sentence $w_0...w_n$
+\begin{itemize}
+  \item $ \hat{t} = \text{argmax}_t~p(t \mid w_0...w_n) $
+  \item Since we know how to find the likelihood of a parse (from above), we could enumerate all possible trees, and find the likelihood of each one.
+  \item But the number of possible trees is enormous
+  \item We will use a \textit{dynamic programming} algorithm to find the best parse tree: P-CKY
+  \item Probabilistic version of the CKY algorithm, which can be used with any CFG
+  \item Analgous to the Viterbi algorithm (both are dynamic programming algorithms)
+\end{itemize}
+
 
 \section{N-Best Parses}
 
