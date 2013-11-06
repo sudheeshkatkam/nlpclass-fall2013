@@ -72,43 +72,78 @@
 \end{itemize}
 
 
-\section{Context-Free Grammars}
+\section{Context-Free Grammars (CFG)}
 
 \begin{itemize}
   \item Context-free grammars can be specified by a table of ``productions''
 	\begin{center}
 	\begin{tabular}{llll p{10mm} lll}
 	  S & $\ra$ & NP VP   &                                && D & $\ra$ & \{\textit{the, a}\}      \\
+	    &       &         &                                &&   &       &                          \\
 	  NP & $\ra$ & D N    & (``\underline{a dog} barks'')  && N & $\ra$ & \{\textit{man, dog}\}    \\
-	  NP & $\ra$ & N      & (``\underline{dogs} bark'')    && V & $\ra$ & \{\textit{barks, walks, sees}\} \\
-	  VP & $\ra$ & VP NP  & (transitive verb)              \\
-	  VP & $\ra$ & VP     & (intransitive verb)
+	  NP & $\ra$ & N      & (``\underline{dogs} bark'')    \\
+	    &       &         &                                &&   &       &                          \\
+	  VP & $\ra$ & V NP   & (transitive verb)              && V & $\ra$ & \{\textit{barks, walks, saw}\} \\
+	  VP & $\ra$ & V      & (intransitive verb)
 	\end{tabular}
 	\end{center}
   \item Words are called ``terminals'' and other nodes are ``non-terminals''
+  \item[]
+  \item[]
+  \item[]
+  \item Independence assumption: each rule choice is dependent only on the parent node; it is independent of all other rule choices
+  \item Independence assumption leads to many problems.  A couple:
+	\begin{figure}[h]
+        \begin{subfigure}[b]{0.5\textwidth}
+          \begin{small} \Tree [.S [.NP [.D the ] [.N dog ] ] [.VP [.V \textbf{barks} ] [.NP [.D a ] [.N car ] ] ] ]
+		  \end{small}
+		  \caption{Intransitive verb with a direct object}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.38\textwidth}
+          \begin{small}
+                \Tree [.S  [.NP [.D a ] [.N \textbf{dogs} ] ] [.VP [.V barks ] ] ] 
+		  \end{small}
+		  \caption{Noun doesn't agree in number with determiner or verb}
+        \end{subfigure}
+	\end{figure}
+  \item We can solve some of these issues by refining our CFG.  For example:
+	\begin{center}
+	\begin{tabular}{llll p{10mm} lll}
+	  VP & $\ra$ & IV      & (intransitive verb)            && IV & $\ra$ & \{\textit{barks, walks}\} \\
+	  VP & $\ra$ & TV NP   & (transitive verb)              && TV & $\ra$ & \{\textit{chases, walks}\}
+	\end{tabular}
+	\end{center}
+	\begin{figure}[h]
+        \begin{subfigure}[b]{0.5\textwidth}
+          \begin{small} \Tree [.S [.NP [.D the ] [.N dog ] ] [.VP [.\textbf{TV} \textbf{chases} ] [.NP [.D a ] [.N car ] ] ] ] \end{small}
+		  \caption{Intransitive verbs are disallowed}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.38\textwidth}
+          \begin{small} \Tree [.S [.NP [.D the ] [.N dog ] ] [.VP [.\textbf{IV} \textbf{barks} ] ] ] \end{small}
+		  \caption{Transitive verbs are disallowed}
+        \end{subfigure}
+	\end{figure}
+
 \end{itemize}
 
-Syntactic Ambiguity
+\newpage
+\section{Syntactic Ambiguity}
 
 \begin{itemize}
   \item For a given CFG, there can be multiple trees that describe the same sentence
   \item Add the following rules to the above:
 	\begin{center}
 	\begin{tabular}{llll p{10mm} lll}
-	  NP & $\ra$ & D N    & (``\underline{a dog} barks'')  && N & $\ra$ & \{\textit{telescope}\}    \\
-	  NP & $\ra$ & N      & (``\underline{dogs} bark'')    && \\
-	  VP & $\ra$ & VP NP  & (transitive verb)              \\
-	  VP & $\ra$ & VP     & (intransitive verb)
+	  NP & $\ra$ & D N PP    & (prep phrase attach to noun)  &&  N & $\ra$ & \{\textit{telescope}\}    \\
+	  VP & $\ra$ & V NP PP   & (prep phrase attach to verb)  &&   \\
+	  PP & $\ra$ & P NP      & (``in the house'')  &&   
 	\end{tabular}
 	\end{center}
   \item ``The man saw a dog with a telescope''
-
-\end{itemize}
-
-\begin{figure}[h]
-        %\centering
-        \begin{subfigure}[b]{0.5\textwidth}
-                \Tree 
+	\begin{figure}[h]
+		\begin{subfigure}[b]{0.5\textwidth}
+		  \begin{small}
+		        \Tree 
 				  [.S  
 				    [.NP [.D the ] [.N man ] ] 
 				    [.VP 
@@ -117,10 +152,11 @@ Syntactic Ambiguity
 				      [.PP [.P with ] [.NP [.D a ] [.N telescope ] ] ]
 				    ] 
 				  ]
-        \end{subfigure}
-        \begin{subfigure}[b]{0.3\textwidth}
-          \begin{small}
-                \Tree 
+		  \end{small}
+		\end{subfigure}
+		\begin{subfigure}[b]{0.3\textwidth}
+		  \begin{small}
+		        \Tree 
 				  [.S  
 				    [.NP [.D the ] [.N man ] ] 
 				    [.VP 
@@ -132,9 +168,244 @@ Syntactic Ambiguity
 				    ] 
 				  ]
 		  \end{small}
-        \end{subfigure}
-\end{figure}
+		\end{subfigure}
+	\end{figure}
 
+  \item Ambiguity is explosive
+  \item A sentence ending in $n$ prepositional phrases has \textit{over} $2^n$ parses (catalan numbers)
+	\begin{itemize}
+	  \item ``I saw the man with the telescope'': 2 parses
+	  \item ``I saw the man on the hill with the telescope'': 5 parses
+	  \item ``I saw the man on the hill in texas with the telescope'': 14 parses
+	  \item ``I saw the man on the hill in texas with the telescope at noon'': 42 parses
+	  \item ``I saw the mon on the hill in texas with the telescope at noon on monday'': 132 parses
+	\end{itemize}
+\end{itemize}
+
+
+
+\section{Agreement}
+
+\begin{itemize}
+  \item In order for a sentence to be grammatical, we must also respect \textit{agreement rules} 
+	\begin{itemize}
+	  \item number: \textit{a dog} vs. \textit{all dogs}
+	  \item person: 1st person (\textit{I am}), 2nd person (\textit{you are}), 3rd person (\textit{he is})
+	  \item gender: \textit{un homme} vs. \textit{use femme} or even \textit{she sees herself}
+	\end{itemize}
+
+  \item[]
+  \item The grammar defined above does not enforce this
+	\begin{itemize}
+	  \item For an NP, since productions are independent of each other, we could get either \textit{dog} or \textit{dogs} no matter whether the D is \textit{a} or \textit{all}
+	\end{itemize}
+
+  \item We can incorporate this into our grammar by duplicating our productions to ensure agreement:
+	\begin{center}
+	\begin{tabular}{llll p{8mm} lll}
+	  S & $\ra$ & NP$_{\text{sg}}$ VP$_{\text{sg}}$                &                                         && D$_{\text{sg}}$ & $\ra$ & \{\textit{the, a}\}      \\
+	  S & $\ra$ & NP$_{\text{pl}}$ VP$_{\text{pl}}$                &                                         && D$_{\text{pl}}$ & $\ra$ & \{\textit{the, all}\}    \\
+	  \\
+	  NP$_{\text{pl}}$ & $\ra$ & N$_{\text{pl}}$                   & (``\underline{dogs} bark'')             && N$_{\text{sg}}$ & $\ra$ & \{\textit{dog}\}    \\
+	  NP$_{\text{pl}}$ & $\ra$ & D$_{\text{pl}}$ N$_{\text{pl}}$   & (``\underline{all dogs} bark'')         && N$_{\text{pl}}$ & $\ra$ & \{\textit{dogs}\}    \\
+	  NP$_{\text{sg}}$ & $\ra$ & D$_{\text{sg}}$ N$_{\text{sg}}$   & (``\underline{a dog} barks'')    \\
+	  \\
+	  VP$_{\text{sg}}$ & $\ra$ & V$_{\text{sg}}$                   & (``a dog \underline{barks}'')           && V$_{\text{sg}}$ & $\ra$ & \{\textit{barks, walks, sees}\} \\
+	  VP$_{\text{sg}}$ & $\ra$ & V$_{\text{sg}}$ NP$_{\text{sg}}$  & (``a dog \underline{chases a car}'')    && V$_{\text{pl}}$ & $\ra$ & \{\textit{bark, walk, see}\} \\
+	  VP$_{\text{sg}}$ & $\ra$ & V$_{\text{sg}}$ NP$_{\text{pl}}$  & (``a dog \underline{chases cars}'')     && \\
+	  \\
+	  VP$_{\text{pl}}$ & $\ra$ & V$_{\text{pl}}$                   & (``all dogs \underline{bark}'')         && \\
+	  VP$_{\text{pl}}$ & $\ra$ & V$_{\text{pl}}$ NP$_{\text{sg}}$  & (``all dogs \underline{chase a car}'')  && \\
+	  VP$_{\text{pl}}$ & $\ra$ & V$_{\text{pl}}$ NP$_{\text{pl}}$  & (``all dogs \underline{chase cars}'')   &&
+	\end{tabular}
+	\end{center}
+
+  \item But this quickly explodes the number of rules
+  \item And the explosion is worse with more agreement rules:
+	\begin{center}
+	\begin{tabular}{llll p{8mm} lll}
+	  VP$_{\text{sg,1st,masc}}$ & $\ra$ & V$_{\text{sg,1st,masc}}$            \\
+	  VP$_{\text{sg,1st,fem}}$ & $\ra$ & V$_{\text{sg,1st,fem}}$            \\
+	  VP$_{\text{sg,2nd,masc}}$ & $\ra$ & V$_{\text{sg,2nd,masc}}$            \\
+	  VP$_{\text{sg,2nd,fem}}$ & $\ra$ & V$_{\text{sg,2nd,fem}}$            \\
+	  ... \\
+	  VP$_{\text{pl,3rd,fem}}$ & $\ra$ & V$_{\text{pl,3rd,fem}}$            \\
+	\end{tabular}
+	\end{center}
+
+  \item We can simplify this greatly using \textit{feature structures} that use variables to ensure agreement
+	\begin{center}
+	\begin{tabular}{llll p{8mm} lll}
+	  S & $\ra$ & NP$_{\text{[num=$x$]}}$ VP$_{\text{[num=$x$]}}$                         &   && D$_{\text{[num=sg]}}$ & $\ra$ & \{\textit{a, every}\}      \\
+	    &       &                                                                         &   && D$_{\text{[num=pl]}}$ & $\ra$ & \{\textit{all, some}\}      \\
+	  NP$_{\text{[num=$x$]}}$ & $\ra$ & D$_{\text{[num=$x$]}}$ N$_{\text{[num=$x$]}}$     &   && D$_{\textbf{[num=$z$]}}$ & $\ra$ & \{\textit{the}\}      \\
+	    &       &                                                                         &   \\
+	  VP$_{\text{[num=$x$]}}$ & $\ra$ & V$_{\text{[num=$x$]}}$                            &   && N$_{\text{[num=sg]}}$ & $\ra$ & \{\textit{dog}\}      \\
+	  VP$_{\text{[num=$x$]}}$ & $\ra$ & V$_{\text{[num=$x$]}}$ NP$_{\textbf{[num=$y$]}}$  &   && N$_{\text{[num=pl]}}$ & $\ra$ & \{\textit{dogs}\}      \\
+	  \\
+	    &       &                                                                         &   && V$_{\text{[num=sg]}}$ & $\ra$ & \{\textit{barks, walks, sees}\} \\
+	    &       &                                                                         &   && V$_{\text{[num=pl]}}$ & $\ra$ & \{\textit{bark, walk, see}\} \\
+	\end{tabular}
+	\end{center}
+
+  \item[]
+  \item[]
+  \item[]
+  \item Feature structures must \textit{unify} as they are combined
+	\begin{itemize}
+	  \item For example, all $x$s must resolve to the same value (\textit{sg} or \textit{pl})
+	\end{itemize}
+
+	\begin{figure}[h]
+		\begin{subfigure}[b]{0.4\textwidth}
+		  \begin{small}
+			\Tree 
+			  [.S  
+			    [.NP$_{\text{[num=$x$]}}$ 
+			      [.D$_{\text{[num=$x$]}}$\\\\\\D$_{\text{[num=z]}}$ the ] 
+			      [.N$_{\text{[num=$x$]}}$\\\\\\N$_{\text{[num=sg]}}$ dog ] ] 
+			    [.VP$_{\text{[num=$x$]}}$ 
+			      [.V$_{\text{[num=$x$]}}$\\\\\\V$_{\text{[num=sg]}}$ barks ] ] 
+			  ]
+		  \end{small}
+		  \caption{Need to unify underspecified features in the rules with secified features in the N and V terminal rules}
+		\end{subfigure}
+		\begin{subfigure}[b]{0.3\textwidth}
+		  \begin{small}
+			\Tree 
+			  [.S  
+			    [.NP$_{\text{[num=sg]}}$ [.D$_{\text{[num=sg]}}$ the ] [.N$_{\text{[num=sg]}}$ dog ] ] 
+			    [.VP$_{\text{[num=sg]}}$ [.V$_{\text{[num=sg]}}$ barks ] ] 
+			  ]
+		  \end{small}
+		  \caption{all $x$s resolve to ``sg''}
+		\end{subfigure}
+	\end{figure}
+
+  \item Similar features could be set up for other required agreements
+	\begin{itemize}
+	  \item PRO[num=sg, per=3rd, gen=masc] $\rightarrow$ \textit{il}
+	\end{itemize}
+
+\end{itemize}
+
+
+
+\section{Probabilistic Context-Free Grammars (PCFG)}
+
+\begin{itemize}
+  \item A CFG is deterministic
+	\begin{itemize}
+	  \item It can decide whether a sentence is in the language (grammatical), or not
+	  \item It can't judge whether one sentence is more likely than another
+	  \item Problematic since we want to say that every sentence is \textit{possible}, even if it's not likely
+	\end{itemize}
+  \item A PCFG is a CFG in which, for every non-terminal, we have a probability distribution over possible productions
+\end{itemize}
+
+	\begin{center}
+	\begin{tabular}{llll p{18mm} llll}
+	  S  & $\ra$ & NP VP    &  1.0  &&  D & $\ra$ & \textit{the}        & 0.6 \\
+	     &       &          &       &&  D & $\ra$ & \textit{a}          & 0.4 \\
+	  NP & $\ra$ & D N      &  0.7  &&    &       &                     &     \\
+	  NP & $\ra$ & N        &  0.2  &&  N & $\ra$ & \textit{man}        & 0.5 \\
+	  NP & $\ra$ & D N PP   &  0.1  &&  N & $\ra$ & \textit{dog}        & 0.4 \\
+	     &       &          &       &&  N & $\ra$ & \textit{telescope}  & 0.1 \\
+	  VP & $\ra$ & VP NP    &  0.4  &&    &       &                     &     \\
+	  VP & $\ra$ & VP       &  0.4  &&  V & $\ra$ & \textit{barks}      & 0.2 \\
+	  VP & $\ra$ & V NP PP  &  0.2  &&  V & $\ra$ & \textit{walks}      & 0.4 \\
+	     &       &          &       &&  V & $\ra$ & \textit{saw}        & 0.4
+	\end{tabular}
+	\end{center}
+
+\begin{itemize}
+  \item We can use this to calculate the likelihood of seeing a particular parse of a particular sentence
+	\begin{itemize}
+	  \item Multiply the probabilities of all productions found in the tree
+	\end{itemize}
+\end{itemize}
+
+
+
+\section{Lexicalized Grammars}
+
+\begin{itemize}
+  \item Problem: trees do not take semantic coherence into account
+  \item Production rules are independent
+  \item These two sentence have \textit{exactly} the same likelihood
+	\begin{figure}[h]
+	        %\centering
+	        \begin{subfigure}[b]{0.5\textwidth}
+	          \begin{small}
+	                \Tree 
+					  [.S  
+					    [.NP [.D the ] [.N \textbf{dog} ] ] 
+					    [.VP 
+					      [.V bit ] 
+					      [.NP [.D a ] [.N \textbf{man} ] ] 
+					    ] 
+					  ]
+			  \end{small}
+	        \end{subfigure}
+	        \begin{subfigure}[b]{0.3\textwidth}
+	          \begin{small}
+	                \Tree 
+					  [.S  
+					    [.NP [.D the ] [.N \textbf{man} ] ] 
+					    [.VP 
+					      [.V bit ] 
+					      [.NP 
+					        [.D a ] [.N \textbf{dog} ] 
+					      ] 
+					    ] 
+					  ]
+			  \end{small}
+	        \end{subfigure}
+	\end{figure}
+  \item Solution: lexicalize the grammar
+  \item Subcategorize rules with their head words:
+    \begin{verbatim}
+      Ndog -> dog
+      NPdog -> D Ndog
+      Nman -> man
+      NPman -> D Nman
+
+      Vbit -> bit
+      VPbit -> Vbit NPman
+      VPbit -> Vbit NPdog
+      X VPbit -> Vbit
+    \end{verbatim}
+
+	\begin{figure}[h]
+	        %\centering
+	        \begin{subfigure}[b]{0.5\textwidth}
+	          \begin{small}
+	                \Tree 
+					  [.S  
+					    [.NPdog [.D the ] [.Ndog \textbf{dog} ] ] 
+					    [.VPbit 
+					      [.Vbit bit ] 
+					      [.NPman [.D a ] [.Nman \textbf{man} ] ] 
+					    ] 
+					  ]
+			  \end{small}
+	        \end{subfigure}
+	        \begin{subfigure}[b]{0.3\textwidth}
+	          \begin{small}
+	                \Tree 
+					  [.S  
+					    [.NPman [.D the ] [.Nman \textbf{man} ] ] 
+					    [.VPbit 
+					      [.Vbit bit ] 
+					      [.NPdog 
+					        [.D a ] [.Ndog \textbf{dog} ] 
+					      ] 
+					    ] 
+					  ]
+			  \end{small}
+	        \end{subfigure}
+	\end{figure}
+\end{itemize}
 
 
 
@@ -155,11 +426,7 @@ Syntactic Ambiguity
 
 
 
-
-
-
-
-
+\section{N-Best Parsers}
 
 
 
