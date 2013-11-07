@@ -24,7 +24,7 @@
 \usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
 
 
-\newcommand{\ra}{\rightarrow}
+\newcommand{\ra}{\ensuremath{\rightarrow}}
 \newcommand{\bs}{\textbackslash}
 %\renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\vv}[1]{\ensuremath{\vec{\mathbf{#1}}}}
@@ -253,7 +253,7 @@
   \item[]
   \item Feature structures must \textit{unify} as they are combined
 	\begin{itemize}
-	  \item For example, all $x$s must resolve to the same value (\textit{sg} or \textit{pl})
+	  \item For example, all $x$s and $z$ must resolve to the same value (\textit{sg} or \textit{pl})
 	\end{itemize}
 
 	\begin{figure}[h]
@@ -280,7 +280,7 @@
 			    [.VP$_{\text{[num=sg]}}$ [.V$_{\text{[num=sg]}}$ barks ] ] 
 			  ]
 		  \end{small}
-		  \caption{all $x$s resolve to ``sg''}
+		  \caption{all $x$s and $z$ resolve to ``sg''}
 		\end{subfigure}
 	\end{figure}
 
@@ -293,6 +293,7 @@
 
 
 
+\newpage
 \section{Probabilistic Context-Free Grammars (PCFG)}
 
 \begin{itemize}
@@ -325,7 +326,7 @@
 	\end{tabular}
 	\end{center}
 
-
+\vspace{-5mm}
 Estimating parameters (MLE)
 
 \begin{itemize}
@@ -343,6 +344,7 @@ Estimating parameters (MLE)
 	          \begin{small} \Tree [.S  [.NP [.D the ] [.N man ] ] [.VP [.V walked ] ] ] \end{small}
 	        \end{subfigure}
 	\end{figure}
+	\vspace{-5mm}
   \item We estimate by counting up all productions in the corpus and normalizing
     \begin{itemize}
       \item Since every non-terminal $A$ must produce \textit{something}, we can simplify slightly
@@ -518,7 +520,6 @@ Likelihood of a (parsed) sentence
 \end{itemize}
 
 
-\newpage
 \section{Generative Model}
 
 \begin{itemize}
@@ -545,6 +546,34 @@ Find the mostly likely parse tree $t$ for the sentence $w_0...w_n$
   \item We will use a \textit{dynamic programming} algorithm to find the best parse tree: P-CKY
   \item Probabilistic version of the CKY algorithm, which can be used with any CFG
   \item Analgous to the Viterbi algorithm (both are dynamic programming algorithms)
+\end{itemize}
+
+Chomsky Normal Form (CNF)
+\begin{itemize}
+  \item CKY requires that the grammar be in CNF
+  \item All productions must be either:
+	\begin{itemize}
+	  \item Non-terminal producing exactly 2 non-terminals: A \ra\ B C\\
+	        Non-terminal producing exactly 1 terminal: A \ra\ \textit{w}
+	\end{itemize}
+  \item Any CFG can be convered to CNF
+	\begin{itemize}
+	  \item Producing more than two nonterminals: ``A \ra\ B ... Y Z'' becomes
+		\begin{itemize}
+		  \item A \ra\ B ... [Y+Z] \\ $[$Y+Z$]$ \ra\ Y Z
+		  \item Repeat as necessary until you just have  A \ra\ B X
+		  \item NP \ra\ D Adj N becomes\\  NP \ra\ D $[$Adj+N$]$ \\ $[$Adj+N$]$ \ra\ Adj N
+		\end{itemize}
+	  \item Producing just one nonterminal:  ``A \ra\ B''
+		\begin{itemize}
+		  \item Replace all rules rooted by B with A
+		  \item A rule ``B \ra\ C D'' would become ``A(B) \ra\ C D''
+		  \item Repeat as necessary until no more unary rules exist
+		  \item Rules ``VP \ra\ V'', ``V \ra\ \textit{walk}'', and ``V \ra\ \textit{bark}'' becomes \\ 
+		        ``VP(V) \ra\ \textit{walk}'' and ``VP(V) \ra\ \textit{bark}''
+		\end{itemize}
+	  \item For our trees we should never have terminals and nonterminals mixed in productions since all terminals a produced by unary rules from POS tags, which never produce anything other than terminals. (But if we needed to we could create dummy non-terminals for those terminals.)
+	\end{itemize}
 \end{itemize}
 
 
