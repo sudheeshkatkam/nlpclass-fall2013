@@ -86,11 +86,19 @@ A couple notes:
 
 
 
-## Problem 2: Sentiment Analysis with a Maximum Entropy Model (20 points)
+## Problem 2: Sentiment Analysis with a MaxEnt Model (20 points)
 
-We will now attempt to improve our sentiment classifier by actually using training data.  To accomplish this, I have provided you a few useful classes that wrap functionality in the [OpenNLP MaxEnt](http://opennlp.apache.org/) library:
+We will now attempt to improve our sentiment classifier by actually using training data.  To accomplish this, I have provided you a few useful classes that wrap functionality in the [OpenNLP MaxEnt](http://opennlp.apache.org/) library: 
 
-A `MaxEntModel` is a `Classifier` that can make label predictions from features.  (It also has a method `saveToFile(modelFilename: String)` that can be used to persist the trained model to a file to be used later.  The model can be restored from file using the `MaxEntModel.fromFile(modelFilename: String)`.)
+* `nlpclass.MaxEntModel`
+* `nlpclass.MaxEntModelTrainer`
+
+You **do not** need to implement these classes.  They are already avilable to you through the nlpclass-fall2013 dependency.
+
+
+### MaxEntModel
+
+A `MaxEntModel` is a `Classifier` that can make label predictions from features.
 
 {% highlight scala %}
 class MaxEntModel extends Classifier[String, String, String] {
@@ -98,19 +106,36 @@ class MaxEntModel extends Classifier[String, String, String] {
   def predict(features: Vector[(Feature, Value)]): Label = {
 {% endhighlight %}
 
-A `MaxEntModelTrainer` is a `ClassifierTrainer` that uses training instances to learn a `MaxEntModel`.  It trains using an iterative algorithm.  It takes two optional parameters:
+(Again, it only works with Strings (`Classifier[String, String, String]`) because OpenNLP only deals with Strings.)
+
+*Note:* It also has a method `saveToFile(modelFilename: String)` that can be used to persist the trained model to a file to be used later.  The model can be restored from file using the `MaxEntModel.fromFile(modelFilename: String)`.
+
+
+### MaxEntModelTrainer
+
+A `MaxEntModelTrainer` is a `ClassifierTrainer` that uses training instances to learn a `MaxEntModel`.  It trains using an iterative algorithm.  It takes a few optional parameters, two of which are relevant for this problem:
 
 * `sigma` controls the amount of regularization.  Remember that regularization in a MaxEnt model is analogous to smoothing in naive Bayes.  A higher `sigma` value means that models parameters (the weights) will be more normal and adhere less to the training data.
 * `maxIterations` dictates the maximum number of iterations that the learning algorithm will be allowed to run.  More iterations mean better parameter estimates, but it also means that training may take longer.  Note that the algorithm may take fewer than the maximum number of iterations.  This happens when the learner finds an optimal set of parameters since it does not need to look any further.
 
 {% highlight scala %}
 class MaxEntModelTrainer(
-  sigma: Double = 1.0, maxIterations: Int = 100) 
+  featureExtender: FeatureExtender[String, String] = new NoOpFeatureExtender[String, String]
+  sigma: Double = 1.0, maxIterations: Int = 100, cutoff: Int = 1) 
   extends ClassifierTrainer[String, String, String] {
 
   def train(instances: Vector[(Label, Vector[(Feature, Value)])]): Classifier[Label, Feature, Value] = {
 {% endhighlight %}
 
+You can ignore the `featureExtender` parameter until Problem 3, so when you instantiate this trainer class, you can do so with by naming the parameters you are passing in:
+
+{% highlight scala %}
+new MaxEntModelTrainer(sigma = 0.1)
+{% endhighlight %}
+
+
+
+### MaxEnt main method
 
 For this problem, you will need to create an object `nlp.a5.MaxEnt` with a main method that accepts the following parameters:
 
