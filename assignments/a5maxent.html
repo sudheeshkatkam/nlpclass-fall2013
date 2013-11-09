@@ -71,7 +71,7 @@
       </div>
       <div id='content'>
         <h1>Assignment 5 - Maximum Entropy Models</h1>
-        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_lexicon_ratio_sentiment_analysis_baseline_20_points">Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)</a></li><li><a href="#problem_2_sentiment_analysis_with_a_maximum_entropy_model_20_points">Problem 2: Sentiment Analysis with a Maximum Entropy Model (20 points)</a></li><li><a href="#problem_3_extended_features_for_sentiment_analysis_60_points">Problem 3: Extended Features for Sentiment Analysis (60 points)</a></li></ol>
+        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_lexicon_ratio_sentiment_analysis_baseline_20_points">Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)</a></li><li><a href="#problem_2_sentiment_analysis_with_a_maxent_model_20_points">Problem 2: Sentiment Analysis with a MaxEnt Model (20 points)</a></li><li><a href="#problem_3_extended_features_for_sentiment_analysis_60_points">Problem 3: Extended Features for Sentiment Analysis (60 points)</a></li></ol>
         <p><strong>Due: Thursday, November 14. Programming at noon. Written portions at 2pm.</strong></p>
 
 <ul>
@@ -162,16 +162,32 @@ avg       46.22  48.49  43.23</code></pre>
 <li>The lexicon files contain all lower-cased words, but the tweets do not.</li>
 </ol>
 
-<h2 id='problem_2_sentiment_analysis_with_a_maximum_entropy_model_20_points'>Problem 2: Sentiment Analysis with a Maximum Entropy Model (20 points)</h2>
+<h2 id='problem_2_sentiment_analysis_with_a_maxent_model_20_points'>Problem 2: Sentiment Analysis with a MaxEnt Model (20 points)</h2>
 
 <p>We will now attempt to improve our sentiment classifier by actually using training data. To accomplish this, I have provided you a few useful classes that wrap functionality in the <a href='http://opennlp.apache.org/'>OpenNLP MaxEnt</a> library:</p>
 
-<p>A <code>MaxEntModel</code> is a <code>Classifier</code> that can make label predictions from features. (It also has a method <code>saveToFile(modelFilename: String)</code> that can be used to persist the trained model to a file to be used later. The model can be restored from file using the <code>MaxEntModel.fromFile(modelFilename: String)</code>.)</p>
+<ul>
+<li><code>nlpclass.MaxEntModel</code></li>
+
+<li><code>nlpclass.MaxEntModelTrainer</code></li>
+</ul>
+
+<p>You <strong>do not</strong> need to implement these classes. They are already avilable to you through the nlpclass-fall2013 dependency.</p>
+
+<h3 id='maxentmodel'>MaxEntModel</h3>
+
+<p>A <code>MaxEntModel</code> is a <code>Classifier</code> that can make label predictions from features.</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>MaxEntModel</span> <span class='k'>extends</span> <span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]</span> <span class='o'>{</span>
 
   <span class='k'>def</span> <span class='n'>predict</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Label</span> <span class='o'>=</span> <span class='o'>{</span>
 </code></pre></div>
-<p>A <code>MaxEntModelTrainer</code> is a <code>ClassifierTrainer</code> that uses training instances to learn a <code>MaxEntModel</code>. It trains using an iterative algorithm. It takes two optional parameters:</p>
+<p>(Again, it only works with Strings (<code>Classifier[String, String, String]</code>) because OpenNLP only deals with Strings.)</p>
+
+<p><em>Note:</em> It also has a method <code>saveToFile(modelFilename: String)</code> that can be used to persist the trained model to a file to be used later. The model can be restored from file using the <code>MaxEntModel.fromFile(modelFilename: String)</code>.</p>
+
+<h3 id='maxentmodeltrainer'>MaxEntModelTrainer</h3>
+
+<p>A <code>MaxEntModelTrainer</code> is a <code>ClassifierTrainer</code> that uses training instances to learn a <code>MaxEntModel</code>. It trains using an iterative algorithm. It takes a few optional parameters, two of which are relevant for this problem:</p>
 
 <ul>
 <li><code>sigma</code> controls the amount of regularization. Remember that regularization in a MaxEnt model is analogous to smoothing in naive Bayes. A higher <code>sigma</code> value means that models parameters (the weights) will be more normal and adhere less to the training data.</li>
@@ -179,11 +195,17 @@ avg       46.22  48.49  43.23</code></pre>
 <li><code>maxIterations</code> dictates the maximum number of iterations that the learning algorithm will be allowed to run. More iterations mean better parameter estimates, but it also means that training may take longer. Note that the algorithm may take fewer than the maximum number of iterations. This happens when the learner finds an optimal set of parameters since it does not need to look any further.</li>
 </ul>
 <div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>MaxEntModelTrainer</span><span class='o'>(</span>
-  <span class='n'>sigma</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>1.0</span><span class='o'>,</span> <span class='n'>maxIterations</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>100</span><span class='o'>)</span> 
+  <span class='n'>featureExtender</span><span class='k'>:</span> <span class='kt'>FeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>NoOpFeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]</span>
+  <span class='n'>sigma</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>1.0</span><span class='o'>,</span> <span class='n'>maxIterations</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>100</span><span class='o'>,</span> <span class='n'>cutoff</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>1</span><span class='o'>)</span> 
   <span class='k'>extends</span> <span class='nc'>ClassifierTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]</span> <span class='o'>{</span>
 
   <span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Label</span>, <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])])</span><span class='k'>:</span> <span class='kt'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span> <span class='k'>=</span> <span class='o'>{</span>
 </code></pre></div>
+<p>You can ignore the <code>featureExtender</code> parameter until Problem 3, so when you instantiate this trainer class, you can do so with by naming the parameters you are passing in:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>new</span> <span class='nc'>MaxEntModelTrainer</span><span class='o'>(</span><span class='n'>sigma</span> <span class='k'>=</span> <span class='mf'>0.1</span><span class='o'>)</span>
+</code></pre></div>
+<h3 id='maxent_main_method'>MaxEnt main method</h3>
+
 <p>For this problem, you will need to create an object <code>nlp.a5.MaxEnt</code> with a main method that accepts the following parameters:</p>
 
 <ul>
