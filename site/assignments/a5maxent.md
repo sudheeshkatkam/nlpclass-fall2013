@@ -93,7 +93,7 @@ We will now attempt to improve our sentiment classifier by actually using traini
 * `nlpclass.MaxEntModel`
 * `nlpclass.MaxEntModelTrainer`
 
-You **do not** need to implement these classes.  They are already avilable to you through the nlpclass-fall2013 dependency.
+You **do not** need to implement these classes.  They are already avilable to you through the nlpclass-fall2013 dependency.  However, if you are interested, you can take a look at the [source code](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/MaxEntClassifier.scala).
 
 
 ### MaxEntModel
