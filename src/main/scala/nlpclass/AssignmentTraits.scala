@@ -187,3 +187,17 @@ trait HiddenMarkovModelToImplement[Word, Tag] extends Tagger[Word, Tag]
 
 /** TODO: REMOVE THIS */
 trait HmmTrainerToImplement[Word, Tag] extends TaggerTrainer[Word, Tag]
+
+////////////////////////////////
+// Assignment 6
+////////////////////////////////
+
+trait Parser {
+  def treeProb(t: Tree): Double
+  def parse(tokens: Vector[String]): Tree
+  def generate(): Tree
+}
+
+trait ParserTrainer {
+  def train(trees: Vector[Tree]): Parser
+}
