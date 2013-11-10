@@ -4,7 +4,7 @@ name := "nlpclass-fall2013"
 
 organization := "com.utcompling"
 
-version := "0008"
+version := "0009"
 
 scalaVersion := "2.10.2"
 
@@ -18,6 +18,8 @@ libraryDependencies ++= Seq(
    "dhg" % "scala-util_2.10" % "1.0.0-SNAPSHOT" changing(),
    "edu.stanford.nlp" % "stanford-corenlp" % "3.2.0",
    "org.apache.opennlp" % "opennlp-maxent" % "3.0.3",
+   "org.abego.treelayout" % "org.abego.treelayout.netbeans" % "1.0.1" exclude("org.netbeans.api", "org-netbeans-api-visual"),
+   "org.codeartisans.thirdparties.swing" % "org-netbeans-api-visual" % "2.23.1",
    "com.typesafe" % "scalalogging-log4j_2.10" % "1.0.1",
    "org.apache.logging.log4j" % "log4j-core" % "2.0-beta3",
    "junit" % "junit" % "4.10" % "test",
