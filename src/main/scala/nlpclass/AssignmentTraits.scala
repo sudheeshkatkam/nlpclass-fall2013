@@ -194,7 +194,7 @@ trait HmmTrainerToImplement[Word, Tag] extends TaggerTrainer[Word, Tag]
 
 trait Parser {
   def likelihood(t: Tree): Double
-  def parse(tokens: Vector[String]): Tree
+  def parse(tokens: Vector[String]): Option[Tree]
   def generate(): Tree
 }
 

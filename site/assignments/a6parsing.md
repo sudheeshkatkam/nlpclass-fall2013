@@ -53,7 +53,7 @@ Since you will have to read in data from files, it will be necessary to be able 
 
 {% highlight scala %}
 import nlpclass._
-val s = "(S (NP (D the) (N man) ) (VP (V walks) (NP (D the) (N dog) ) ) )"
+val s = "(S (NP (D the) (N man)) (VP (V walks) (NP (D the) (N dog))))"
 val t = Tree.fromString(s)
 {% endhighlight %}
 
@@ -66,7 +66,7 @@ case class TreeNode(label: String, children: Vector[Tree] = Vector()) extends Tr
 The `Tree` trait also provides a `toString` implementation and method called `pretty` that can be used to view the tree in different forms.
 
     scala> println(t)
-    (S (NP (D the) (N man) ) (VP (V walks) (NP (D the) (N dog) ) ) )
+    (S (NP (D the) (N man)) (VP (V walks) (NP (D the) (N dog))))
     scala> println(t.pretty)
     S
       NP
@@ -85,37 +85,34 @@ scala> TreeViz.drawTree(t)
 {% endhighlight %}
 
 
-## Part 2: Chomsky Normal Form (CNF)
+## Part 2: Chomsky Normal Form 
 
 ### To CNF
 
-Our goal is to implement the CKY algorithm for parsing.  Since CKY requires that the input be in Chomsky Normal Form, we will first write a function for transforming a tree into CNF.  
+Our goal is to implement the CKY algorithm for parsing.  Since CKY requires that all trees be in Chomsky Normal Form (CNF), we will first write a function for transforming a tree into CNF.  However, we will not strictly be using CNF; we want to allow for unary productions since this makes it easier to covert back from CNF.
 
-Recall that a tree is in CNF if all of its productions fall into one of two categories:
+A tree is in CNF (with unary rules) if each of its productions fall into one of three categories:
 
 * A non-terminal yielding exactly two non-terminals: A → B C
+* A non-terminal yielding exactly one non-terminals: A → B
 * A non-terminal yielding exactly one terminal: A → w
 
-It is provable that any CNF can be converted to a CFG in CNF.  To transform any tree into a CNF tree, you should trace through the tree, making the following changes:
+It is provable that any CFG can be converted to a CFG in CNF.  To transform any tree into a CNF tree, you should trace through the tree, making the following change:
 
-1. If the node has more than two children, take the last two children X and Y and group them into a new node {X+Y} that has X and Y as children.  Repeat until there are exactly two children.
+* If the node has more than two children, take the last two children X and Y and group them into a new node {X+Y} that has X and Y as children.  Repeat until there are exactly two children.
 
-    (NP (D a) (A big) (A brown) (N dog) )   
-    → (NP (D a) (A big) ({A+N} (A brown) (N dog) ) )  
-    → (NP (D a) ({A+{A+N}} (A big) ({A+N} (A brown) (N dog) ) ) )  
+    (NP (D a) (A big) (A brown) (N dog))   
+    → (NP (D a) (A big) ({A+N} (A brown) (N dog)))  
+    → (NP (D a) ({A+{A+N}} (A big) ({A+N} (A brown) (N dog))))  
 
     Note: While it would be possible to group in a left-branching way (eg, "(NP ({D+A} N))" instead of "(NP (D {A+N}))"), I find it more visually appealing to branch right since English is generally a right-branching language.
 
-2. If the node A has exactly one child X and X is not terminal (it has at least one child), then collapase the link between A and X into one new node A{X} that still points to X's children.
+We do not need to worry about cases where terminals are found in non-unary productions since all of our terminals are words, which cannot have children, and all words are produced by part-of-speech tags, which do not have non-terminal children.
 
-    (S (VP (V walk) ) )   
-    → (S (VP{V} walk) )  
-    → (S{VP{V}} walk)  
-
-You will create an object called `nlp.a6.Cnf` with a method `apply` that takes a tree as a parameter and returns a new tree that is in CNF:
+For this part of the assigment, you will create an object called `nlp.a6.Cnf` with a method `convertTree` that takes a tree as a parameter and returns a new tree that is in CNF:
 {% highlight scala %}
 object Cnf {
-  def apply(t: Tree): ? = {
+  def convertTree(t: Tree): ? = {
     // your code here
   }
 }
@@ -127,7 +124,7 @@ Once this method is implemented, you should get behavior similar to this:
 
 {% highlight scala %}
 scala> import nlpclass._
-scala> val s = "(S (NP (D the) (A big) (N dog) ) (VP (V walks) ) )"
+scala> val s = "(S (NP (D the) (A big) (N dog)) (VP (V walks)))"
 scala> val t = Tree.fromString(s)
 
 scala> t.pretty
@@ -139,8 +136,8 @@ S
   VP V walks
 
 scala> import nlp.a6._
-scala> val c = Cnf(t)
-(S (NP (D the) ({A+N} (A big) (N dog) ) ) (VP{V} walks) )
+scala> val c = Cnf.convertTree(t)
+(S (NP (D the) ({A+N} (A big) (N dog))) (VP (V walks)))
 
 scala> c.pretty
 S
@@ -149,7 +146,7 @@ S
     {A+N}
       A big
       N dog
-  VP{V} walks
+  VP V walks
 {% endhighlight %}
 
 
@@ -161,7 +158,7 @@ You will write a function `Cnf.undo` that takes a tree in CNF and returns a `Tre
 
 {% highlight scala %}
 scala> val u = Cnf.undo(c)
-(S (NP (D the) (A big) (N dog) ) (VP (V walks) ) )
+(S (NP (D the) (A big) (N dog)) (VP (V walks)))
 
 scala> u.pretty
 S
@@ -173,9 +170,18 @@ S
 {% endhighlight %}
 
 
+### Written Exercises
 
+Assume the following three-sentence dataset:
+    
+    (V walk)
+    (S (NP (D the) (A big) (N dogs)) (VP (V walk)))
+    (S (NP (D the) (A tall) (N men)) (VP (V walk) (NP (D the) (N dogs))))
 
-**Note:** In a part below you will be required to reverse this conversion: to take a tree in CNF and convert it back to it's original non-CNF form.  The representation I have described above makes it clear which nodes were transformed in the CNF conversion, and how to convert them back.  You can choose to represent the node label as a string like "{A+N}" or "VP{V}", or you can create your own class hierarchy to represent the recursive structure of these complex non-terminals.  I implemented the latter since I found that this made it easier to convert back from CNF.
+> **Written Answer (a):** Give the PCFG that would be generated by this dataset using the Maximum Likelihood Estimate.
+
+> **Written Answer (b):** Transform the PCFG from above into its CNF (with unary productions) equivalent.
+
 
 
 ## Part 3: Likelihood of a Parsed Sentence
@@ -189,7 +195,7 @@ class PcfgParser(...) extends Parser {
     // your code here
   }
 
-  def parse(tokens: Vector[String]): Tree = ???
+  def parse(tokens: Vector[String]): Option[Tree] = ???
   def generate(): Tree = ???
 }
 {% endhighlight %}
@@ -201,11 +207,24 @@ In order to calculate the likelihood, you will need two probability distribution
 * The conditional probability distribution `\( p(\beta \mid A) \)` for non-terminal A and production `\( \beta \)`
 * The probability distribution over possible root tree nodes `\( p(\sigma) \)` for production `\( \sigma \)`
 
-Since we will need the grammar to be in CNF for parsing, you should assume (or ensure?) that these distributions are in CNF.  In other words, `\( \beta \)` and `\( \sigma \)` can only have two forms: a pair of nonterminals (B C) or a single terminal (*w*).
+Since we will need the grammar to be in CNF for parsing, you should assume (or ensure?) that these distributions are in CNF.  In other words, `\( \beta \)` and `\( \sigma \)` can only have three forms: a pair of nonterminals (B C), a single nonterminal (B), or a single terminal (*w*).
 
 The likelihood of a parsed sentence is computed as the product of all productions in the tree.  Additionally, you must take into consideration the likelihood of the tree's root.
 
 Since you will be storing your probability distributions for the grammar in CNF, you will need to convert the incoming tree into CNF before looking up the productions in the distributions.
+
+
+### Written Exercises
+
+For the following parsed sentence:
+
+    (S (NP (D the) (A tall) (N dogs)) (VP (V walk)))
+
+> **Written Answer (a):** Calculate the likelihood given the PCFG from exercise 2a.
+
+> **Written Answer (a):** Convert the parsed sentence to CNF (with unary rules) and calculate the likelihood given the PCFG from exercise 2b.  Confirm that this is the same value as you found in 3a.
+
+
 
 
 ## Part 4: Unsmoothed PCFG Parser Trainer
@@ -222,20 +241,20 @@ class UnsmoothedPcfgParserTrainer(...) extends ParserTrainer {
 
 The `train` method will count up productions across all given trees to compute the MLE.  Since the `PcfgParser` will be expecting probability distributions over productions that conform to CNF, you should convert all the given trees to CNF before computing the MLE.
 
-To check your implementation, assume the following dataset (`trees1`):
+To check your implementation, assume the following dataset (`trees2`):
 
-    (S (NP (D the) (N dog) ) (VP (V barks) ) )
-    (S (NP (D the) (N dog) ) (VP (V walks) ) )
-    (S (NP (D the) (N man) ) (VP (V walks) (NP (D the) (N dog) ) ) )
+    (S (NP (D the) (N dog)) (VP (V barks)))
+    (S (NP (D the) (N dog)) (VP (V walks)))
+    (S (NP (D the) (N man)) (VP (V walks) (NP (D the) (N dog))))
 
 And you should be able to do this:
 
 {% highlight scala %}
 val trainer = new UnsmoothedPcfgParserTrainer(...)
-val pcfg = trainer.train(trees1)
-val s1 = "(S (NP (D the) (N dog) ) (VP (V walks) (NP (D the) (N man) ) ) ) )"
-pcfg.likelihood(Tree.fromString(s1)) // -2.7725887222397816
-val s2 = "(S (NP (D a) (N cat) ) (VP (V runs) ) )"
+val pcfg = trainer.train(trees2)
+val s1 = "(S (NP (D the) (N dog)) (VP (V walks) (NP (D the) (N man)))))"
+pcfg.likelihood(Tree.fromString(s1)) // -3.1780538303479453
+val s2 = "(S (NP (D a) (N cat)) (VP (V runs)))"
 pcfg.likelihood(Tree.fromString(s2)) // -Infinity
 {% endhighlight %}
 
@@ -245,28 +264,27 @@ pcfg.likelihood(Tree.fromString(s2)) // -Infinity
 For this part you will implement the `parse` method on `PcfgParser`:
 
 {% highlight scala %}
-def parse(tokens: Vector[String]): Tree
+def parse(tokens: Vector[String]): Option[Tree]
 {% endhighlight %}
 
-This method takes a sentence (as a sequence of tokens), runs the Probabilitic CKY algorithm, and returns a `Tree` representing the most likely parse of that sentence.
+This method takes a sentence (as a sequence of tokens), runs the Probabilitic CKY algorithm, and returns a `Tree` representing the most likely parse of that sentence, if there is one, and returns `None` if there is no valid parse of the sentence.  Be sure to convert the tree back from CNF before returning it.
 
-Using this dataset (`trees2`):
+Using this dataset (`trees3`):
 
-    (S (NP (D the) (N dog) ) (VP (V barks) ) )
-    (S (NP (D the) (N dog) ) (VP (V walks) ) )
-    (S (NP (D the) (N man) ) (VP (V walks) (NP (D the) (N dog) ) ) )
-    (S (NP (D the) (N man) ) (VP (V saw) (NP (D the) (N dog) (PP (P in) (NP (D a) (N house) ) ) ) ) )
-    (S (NP (D the) (N man) ) (VP (V saw) (NP (D the) (N dog) ) (PP (P with) (NP (D a) (N telescope) ) ) ) )
+    (S (NP (D the) (A big) (N dog)) (VP (V barks)))
+    (S (NP (D the) (N dog)) (VP (V walks)))
+    (S (NP (D the) (A tall) (N man)) (VP (V walks) (NP (D the) (N dog))))
+    (S (NP (D the) (N man)) (VP (V saw) (NP (D the) (N dog) (PP (P in) (NP (D a) (N house))))))
+    (S (NP (D the) (N man)) (VP (V saw) (NP (D the) (N dog)) (PP (P with) (NP (D a) (N telescope)))))
 
-
-you should see this behavior:
+you should see this behavior without smoothing:
 
 {% highlight scala %}
-val trainer = new UnsmoothedPcfgParserTrainer(...)
-val pcfg = trainer.train(trees1)
+scala> val trainer = new UnsmoothedPcfgParserTrainer(...)
+scala> val pcfg = trainer.train(trees3)
 
-val s1 = "the dog walks the man".split(" ").toVector
-pcfg.parse(s1).pretty
+scala> val s1 = "the dog walks the man".split(" ").toVector
+scala> pcfg.parse(s1).fold("None")(_.pretty)
 S
   NP
     D the
@@ -276,21 +294,101 @@ S
     NP
       D the
       N man
+
+scala> val s2 = "a man in the telescope barks the dog with the house with a telescope".split(" ").toVector
+scala> pcfg.parse(s2).fold("None")(_.pretty)
+S
+  NP
+    D a
+    N man
+    PP
+      P in
+      NP
+        D the
+        N telescope
+  VP
+    V barks
+    NP
+      D the
+      N dog
+    PP
+      P with
+      NP
+        D the
+        N house
+        PP
+          P with
+          NP
+            D a
+            N telescope
+
+scala> val s3 = "a cat walks".split(" ").toVector
+scala> pcfg.parse(s3).fold("None")(_.pretty)
+None
 {% endhighlight %}
 
 
 
+## Part 6: Generating Text
+
+Since a PCFG is a generative model, we can use it to generate sentences.  For this part, you will implement the `generate` method on `PcfgParser`.  The method should return a `Tree` object 
+
+{% highlight scala %}
+def generate(): Tree
+{% endhighlight %}
+
+Your method should first sample some non-terminal A from the distribution `\( p(\sigma) \)` over possible start non-terminals.  Then, it should sample some `\( \beta \)` from `\( p(\beta \mid A) \)`.  For each non-terminal in `\( \beta \)`, you should recursively sample a next production until all paths result in terminal nodes (words).
+
+Be sure to convert your generated tree back from CNF before returning it.
+
+Using `trees3` from Part 5 above, you should get something like this:
+
+{% highlight scala %}
+scala> val trainer = new UnsmoothedPcfgParserTrainer()
+scala> val pcfg = trainer.train(trees3)
+scala> pcfg.generate().sentence.mkString(" ")
+"the dog with the man saw the dog"
+{% endhighlight %}
+
+### Agreement features
+
+Using this data:
+
+    (S (NP (D all) (N dogs)) (VP (V bark)))
+    (S (NP (D a) (N man)) (VP (V walks) (NP (D a) (N dog))))
+
+you might see trees like this:
+
+{% highlight scala %}
+"a dogs bark"
+"all man bark all man"
+{% endhighlight %}
+
+A large number of possible sentences can be generated from this grammar, but not all of them would generally be considered grammatical.
+
+To ensure number agreement, we can add *features* to the same data:
+
+{% highlight scala %}
+(S (NPpl (Dpl all) (Npl dogs)) (VPpl (Vpl bark)))
+(S (NPsg (Dsg a) (Nsg man)) (VPsg (Vsg walks) (NPpl (Dpl all) (Npl dogs))))
+{% endhighlight %}
+
+and, again, generate trees.  But with this grammar, all trees will have number agreement.
+
+> **Written Answer (a):** How many distinct trees can be generated from the above grammar with features?  What is the probability of each tree?
 
 
 
 
+## Part 7: Add-λ Smoothed PCFG
+
+We would ultimately like for our parser to be able to return a "best guess" tree for *any* sentence that it is given.
+
+Ensure that all compound non-terminals created during CNF converion are left unsmoothed.  After all, "{A+N}" should never produce anything other than "A N".  Also ensure that no compund non-terminal is given a non-zero probability in the start symbol distribution since a compound non-terminal must always have a parent.
 
 
 
+## Part 8: The Penn Treebank
 
 
-
-
-
-> **Written Answer (f):** Using the same feature extenders sigma value as Problem 3e, run MaxEnt once on `debate08/dev.txt`.  Report the accuracy.
 

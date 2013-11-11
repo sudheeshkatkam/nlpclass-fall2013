@@ -4,6 +4,11 @@ trait Tree {
   def label: String
   def children: Vector[Tree]
 
+  def sentence: Vector[String] = {
+    if (children.isEmpty) Vector(label)
+    else children.flatMap(_.sentence)
+  }
+
   override def toString() = {
     children match {
       case Vector(child) if child.children.isEmpty => f"($label ${child.label})"
@@ -11,7 +16,7 @@ trait Tree {
     }
   }
 
-  final def pretty: String = prettyLines.mkString("\n")
+  def pretty: String = prettyLines.mkString("\n")
   private def prettyLines: Vector[String] = {
     children.flatMap(_.prettyLines) match {
       case Vector(childLine) => Vector(label + " " + childLine)
@@ -23,7 +28,7 @@ trait Tree {
 /**
  * A basic Tree implementation
  */
-case class TreeNode(label: String, children: Vector[Tree] = Vector()) extends Tree
+case class TreeNode(label: String, children: Vector[TreeNode] = Vector()) extends Tree
 
 object Tree {
 
@@ -40,14 +45,14 @@ object Tree {
 
     var i = 0
 
-    def _parse(): Option[Tree] = {
+    def _parse(): Option[TreeNode] = {
       val tok = tokens(i)
       i += 1
       //println((tokens.take(i - 1) ++ Vector("[[" + tokens(i) + "]]") ++ tokens.drop(i)).mkString(" "))
       tok match {
         case "(" =>
           val nonterminal = tokens(i); i += 1
-          var children = Vector[Tree]()
+          var children = Vector[TreeNode]()
           while (tokens(i) != ")") {
             _parse().foreach { child =>
               if (nonterminal != "-NONE-") {
